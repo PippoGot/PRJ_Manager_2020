@@ -1,4 +1,4 @@
-number,parent,title,description,class,material,status,comment,priceUnit,quantity,quantityPackage,seller,kit,link
+number,parent,title,description,type,manufacture,status,comment,priceUnit,quantity,quantityPackage,seller,kit,link
 #MEH-001,number,M3x50mm Screw,"Cross slot, fully threaded",Hardware,Off the Shelf,Designed,-,0,1,1,Longhin,-,-
 #MEH-002,number,M3 washer,"1 mm thickness, 8 mm OD",Hardware,Off the Shelf,Not Designed,-,0,1,1,Longhin,-,-
 #MEH-003,number,M3 nut,5.5 mm smaller distance,Hardware,Off the Shelf,Not Designed,-,0,1,1,Brico,-,-
@@ -17,8 +17,7 @@ number,parent,title,description,class,material,status,comment,priceUnit,quantity
 #ELH-001,,Endstop Switch,"3 terminals, NO, NC, COM",Hardware,Off the Shelf,Designed,...,0,1,1,...,Amazon,-
 #MEH-00F,,Spring Coupler 5mm to 8mm,"5mm, 8mm, aluminum spring coupler",Hardware,Off the Shelf,Designed,...,0,1,1,Amazon,,-
 #MEH-00G,,T8 Rod,T8 screw rod,Hardware,Off the Shelf,Designed,...,0,1,1,Amazon,,-
-#MEH-00H,,T8 Brass Nut,"T8 brass nut, 20mm OD
-",Hardware,Off the Shelf,Designed,...,0,1,1,Amazon,,-
+#MEH-00H,,T8 Brass Nut,"T8 brass nut, 20mm OD",Hardware,Off the Shelf,Designed,...,0,1,1,Amazon,,-
 #EMH-002,,Makita Router,Makita router tool,Hardware,Off the Shelf,Designed,...,0,1,1,Amazon,,-
 #MEH-00I,,M8x30mm Bolt,Hex Bolt,Hardware,Off the Shelf,Designed,...,0,1,1,Bricoman,,-
 #MEH-00J,,M8x80mm Bolt,"Hex Bolt, fully threaded",Hardware,Off the Shelf,Designed,...,0,1,1,Bricoman,,-
