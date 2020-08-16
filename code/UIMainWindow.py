@@ -53,11 +53,11 @@ class MainWindow(qtw.QMainWindow):
         self.uiActionSave.triggered.connect(self.saveFile)
         self.uiActionSaveAs.triggered.connect(self.saveAsFile)
         self.uiActionClear.triggered.connect(self.clearFile)
-        self.uiActionExportBOM.triggered.connect(self.exportBOM)
+        # self.uiActionExportBOM.triggered.connect(self.exportBOM)
 
         self.uiActionAddPart.triggered.connect(self.addPart)
         self.uiActionAddHardwareToList.triggered.connect(self.addHardwareToList)
-        self.uiActionAddLeafPart.triggered.connect(self.addLeafPart)
+        # self.uiActionAddLeafPart.triggered.connect(self.addLeafPart)
         self.uiActionMorphHardware.triggered.connect(self.morphHardware)
         self.uiActionUpdateHardware.triggered.connect(self.updateHardware)
         self.uiActionRemovePart.triggered.connect(self.removePart)
@@ -192,39 +192,39 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Ok
             )
 
-    def exportBOM(self):
-        if self.model:
-            filename, _ = qtw.QFileDialog.getSaveFileName(                              # opens up a popup window to select the destination folder
-                self, 
-                "Select the file to save to...", 
-                qtc.QDir.homePath(),
-                'CSV Documents (*.csv)'
-            )
+    # def exportBOM(self):
+    #     if self.model:
+    #         filename, _ = qtw.QFileDialog.getSaveFileName(                              # opens up a popup window to select the destination folder
+    #             self, 
+    #             "Select the file to save to...", 
+    #             qtc.QDir.homePath(),
+    #             'CSV Documents (*.csv)'
+    #         )
 
-            if filename:                                                                # then if a filename is given
-                try:
-                    self.model.bill.exportBill(filename)                                       # the file is saved
-                    self.classes.saveModel()
-                    self.materials.saveModel()
-                    self.statuses.saveModel()
+    #         if filename:                                                                # then if a filename is given
+    #             try:
+    #                 self.model.bill.exportBill(filename)                                       # the file is saved
+    #                 self.classes.saveModel()
+    #                 self.materials.saveModel()
+    #                 self.statuses.saveModel()
 
-                except Exception as e:                                                  # if a problem occurs during the operation a message box is shown
-                        self.msgBox = qtw.QMessageBox.critical(                         # informing the user of the problem
-                        self, 
-                        'Critical Error!', 
-                        f'Could not save the file at {filename}\nbecause "{e}" exception occurred!', 
-                        qtw.QMessageBox.Ok, 
-                        qtw.QMessageBox.Ok
-                    )          
+    #             except Exception as e:                                                  # if a problem occurs during the operation a message box is shown
+    #                     self.msgBox = qtw.QMessageBox.critical(                         # informing the user of the problem
+    #                     self, 
+    #                     'Critical Error!', 
+    #                     f'Could not save the file at {filename}\nbecause "{e}" exception occurred!', 
+    #                     qtw.QMessageBox.Ok, 
+    #                     qtw.QMessageBox.Ok
+    #                 )          
 
-        else:                                                                           # if a model is not present
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
-                self, 
-                'Warning!', 
-                'No file currently open.', 
-                qtw.QMessageBox.Ok, 
-                qtw.QMessageBox.Ok
-            )
+    #     else:                                                                           # if a model is not present
+    #         self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+    #             self, 
+    #             'Warning!', 
+    #             'No file currently open.', 
+    #             qtw.QMessageBox.Ok, 
+    #             qtw.QMessageBox.Ok
+    #         )
 
     def clearFile(self):
         """Resets the current open file, as well as the components view."""
@@ -265,9 +265,6 @@ class MainWindow(qtw.QMainWindow):
                 # self.newComponentEditor.uiClass.setModel(self.classes)
                 # self.newComponentEditor.uiMaterial.setModel(self.materials)
                 # self.newComponentEditor.uiStatus.setModel(self.statuses)
-
-                # number = ModelTree.calculateNumber(parentItem)                          # the new number is calculated and set
-                # self.newComponentEditor.uiNumberID.setText(number)
 
                 self.newComponentEditor.index = currentSelection                        # pass in to the editor the index and row number for the submit signal of the editor
                 self.newComponentEditor.row = row
@@ -334,49 +331,49 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Ok
             )
 
-    def addLeafPart(self):
-        currentSelection = self.treeEditor.current                      # gets the current selected item
+    # def addLeafPart(self):
+    #     currentSelection = self.treeEditor.current                      # gets the current selected item
 
-        if currentSelection:                                                            # if an item is selected
-            parentItem = currentSelection.internalPointer().copy()                             # the item where the item has to be added is extracted
-            parentItem.level = 4
-            row = len(parentItem.children)                                              # gets the row where the item needs to be added
+    #     if currentSelection:                                                            # if an item is selected
+    #         parentItem = currentSelection.internalPointer().copy()                             # the item where the item has to be added is extracted
+    #         parentItem.level = 4
+    #         row = len(parentItem.children)                                              # gets the row where the item needs to be added
 
-            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
-                self.newComponentEditor = PropEditor('popup')                           # opens up a popup version of PropEditor
-                # self.newComponentEditor.uiClass.setModel(self.classes)
-                # self.newComponentEditor.uiMaterial.setModel(self.materials)
-                # self.newComponentEditor.uiStatus.setModel(self.statuses)
+    #         if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+    #             self.newComponentEditor = PropEditor('popup')                           # opens up a popup version of PropEditor
+    #             # self.newComponentEditor.uiClass.setModel(self.classes)
+    #             # self.newComponentEditor.uiMaterial.setModel(self.materials)
+    #             # self.newComponentEditor.uiStatus.setModel(self.statuses)
 
-                number = ModelTree.calculateNumber(parentItem)                          # the new number is calculated and set
-                self.newComponentEditor.uiNumberID.setText(number)
+    #             number = ModelTree.calculateNumber(parentItem)                          # the new number is calculated and set
+    #             self.newComponentEditor.uiNumberID.setText(number)
 
-                self.newComponentEditor.index = currentSelection                        # pass in to the editor the index and row number for the submit signal of the editor
-                self.newComponentEditor.row = row
+    #             self.newComponentEditor.index = currentSelection                        # pass in to the editor the index and row number for the submit signal of the editor
+    #             self.newComponentEditor.row = row
 
-                self.newComponentEditor.submit.connect(self.model.insertRows)           # connects the submit signal with the insertRows() function
-                self.newComponentEditor.submit.connect(self.treeEditor.refreshView)     # and to the refreshView() function of the central widget
-                self.newComponentEditor.submit.connect(self.changeLevel)
+    #             self.newComponentEditor.submit.connect(self.model.insertRows)           # connects the submit signal with the insertRows() function
+    #             self.newComponentEditor.submit.connect(self.treeEditor.refreshView)     # and to the refreshView() function of the central widget
+    #             self.newComponentEditor.submit.connect(self.changeLevel)
 
-                self.newComponentEditor.show()                                          # then the popup editor is shown
+    #             self.newComponentEditor.show()                                          # then the popup editor is shown
 
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
-                    self, 
-                    'Warning!', 
-                    'The selected item is not of an appropriate level!', 
-                    qtw.QMessageBox.Ok, 
-                    qtw.QMessageBox.Ok
-                )
+    #         else:                                                                       # if the component is not of the appropriate level
+    #             self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+    #                 self, 
+    #                 'Warning!', 
+    #                 'The selected item is not of an appropriate level!', 
+    #                 qtw.QMessageBox.Ok, 
+    #                 qtw.QMessageBox.Ok
+    #             )
 
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
-                self, 
-                'Warning!', 
-                'No item currently selected.', 
-                qtw.QMessageBox.Ok, 
-                qtw.QMessageBox.Ok
-            )
+    #     else:                                                                           # if nothing is selected
+    #         self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+    #             self, 
+    #             'Warning!', 
+    #             'No item currently selected.', 
+    #             qtw.QMessageBox.Ok, 
+    #             qtw.QMessageBox.Ok
+    #         )
 
     def morphHardware(self):
         """Changes a selected hardware component with another hardware component of chice."""
@@ -395,8 +392,6 @@ class MainWindow(qtw.QMainWindow):
                 self.hardwareSelector.submit.connect(self.removeBeforeMorph)            # first removes the previous hardware component
                 self.hardwareSelector.submit.connect(self.model.insertRows)             # then the submit signal is connected to the insertRows() function
                 self.hardwareSelector.submit.connect(self.treeEditor.refreshView)       # and to the refreshView() function of the central widget
-
-                self.hardwareSelector.add.connect(self.addHardwareToArchive)            # the addHardwareToArchive signal is connected to it's function
 
                 self.hardwareSelector.show()                                            # the popup is shown
 
@@ -429,8 +424,8 @@ class MainWindow(qtw.QMainWindow):
         columns = {                                                                      # default values for the headers
             0: 'title', 
             1: 'description',
-            2: 'class',
-            3: 'material',
+            2: 'type',
+            3: 'manufacture',
             4: 'status',
             5: 'priceUnit',
             6: 'quantityPackage',
@@ -470,7 +465,7 @@ class MainWindow(qtw.QMainWindow):
             parent = currentSelection.parent()                                          # and it's parent
 
             if item.level != 1:                                                         # then if the item isn't at level 1 (project root)
-                self.model.removeRows(row, 1, parent)                                   # it removes it
+                self.model.removeRows(row, parent)                                   # it removes it
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
                     self, 
@@ -512,10 +507,10 @@ class MainWindow(qtw.QMainWindow):
         self.newHardwareEditor.uiStatus.setModel(self.statuses)
         self.newHardwareEditor.show()                                                   # shows the popup editor
 
-    def removeBeforeMorph(self, rowNumber, rows, index, item):
+    def removeBeforeMorph(self, rowNumber, item, index):
         """Removes the component in a certain position. Used for the morph hardware action."""
 
-        self.model.removeRows(rowNumber, 1, index)
+        self.model.removeRows(rowNumber, index)
 
     def refreshBillView(self):
         sizes = {

@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 import csv
-from util import increment_number
+from util import increment_number, headers
 
 class HardwareModel(qtc.QAbstractItemModel):
     """
@@ -68,7 +68,7 @@ class HardwareModel(qtc.QAbstractItemModel):
         if index.isValid():                                                                     # if the index isn't valid
             if role == qtc.Qt.EditRole:                                                         # and role is Edit
                 row = index.row()                                                               # gets the index row
-                fieldnames = fieldnamesDict(index.internalPointer())                            # generates a numbered dictionary with keyword arguments
+                fieldnames = headers                          # generates a numbered dictionary with keyword arguments
                 column = fieldnames[index.column()]                                             # and converts the index column
 
                 self.hardwareList[row][column] = value                                          # changes the data in the given location

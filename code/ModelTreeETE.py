@@ -265,6 +265,7 @@ class ModelTree(qtc.QAbstractItemModel):
         self.beginInsertRows(parent.siblingAtColumn(0), position, position)
 
         setattr(item, 'level', parentItem.level + 1)
+        setattr(item, 'parent', parentItem.number)
         success = parentItem.add_child(item)
 
         self.endInsertRows()

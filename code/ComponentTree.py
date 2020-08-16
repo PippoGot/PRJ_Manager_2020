@@ -1,6 +1,6 @@
 from ete3 import Tree
 import csv
-from util import increment_number, special
+from util import increment_number, special, headers
 
 class ComponentTree(Tree):
     def __init__(self, name, attrs = {}):
@@ -27,7 +27,7 @@ class ComponentTree(Tree):
 
     def save_file(self, filename):
         with open(filename, 'w') as file:
-            fieldnames = list(self.base.keys())
+            fieldnames = headers
             csv_writer = csv.DictWriter(file, fieldnames = fieldnames)
 
             csv_writer.writeheader()
@@ -82,7 +82,7 @@ class ComponentTree(Tree):
         if prefix in special:
             setattr(childItem, 'level', 5)
         else:
-            setattr(childItem, 'number', childItem.calculateNumber(parent))
+            setattr(childItem, 'number', childItem.calc_number(parent))
             
         number = getattr(childItem, 'number')
         setattr(childItem, 'name', number)
