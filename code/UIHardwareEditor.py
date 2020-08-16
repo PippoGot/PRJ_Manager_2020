@@ -111,6 +111,9 @@ class HardwareEditor(qtw.QWidget):
         }
 
         self.archive.insertRows(data)                                                       # then the data is inserted in to the archive model
+
+        self.initFields()
+
         self.updateNumber()
         self.refreshView()                                                                  # and the view refreshed
     
@@ -191,3 +194,4 @@ class HardwareEditor(qtw.QWidget):
         self.uiNewSeller.setText('...')
         self.uiNewLink.setPlainText('-')
         self.uiNewPriceUnit.setText('0')
+        self.uiNewType.setText('Hardware')

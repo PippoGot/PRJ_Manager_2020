@@ -27,8 +27,7 @@ class PropEditor(qtw.QWidget):
         self.uiCancelButton.clicked.connect(self.close)                                 # connects the buttons to their respective functions
         self.uiSubmitButton.clicked.connect(self.onSubmit)
 
-        number = parent.calc_number(parent)
-        self.uiNumberID.setText(number)
+        self.initFields(parent)
 
     def onSubmit(self):
         """
@@ -40,7 +39,7 @@ class PropEditor(qtw.QWidget):
             'number': self.uiNumberID.text(),
             'title': self.uiName.text(), 
             'description': self.uiDescription.toPlainText(),
-            'type': self.uiType.currentText(),
+            'type': self.uiType.text(),
             'manufacture': self.uiManufacture.currentText(),
             'status': self.uiStatus.currentText(),
             'comment': self.uiComment.toPlainText(),
@@ -56,3 +55,35 @@ class PropEditor(qtw.QWidget):
 
         self.submit.emit(self.row, newComponent, self.index)                                 # the signal is emitted
         self.close()                                                                    # the window is closed
+
+    def initFields(self, parent):
+        number = parent.calc_number(parent)
+        self.uiNumberID.setText(number)
+
+        self.uiName.setText('-')
+        self.uiDescription.setPlainText('-')
+
+        types = {
+            1: 'Project',
+            2: 'Assembly',
+            3: 'Assembly',
+            4: 'Assembly',
+            5: self.defineType(number)
+        }
+
+        self.uiType.setText(types[parent.level + 1])
+        # self.uiManufacture.currentText(),
+        # self.uiStatus.currentText(),
+        self.uiComment.setPlainText('-')
+        self.uiPriceUnit.setText('0')
+        self.uiSeller.setText('-')
+        # self.uiKit.currentText()
+        self.uiLink.setPlainText('-')
+
+    def defineType(self, number):
+        prefix = number[1:4]
+        if prefix in ['MEH', 'MMH', 'ELH', 'EMH']:
+            return 'Hadware'
+        elif prefix == 'CON':
+            return 'Consumable'
+        else: return 'Part'
