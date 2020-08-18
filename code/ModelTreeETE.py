@@ -292,6 +292,10 @@ class ModelTree(qtc.QAbstractItemModel):
 
 # CUSTOM FUNCTIONS
 
+    def swapComponent(self, position, newNode, parent = qtc.QModelIndex()):
+        self.removeRows(position, parent)
+        self.insertRows(position, newNode, parent)
+
     def saveFile(self, filename):
         """
         Saves the tree structure in a .csv file, given a proper filename.

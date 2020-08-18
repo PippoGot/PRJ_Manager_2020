@@ -48,8 +48,6 @@ It's purpose is to have a bill of material for the ordering of components withou
 
 # UIMainWindow.py <- ui_main_window.ui
 
-TO INTEGRATE "removeBeforeMorph" IN TO "morphHardware" 
-
 Main application window. It should be responsible for all of the actions performable inside the application.
 contains the different application pages and the actions. Should also contains all the globally used models.
 
@@ -79,12 +77,12 @@ Actions to add:
 - Expand all
 - Collapse all
 
-# UITreeEditor.py <- ui_components_page.ui
+# UIComponentsPage.py <- ui_components_page.ui
 
 Class responsible of the displaying and editing of the components tree.
 Takes a ModelTreeETE class for its view and mapper.
 
-# UIPropEditor.py <- ui_component_editor.ui
+# UIComponentEditor.py <- ui_component_editor.ui
 
 Class responsible for editing a new component that is about to be added to the tree.
 It is a popup window that emits a ComponentTree instance.
@@ -98,9 +96,15 @@ hardware components and consumables.
 
 # UIHardwareSelector.py <- ui_hardware_selector.ui
 
+TO ADD AN OPTION FOR SELECTING THE QUANTITY OF THE ITEM
+
 Class responsible for selecting a specific hardware component form the archive to be added in the list or
 to be changed inside the list. It is a popup window that emits a ComponentTree instance.
 
 # util.py
 
 Class with general purpose functions and data.
+
+# MainApp.py
+
+__main__ program to run.

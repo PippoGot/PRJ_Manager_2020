@@ -35,18 +35,9 @@ class MainWindow(qtw.QMainWindow):
 
         self.treeEditor = TreeEditor()                                                  # creates the tree editor
         self.uiTreePage.layout().addWidget(self.treeEditor)
-        # self.treeEditor.componentEditor.uiClass.setModel(self.classes)
-        # self.treeEditor.componentEditor.uiMaterial.setModel(self.materials)
-        # self.treeEditor.componentEditor.uiStatus.setModel(self.statuses)
 
         self.hardwareEditor = HardwareEditor(self.archive)                              # creates the hardware editor
         self.uiHardwarePage.layout().addWidget(self.hardwareEditor)
-        # self.hardwareEditor.uiClass.setModel(self.classes)
-        # self.hardwareEditor.uiMaterial.setModel(self.materials)
-        # self.hardwareEditor.uiStatus.setModel(self.statuses)        
-        # self.hardwareEditor.uiClass_2.setModel(self.classes)
-        # self.hardwareEditor.uiMaterial_2.setModel(self.materials)
-        # self.hardwareEditor.uiStatus_2.setModel(self.statuses)
 
         self.uiActionNew.triggered.connect(self.newFile)                                # connects the actions to their respective functions
         self.uiActionOpen.triggered.connect(self.openFile)
@@ -260,12 +251,13 @@ class MainWindow(qtw.QMainWindow):
             parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
             def insertWrapper(node):
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
+                self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
                 self.newComponentEditor = PropEditor(parentItem)                           # opens up a popup version of PropEditor
                 self.newComponentEditor.submit.connect(insertWrapper)           # connects the submit signal with the insertRows() function
-                self.newComponentEditor.submit.connect(self.treeEditor.refreshView)     # and to the refreshView() function of the central widget
                 self.newComponentEditor.show()                                          # then the popup editor is shown
+
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
                     self, 
@@ -291,6 +283,8 @@ class MainWindow(qtw.QMainWindow):
         
         def insertWrapper(node):
             self.model.insertRows(currentSelection.row(), node, currentSelection)
+            setattr(node, 'level', 5)
+            self.treeEditor.refreshView()
 
         if currentSelection:                                                            # if an item is selected
             item = currentSelection.internalPointer()                                   # the item is extracted
@@ -299,8 +293,8 @@ class MainWindow(qtw.QMainWindow):
             if level < 5:                                                               # if the item is not at level 5 (leaf)
                 self.hardwareSelector = HardwareSelector(self.archive)                  # a popup window containing a hardware selector is opened with the archive as model
                 self.hardwareSelector.submit.connect(insertWrapper)             # then the submit signal is connected to the insertRows() function
-                self.hardwareSelector.submit.connect(self.treeEditor.refreshView)       # and to the refreshView() function of the central widget
                 self.hardwareSelector.show()                                            # the popup is shown
+
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
                     self, 
@@ -327,12 +321,13 @@ class MainWindow(qtw.QMainWindow):
             def insertWrapper(node):
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
                 setattr(node, 'level', 5)
+                self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
                 self.newComponentEditor = PropEditor(parentItem, 5)                           # opens up a popup version of PropEditor
                 self.newComponentEditor.submit.connect(insertWrapper)           # connects the submit signal with the insertRows() function
-                self.newComponentEditor.submit.connect(self.treeEditor.refreshView)     # and to the refreshView() function of the central widget
                 self.newComponentEditor.show()                                          # then the popup editor is shown
+
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
                     self, 
@@ -355,6 +350,10 @@ class MainWindow(qtw.QMainWindow):
         """Changes a selected hardware component with another hardware component of chice."""
 
         currentSelection = self.treeEditor.current                      # gets the current selected item
+        def morphWrapper(node):
+            self.model.swapComponent(currentSelection.row(), node, currentSelection.parent())
+            setattr(node, 'level', 5)
+            self.treeEditor.refreshView()
 
         if currentSelection:                                                            # if an item is selected
             item = currentSelection.internalPointer()                                   # the item is extracted
@@ -362,16 +361,8 @@ class MainWindow(qtw.QMainWindow):
 
             if level == 5:                                                              # if the item is at level 5 (leaf)
                 self.hardwareSelector = HardwareSelector(self.archive)                  # a popup window containing a hardware selector is opened with the archive as model
-                self.hardwareSelector.row = currentSelection.row()                      # the index and row parameters are passed to the selector for the submit signal
-                self.hardwareSelector.index = currentSelection.parent()
-
-                self.hardwareSelector.submit.connect(self.removeBeforeMorph)            # first removes the previous hardware component
-                self.hardwareSelector.submit.connect(self.model.insertRows)             # then the submit signal is connected to the insertRows() function
-                self.hardwareSelector.submit.connect(self.treeEditor.refreshView)       # and to the refreshView() function of the central widget
-
+                self.hardwareSelector.submit.connect(morphWrapper)             # then the submit signal is connected to the insertRows() function
                 self.hardwareSelector.show()                                            # the popup is shown
-
-                self.treeEditor.refreshView()                                           # and the view is resized
             
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
@@ -473,8 +464,3 @@ class MainWindow(qtw.QMainWindow):
             self.treeEditor.refreshView()
 
 # OTHER FUNCTIONS
-
-    def removeBeforeMorph(self, rowNumber, item, index):
-        """Removes the component in a certain position. Used for the morph hardware action."""
-
-        self.model.removeRows(rowNumber, index)

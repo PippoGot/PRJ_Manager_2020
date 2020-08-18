@@ -89,6 +89,7 @@ class HardwareSelector(qtw.QWidget):
             index = self.proxyModel.mapToSource(self.current)                                   # the index is mapped from the proxy model to the original model
             data = index.internalPointer()                                                      # the data is extracted
             newComponent = ComponentTree(data['number'], data)
+            newComponent.quantity = self.uiSelectQuantity.text()
             self.submit.emit(newComponent)                                     # the signal is emitted
             self.close()                                                                        # and the selector is closed
 
