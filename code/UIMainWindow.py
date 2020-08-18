@@ -6,7 +6,7 @@ from UIComponentsPage import TreeEditor
 from UIComponentEditor import PropEditor
 from UIHardwareSelector import HardwareSelector
 from UIHardwareEditor import HardwareEditor
-from HardwareModel import HardwareModel
+from ModelHardware import HardwareModel
 from ModelTreeETE import ModelTree
 from ModelCombobox import ModelCombobox
 

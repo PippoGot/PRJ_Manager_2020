@@ -2,7 +2,7 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from HardwareProxyModel import HardwareProxyModel
+from ProxyHardware import HardwareProxyModel
 from ComponentTree import ComponentTree
 
 class HardwareSelector(qtw.QWidget):

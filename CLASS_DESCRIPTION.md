@@ -20,8 +20,7 @@ Proxy model for the tree model. Hides the unwanted columns and sorts the compone
 
 # HardwareModel.py
 
-TO CHANGE THE DATA STRUCTURE WITH A "ModelTreeETE.py" CLASS FOR EASIER DATA MANAGING.
-TO CHANGE THE FILE NAME WITH "ModelHardware.py"
+TO CHANGE THE DATA STRUCTURE WITH A "ModelTreeETE.py" CLASS FOR EASIER DATA MANAGING
 
 Class for the management of the hardware archive. Such archive should be available for every assembly project.
 This is achieved through the storing of an internal .csv file with all the hardware components used in the previous
@@ -33,8 +32,6 @@ and current project. Adding and removing such components can be performed inside
 - represent a node as a string for the filtering function: stringAtRow (move it in the proxy model) 
 
 # HardwareProxyModel.py
-
-TO CHANGE THE FILE NAME WITH "ProxyHardware.py"
 
 Proxy model for the hardware model. Hides unwanted columns and sorts the components in a specific order.
 
