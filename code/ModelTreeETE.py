@@ -115,7 +115,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
         if not index.isValid():                                                             # if the index is not valid                                                        
             return qtc.Qt.NoItemFlags                                                       # returns NoItemFlags
-        if index.column() == 1 or index.column() == 0:                                      # if the index column is either 0 or 1
+        if index.column() == 4 or index.column() == 1 or index.column() == 0:                                      # if the index column is either 0 or 1
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable                           # the item is both enabled and selectable
         else:                                                                               # otherwise
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable   # the object is also editable

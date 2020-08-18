@@ -8,6 +8,8 @@ Subclass of the Tree class. Adds some specific functions for the managing of the
 
 # ModelTreeETE.py
 
+TO CHANGE THE BEHAVIOR OF FLAGS BASED ON THE ROW
+
 Model for the components tree to be displayed in views.
 
 - manages all the model functions needed to add and remove components and to display the component tree
@@ -21,6 +23,7 @@ Proxy model for the tree model. Hides the unwanted columns and sorts the compone
 # HardwareModel.py
 
 TO CHANGE THE DATA STRUCTURE WITH A "ModelTreeETE.py" CLASS FOR EASIER DATA MANAGING
+TO MOVE THE "stringAtRow" FUNCTION IN THE PROXY MODEL
 
 Class for the management of the hardware archive. Such archive should be available for every assembly project.
 This is achieved through the storing of an internal .csv file with all the hardware components used in the previous
@@ -32,6 +35,8 @@ and current project. Adding and removing such components can be performed inside
 - represent a node as a string for the filtering function: stringAtRow (move it in the proxy model) 
 
 # HardwareProxyModel.py
+
+TO ADD THE "stringAtRow" FUNCTION
 
 Proxy model for the hardware model. Hides unwanted columns and sorts the components in a specific order.
 
@@ -58,12 +63,12 @@ Current preformable actions:
 - Save As file
 - Clear file
 
-- Add part
-- Add hardware to list
-- Add leaf part
-- Morph hardware
-- Update hardware
-- Remove part
+- Add component
+- Add special component
+- Add leaf component
+- Morph special component
+- Update special components (TO IMPROVE WHEN CHANGING THE HARDWARE MODEL WITH A TREE DATA STRUCTURE)
+- Remove component
 
 - Show deprecated
 
@@ -72,12 +77,17 @@ Actions to add:
 
 - Undo
 - Redo
-- (separate add hardware to list in different cathegories)
+
+TO IMPLEMENT:
+
+- Add jig
 
 - Expand all
 - Collapse all
 
 # UIComponentsPage.py <- ui_components_page.ui
+
+TO CHANGE THE EDITOR SECTION BASED ON THE SELECTED LINE
 
 Class responsible of the displaying and editing of the components tree.
 Takes a ModelTreeETE class for its view and mapper.

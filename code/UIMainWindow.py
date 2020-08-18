@@ -79,9 +79,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.model = ModelTree()                                                        # the model parameter is updated with the new model created
         self.treeEditor.setModel(self.model)                                            # and passed to the central widget
-        # self.uiBillView.setModel(self.model.bill)
         self.filename = None                                                            # then the filename is reset
-        # self.refreshBillView()
 
     def openFile(self):
         """Opens and read a .csv file, then creates the corresponding model."""
@@ -110,10 +108,7 @@ class MainWindow(qtw.QMainWindow):
             try:                                                                        # tries to read the model inside it
                 self.model = ModelTree(filename)
                 self.treeEditor.setModel(self.model)
-                # self.uiBillView.setModel(self.model.bill)
-                # self.refreshBillView()
                 self.filename = filename
-                self.treeEditor.refreshView()
 
             except Exception as e:                                                      # if a problem during the process occurs a message box is created
                 self.msgBox = qtw.QMessageBox.critical(                                 # informing the user of the problem
@@ -130,9 +125,6 @@ class MainWindow(qtw.QMainWindow):
         if self.model:                                                                  # if a model is present to be saved
             if self.filename:                                                           # if a filename is present
                 self.model.saveFile(self.filename)                                      # it saves the current file with this filename
-                self.classes.saveModel()
-                self.materials.saveModel()
-                self.statuses.saveModel()
             else:                                                                       # otherwise
                 self.saveAsFile()                                                       # it calls the saveAsFile() function
 
@@ -159,9 +151,6 @@ class MainWindow(qtw.QMainWindow):
             if filename:                                                                # then if a filename is given
                 try:
                     self.model.saveFile(filename)                                       # the file is saved
-                    self.classes.saveModel()
-                    self.materials.saveModel()
-                    self.statuses.saveModel()
 
                 except Exception as e:                                                  # if a problem occurs during the operation a message box is shown
                         self.msgBox = qtw.QMessageBox.critical(                         # informing the user of the problem
@@ -237,8 +226,6 @@ class MainWindow(qtw.QMainWindow):
         self.filename = None
         self.model = None
         self.treeEditor.setModel(None)
-        # self.treeEditor.componentEditor.setDisabled(True)
-        # self.uiBillView.setModel(None)
 
 # edit menu
 
@@ -388,29 +375,19 @@ class MainWindow(qtw.QMainWindow):
         Then updates every present item in the list with the data in the archive.
         """
 
-        columns = {                                                                      # default values for the headers
-            0: 'title', 
-            1: 'description',
-            2: 'type',
-            3: 'manufacture',
-            4: 'status',
-            5: 'priceUnit',
-            6: 'quantityPackage',
-            7: 'seller',
-            8: 'link'
-        }
+        columns = [                                                                      # default values for the headers
+            'title', 
+            'description',
+            'type',
+            'manufacture',
+            'status',
+            'priceUnit',
+            'quantityPackage',
+            'seller',
+            'link'
+        ]
 
-        sections = {
-            0:2,
-            1:3,
-            2:4,
-            3:5,
-            4:6,
-            5:8,
-            6:10,
-            7:11,
-            8:13
-        }
+        sections = [2, 3, 4, 5, 6, 8, 10, 11, 13]
 
         if self.model:
             for item in self.model.rootItem.iter_leaves():                               # iterates over the hardware and the leaves
@@ -464,3 +441,6 @@ class MainWindow(qtw.QMainWindow):
             self.treeEditor.refreshView()
 
 # OTHER FUNCTIONS
+#TODO?
+    def setModel(self, model):
+        pass
