@@ -98,8 +98,8 @@ class HardwareEditor(qtw.QWidget):
             'number': self.uiNewNumberID.text(),                                               # gathers the data to emit
             'title': self.uiNewName.text(), 
             'description': self.uiNewDescription.toPlainText(),
-            'class': self.uiNewType.currentText(),
-            'material': self.uiNewManufacture.currentText(),
+            'type': self.uiNewType.text(),
+            'manufacture': self.uiNewManufacture.currentText(),
             'status': self.uiNewStatus.currentText(),
             'comment': self.uiNewComment.toPlainText(),
             'priceUnit': self.uiNewPriceUnit.text(),
@@ -188,10 +188,10 @@ class HardwareEditor(qtw.QWidget):
         self.refreshView()                                                                  # finally resizes the view to its content
 
     def initFields(self):
-        self.uiNewName.setText('no name')                                                      # sets some fields to default values
-        self.uiNewDescription.setPlainText('no description')
-        self.uiNewComment.setPlainText('...')
-        self.uiNewSeller.setText('...')
+        self.uiNewName.setText('-')                                                      # sets some fields to default values
+        self.uiNewDescription.setPlainText('-')
+        self.uiNewComment.setPlainText('-')
+        self.uiNewSeller.setText('-')
         self.uiNewLink.setPlainText('-')
         self.uiNewPriceUnit.setText('0')
         self.uiNewType.setText('Hardware')

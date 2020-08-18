@@ -2,9 +2,7 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from ComponentTree import ComponentTree
-import csv
 from util import increment_number, headers
-from ModelBill import ModelBill
 
 class ModelTree(qtc.QAbstractItemModel):
     """
@@ -28,9 +26,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
         super(ModelTree, self).__init__()
 
-        # self.bill = ModelBill()
         self.rootItem = ComponentTree('root')
-        # setattr(self.rootItem, 'quantity', 1)
 
         if filename:                                                                        # creates the first item in one of two ways
             self.first = self.readFile(filename)                                            # from a file
@@ -40,10 +36,6 @@ class ModelTree(qtc.QAbstractItemModel):
         setattr(self.first, 'level', 1)
 
         self.rootItem.add_child(self.first)
-
-        # self.bill.recalculate(self.first)
-
-    headers = headers
 
     base = {                                                                                # default values for the first node
         'number': '#000-000', 
@@ -82,7 +74,7 @@ class ModelTree(qtc.QAbstractItemModel):
         item = index.internalPointer()
 
         if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                           # then if the role is display or edit
-            return getattr(item, self.headers[index.column()], None)                        # returns the data stored under the given index
+            return getattr(item, headers[index.column()], None)                        # returns the data stored under the given index
 
     def setData(self, index, value, role = qtc.Qt.EditRole):
         """
@@ -104,7 +96,6 @@ class ModelTree(qtc.QAbstractItemModel):
         if index.isValid() and role == qtc.Qt.EditRole:
             item = index.internalPointer()
             setattr(item, self.headers[index.column()], value)
-            # self.bill.recalculate(self.first)
             self.dataChanged.emit(index, index)
             return True
         return 
@@ -145,7 +136,7 @@ class ModelTree(qtc.QAbstractItemModel):
         """
 
         if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:                 # if the orientation is horizontal and the role is display
-            return self.headers[section].title()                                                    # returns the root data under the given index
+            return headers[section].title()                                                    # returns the root data under the given index
         return None                                                                         # otherwise returns None
 
     def index(self, row, column, parent):

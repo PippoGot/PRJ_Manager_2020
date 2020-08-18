@@ -13,7 +13,6 @@ class HardwareSelector(qtw.QWidget):
     """
 
     submit = qtc.pyqtSignal(int, ComponentTree, qtc.QModelIndex)                                    # signal emitted when submit is pressed
-    # add = qtc.pyqtSignal()                                                                      # signal emitted when add hardware is pressed
 
     def __init__(self, archive):
         """Loads the .ui file, connects the buttons to the respective functions, 
@@ -29,8 +28,6 @@ class HardwareSelector(qtw.QWidget):
 
         self.uiCancelButton.clicked.connect(self.close)                                         # connects the buttons to the respective functions
         self.uiOkButton.clicked.connect(self.onSubmit)
-        # self.uiRemoveHardwareButton.clicked.connect(self.removeHardware)
-        # self.uiAddHardwareButton.clicked.connect(self.add.emit)
 
         self.uiMechanicalButton.clicked.connect(self.changeFilter)
         self.uiMeasuredButton.clicked.connect(self.changeFilter)
@@ -42,7 +39,6 @@ class HardwareSelector(qtw.QWidget):
         self.current = None                                                                     # initialize the parameter current to None
         self.currentSelection = None
         self.uiOkButton.setDisabled(True)                                                       # and disables the ok and remove buttons
-        # self.uiRemoveHardwareButton.setDisabled(True)
 
         self.model = archive                                                                    # save the archive model in a class parameter
         self.proxyModel = HardwareProxyModel()                                                  # creates a hardware proxy model
@@ -62,18 +58,6 @@ class HardwareSelector(qtw.QWidget):
         """Updates the archive selection."""
 
         self.currentSelection = self.selectionModel.selectedIndexes()                           # the class parameter is updated with the current selected indexes
-        # self.uiRemoveHardwareButton.setDisabled(False)                                          # and the remove button is enabled
-
-    # def removeHardware(self):
-    #     """Removes the selected hardware item from the archive."""
-
-    #     mapped = []                                                                             # an empty list is created for the indexes
-    #     for index in self.currentSelection:                                                     # for every index selected
-    #         mapped.append(self.proxyModel.mapToSource(index))                                   # the index is mapped to the source model and added to the list
-
-    #     self.model.removeRows(mapped)                                                           # then the indexes are removed from the archive
-
-    #     self.currentSelection = None
 
     def setCurrentIndex(self, index):
         """

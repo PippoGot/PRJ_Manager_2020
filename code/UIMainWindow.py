@@ -28,9 +28,9 @@ class MainWindow(qtw.QMainWindow):
 
         self.filename = None                                                            # initialize the filename to None
         self.archive = HardwareModel()                                                  # creates the models from the archive and stores them in a class parameter
-        self.classes = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/classes.csv')
-        self.materials = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/materials.csv')
-        self.statuses = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/statuses.csv')
+        # self.classes = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/classes.csv')
+        # self.materials = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/materials.csv')
+        # self.statuses = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/statuses.csv')
         self.model = None                                                               # the model class parameter is set to None
 
         self.treeEditor = TreeEditor()                                                  # creates the tree editor
@@ -495,36 +495,36 @@ class MainWindow(qtw.QMainWindow):
 
 # OTHER FUNCTIONS
 
-    def addHardwareToArchive(self):
-        """Adds a hardware component to the hardware archive."""
+    # def addHardwareToArchive(self):
+    #     """Adds a hardware component to the hardware archive."""
 
-        self.newHardwareEditor = HardwareEditor(self.archive)                           # creates a popup hardware editor
-        self.newHardwareEditor.uiClass.setModel(self.classes)
-        self.newHardwareEditor.uiMaterial.setModel(self.materials)
-        self.newHardwareEditor.uiStatus.setModel(self.statuses)
-        self.newHardwareEditor.show()                                                   # shows the popup editor
+    #     self.newHardwareEditor = HardwareEditor(self.archive)                           # creates a popup hardware editor
+    #     self.newHardwareEditor.uiClass.setModel(self.classes)
+    #     self.newHardwareEditor.uiMaterial.setModel(self.materials)
+    #     self.newHardwareEditor.uiStatus.setModel(self.statuses)
+    #     self.newHardwareEditor.show()                                                   # shows the popup editor
 
     def removeBeforeMorph(self, rowNumber, item, index):
         """Removes the component in a certain position. Used for the morph hardware action."""
 
         self.model.removeRows(rowNumber, index)
 
-    def refreshBillView(self):
-        sizes = {
-            0: 70,
-            1: 200,
-            2: 360,
-            3: 130,
-            4: 130,
-            5: 130,
-            6: 130,
-            7: 130,
-            8: 70,
-            9: 100,
-            10: 360
-        }
-        for column in range(self.model.bill.columnCount(qtc.QModelIndex())):
-            self.uiBillView.setColumnWidth(column, sizes[column])
+    # def refreshBillView(self):
+    #     sizes = {
+    #         0: 70,
+    #         1: 200,
+    #         2: 360,
+    #         3: 130,
+    #         4: 130,
+    #         5: 130,
+    #         6: 130,
+    #         7: 130,
+    #         8: 70,
+    #         9: 100,
+    #         10: 360
+    #     }
+    #     for column in range(self.model.bill.columnCount(qtc.QModelIndex())):
+    #         self.uiBillView.setColumnWidth(column, sizes[column])
 
     def changeLevel(self, position, data, parent):
         parent = parent.internalPointer()

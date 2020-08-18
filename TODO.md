@@ -3,3 +3,4 @@
 - select quantity in hardware selector
 - bill list page
 - adjusting automatic type with numbers
+- isolate all classes
