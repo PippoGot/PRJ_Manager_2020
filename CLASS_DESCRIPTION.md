@@ -84,14 +84,10 @@ Actions to add:
 
 # UITreeEditor.py <- ui_components_page.ui
 
-TO CHANGE THE NAME INTO "UIComponentsPage.py"
-
 Class responsible of the displaying and editing of the components tree.
 Takes a ModelTreeETE class for its view and mapper.
 
 # UIPropEditor.py <- ui_component_editor.ui
-
-TO CHANGE THE NAME INTO "UIComponentEditor.py"
 
 Class responsible for editing a new component that is about to be added to the tree.
 It is a popup window that emits a ComponentTree instance.
@@ -99,14 +95,11 @@ It is a popup window that emits a ComponentTree instance.
 # UIHardwareEditor.py <- ui_hardware_editor_page.ui
 
 TO CHANGE THE VIEW INTO A TREEVIEW WHEN CHANGING THE HARDWARE MODEL TO A TREE MODEL
-TO CLEAN THE FUNCTIONS CODE
 
 Class responsible for the editing and displaying of the hardware archive, as well as adding and removing new
 hardware components and consumables.
 
 # UIHardwareSelector.py <- ui_hardware_selector.ui
-
-TO CLEAN THE FUNCTIONS CODE
 
 Class responsible for selecting a specific hardware component form the archive to be added in the list or
 to be changed inside the list. It is a popup window that emits a ComponentTree instance.

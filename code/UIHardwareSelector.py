@@ -52,7 +52,6 @@ class HardwareSelector(qtw.QWidget):
         self.selectionModel.selectionChanged.connect(self.setCurrentSelection)                  # and the selection changed signal is connected to the respective function
 
         self.changeFilter()
-        self.refreshView()                                                                      # finally it resizes the view to the content
 
     def setCurrentSelection(self):
         """Updates the archive selection."""

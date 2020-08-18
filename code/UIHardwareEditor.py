@@ -46,11 +46,6 @@ class HardwareEditor(qtw.QWidget):
         self.selectionModel = self.uiHardwareView.selectionModel()                          # the view's selection model is extracted
         self.selectionModel.selectionChanged.connect(self.setCurrentSelection)              # and the selection changed signal is connected to the respective function
 
-        self.initFields()
-
-        self.changeFilter()                                                                 # finally the filter is changed
-        self.updateNumber()
-
         self.mapper = qtw.QDataWidgetMapper()
         self.mapper.setModel(self.archive)
 
@@ -67,6 +62,8 @@ class HardwareEditor(qtw.QWidget):
         self.mapper.addMapping(self.uiCurrentSeller, 11)
         self.mapper.addMapping(self.uiCurrentKit, 12)
         self.mapper.addMapping(self.uiCurrentLink, 13)
+
+        self.updateNumber()
 
     def updateNumber(self):
         """
@@ -91,6 +88,7 @@ class HardwareEditor(qtw.QWidget):
 
         self.initFields()
         self.changeFilter()                                                                 # changes the filter
+        self.refreshView()
 
     def addHardwareToArchive(self):
         """Adds a new hardware item to the archive and generates a new item for it to be added."""
@@ -114,7 +112,6 @@ class HardwareEditor(qtw.QWidget):
         self.archive.insertRows(data)                                                       # then the data is inserted in to the archive model
 
         self.updateNumber()
-        self.refreshView()                                                                  # and the view refreshed
     
     def setCurrentSelection(self):
         """Updates the archive selection and enables the remove button."""
@@ -184,7 +181,6 @@ class HardwareEditor(qtw.QWidget):
             filterString = '#EMH-[0-9A-Z]{3}([ -0-9a-zA-Z]+)?' + textString
 
         self.proxyModel.setFilterRegExp(filterString)                                       # updates the filter expression
-        self.refreshView()                                                                  # finally resizes the view to its content
 
     def initFields(self):
         self.uiNewName.setText('-')                                                      # sets some fields to default values

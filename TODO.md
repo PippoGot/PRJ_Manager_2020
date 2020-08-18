@@ -2,5 +2,5 @@
 - expand and collapse functions in view menu
 - select quantity in hardware selector
 - bill list page
-- adjusting automatic type with numbers
+- adjusting automatic type with numbers (DONE ?)
 - isolate all classes

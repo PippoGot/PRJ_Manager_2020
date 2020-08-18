@@ -2,8 +2,8 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from UITreeEditor import TreeEditor
-from UIPropEditor import PropEditor
+from UIComponentsPage import TreeEditor
+from UIComponentEditor import PropEditor
 from UIHardwareSelector import HardwareSelector
 from UIHardwareEditor import HardwareEditor
 from HardwareModel import HardwareModel
