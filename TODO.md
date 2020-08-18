@@ -1,0 +1,5 @@
+- convert the hardware model to a tree model
+- expand and collapse functions in view menu
+- select quantity in hardware selector
+- bill list page
+- adjusting automatic type with numbers

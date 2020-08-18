@@ -19,6 +19,7 @@ class TreeEditor(qtw.QWidget):
 
         self.mapper = qtw.QDataWidgetMapper()
         self.current = None
+        self.uiComponentsEditor.setDisabled(True)
 
     def setModel(self, model):
         """
@@ -63,6 +64,7 @@ class TreeEditor(qtw.QWidget):
         else:
             self.uiComponentsView.setModel(None)
             self.mapper.setModel((None))
+            self.uiComponentsEditor.setDisabled(True)
 
     def mapTreeIndex(self, index):
         """
@@ -80,7 +82,7 @@ class TreeEditor(qtw.QWidget):
         self.mapper.setCurrentModelIndex(index)
 
         self.current = index                                                          # then updates the current parameter
-        self.setDisabled(False)
+        self.uiComponentsEditor.setDisabled(False)
 
     def refreshView(self):
         """Updates the view resizing it to the content."""

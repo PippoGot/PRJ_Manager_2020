@@ -57,7 +57,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.uiActionAddPart.triggered.connect(self.addPart)
         self.uiActionAddHardwareToList.triggered.connect(self.addHardwareToList)
-        # self.uiActionAddLeafPart.triggered.connect(self.addLeafPart)
+        self.uiActionAddLeafPart.triggered.connect(self.addLeafPart)
         self.uiActionMorphHardware.triggered.connect(self.morphHardware)
         self.uiActionUpdateHardware.triggered.connect(self.updateHardware)
         self.uiActionRemovePart.triggered.connect(self.removePart)
@@ -331,49 +331,46 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Ok
             )
 
-    # def addLeafPart(self):
-    #     currentSelection = self.treeEditor.current                      # gets the current selected item
+    def addLeafPart(self):
+        currentSelection = self.treeEditor.current                      # gets the current selected item
 
-    #     if currentSelection:                                                            # if an item is selected
-    #         parentItem = currentSelection.internalPointer().copy()                             # the item where the item has to be added is extracted
-    #         parentItem.level = 4
-    #         row = len(parentItem.children)                                              # gets the row where the item needs to be added
+        if currentSelection:                                                            # if an item is selected
+            parentItem = currentSelection.internalPointer().copy()                             # the item where the item has to be added is extracted
+            parentItem.level = 4
+            row = len(parentItem.children)                                              # gets the row where the item needs to be added
 
-    #         if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
-    #             self.newComponentEditor = PropEditor('popup')                           # opens up a popup version of PropEditor
-    #             # self.newComponentEditor.uiClass.setModel(self.classes)
-    #             # self.newComponentEditor.uiMaterial.setModel(self.materials)
-    #             # self.newComponentEditor.uiStatus.setModel(self.statuses)
+            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+                self.newComponentEditor = PropEditor(parentItem)                           # opens up a popup version of PropEditor
+                # self.newComponentEditor.uiClass.setModel(self.classes)
+                # self.newComponentEditor.uiMaterial.setModel(self.materials)
+                # self.newComponentEditor.uiStatus.setModel(self.statuses)
 
-    #             number = ModelTree.calculateNumber(parentItem)                          # the new number is calculated and set
-    #             self.newComponentEditor.uiNumberID.setText(number)
+                self.newComponentEditor.index = currentSelection                        # pass in to the editor the index and row number for the submit signal of the editor
+                self.newComponentEditor.row = row
 
-    #             self.newComponentEditor.index = currentSelection                        # pass in to the editor the index and row number for the submit signal of the editor
-    #             self.newComponentEditor.row = row
+                self.newComponentEditor.submit.connect(self.model.insertRows)           # connects the submit signal with the insertRows() function
+                self.newComponentEditor.submit.connect(self.treeEditor.refreshView)     # and to the refreshView() function of the central widget
+                self.newComponentEditor.submit.connect(self.changeLevel)
 
-    #             self.newComponentEditor.submit.connect(self.model.insertRows)           # connects the submit signal with the insertRows() function
-    #             self.newComponentEditor.submit.connect(self.treeEditor.refreshView)     # and to the refreshView() function of the central widget
-    #             self.newComponentEditor.submit.connect(self.changeLevel)
+                self.newComponentEditor.show()                                          # then the popup editor is shown
 
-    #             self.newComponentEditor.show()                                          # then the popup editor is shown
+            else:                                                                       # if the component is not of the appropriate level
+                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                    self, 
+                    'Warning!', 
+                    'The selected item is not of an appropriate level!', 
+                    qtw.QMessageBox.Ok, 
+                    qtw.QMessageBox.Ok
+                )
 
-    #         else:                                                                       # if the component is not of the appropriate level
-    #             self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
-    #                 self, 
-    #                 'Warning!', 
-    #                 'The selected item is not of an appropriate level!', 
-    #                 qtw.QMessageBox.Ok, 
-    #                 qtw.QMessageBox.Ok
-    #             )
-
-    #     else:                                                                           # if nothing is selected
-    #         self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
-    #             self, 
-    #             'Warning!', 
-    #             'No item currently selected.', 
-    #             qtw.QMessageBox.Ok, 
-    #             qtw.QMessageBox.Ok
-    #         )
+        else:                                                                           # if nothing is selected
+            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+                self, 
+                'Warning!', 
+                'No item currently selected.', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
 
     def morphHardware(self):
         """Changes a selected hardware component with another hardware component of chice."""
@@ -529,7 +526,7 @@ class MainWindow(qtw.QMainWindow):
         for column in range(self.model.bill.columnCount(qtc.QModelIndex())):
             self.uiBillView.setColumnWidth(column, sizes[column])
 
-    def changeLevel(self, position, rows, parent, data):
+    def changeLevel(self, position, data, parent):
         parent = parent.internalPointer()
         item = parent.children[position]
         setattr(item, 'level', 5)
