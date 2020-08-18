@@ -9,19 +9,21 @@ class ComponentTree(Tree):
         if attrs:
             self.init_node_attrs(attrs)
 
-    def calc_number(self, parent):
+    def calc_number(self, parent, level = None):
         ct = 1
         numbers = []
+        if not level:
+            level = parent.level + 1
 
         for child in parent.children:
             numbers.append(child.number)
 
         parentNumber = parent.number
 
-        number = increment_number(parentNumber, ct, parent.level + 1)
+        number = increment_number(parentNumber, ct, level)
         while number in numbers:
             ct += 1
-            number = increment_number(parentNumber, ct, parent.level + 1)
+            number = increment_number(parentNumber, ct, level)
         
         return number
 

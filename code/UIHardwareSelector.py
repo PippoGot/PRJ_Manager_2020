@@ -12,7 +12,7 @@ class HardwareSelector(qtw.QWidget):
     Emits the signal containing all the data when a component needs to be added.
     """
 
-    submit = qtc.pyqtSignal(int, ComponentTree, qtc.QModelIndex)                                    # signal emitted when submit is pressed
+    submit = qtc.pyqtSignal(ComponentTree)                                    # signal emitted when submit is pressed
 
     def __init__(self, archive):
         """Loads the .ui file, connects the buttons to the respective functions, 
@@ -90,7 +90,7 @@ class HardwareSelector(qtw.QWidget):
             index = self.proxyModel.mapToSource(self.current)                                   # the index is mapped from the proxy model to the original model
             data = index.internalPointer()                                                      # the data is extracted
             newComponent = ComponentTree(data['number'], data)
-            self.submit.emit(self.row, newComponent, self.index)                                     # the signal is emitted
+            self.submit.emit(newComponent)                                     # the signal is emitted
             self.close()                                                                        # and the selector is closed
 
     def changeFilter(self):

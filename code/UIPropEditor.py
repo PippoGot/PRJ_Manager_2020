@@ -10,9 +10,9 @@ class PropEditor(qtw.QWidget):
     needs to be added.
     """
 
-    submit = qtc.pyqtSignal(int, ComponentTree, qtc.QModelIndex)                            # signal for the submit button
+    submit = qtc.pyqtSignal(ComponentTree)                            # signal for the submit button
     
-    def __init__(self, parent):
+    def __init__(self, parent, level = None):
         """Loads the .ui file, and connects the buttons to their respective functions.
 
         INPUT:
@@ -27,7 +27,7 @@ class PropEditor(qtw.QWidget):
         self.uiCancelButton.clicked.connect(self.close)                                 # connects the buttons to their respective functions
         self.uiSubmitButton.clicked.connect(self.onSubmit)
 
-        self.initFields(parent)
+        self.initFields(parent, level)
 
     def onSubmit(self):
         """
@@ -53,11 +53,11 @@ class PropEditor(qtw.QWidget):
 
         newComponent = ComponentTree(self.uiNumberID, data)
 
-        self.submit.emit(self.row, newComponent, self.index)                                 # the signal is emitted
+        self.submit.emit(newComponent)                                 # the signal is emitted
         self.close()                                                                    # the window is closed
 
-    def initFields(self, parent):
-        number = parent.calc_number(parent)
+    def initFields(self, parent, level):
+        number = parent.calc_number(parent, level)
         self.uiNumberID.setText(number)
 
         self.uiName.setText('-')
@@ -68,7 +68,7 @@ class PropEditor(qtw.QWidget):
             2: 'Assembly',
             3: 'Assembly',
             4: 'Assembly',
-            5: self.defineType(number)
+            5: 'Part'
         }
 
         self.uiType.setText(types[parent.level + 1])
@@ -79,11 +79,3 @@ class PropEditor(qtw.QWidget):
         self.uiSeller.setText('-')
         # self.uiKit.currentText()
         self.uiLink.setPlainText('-')
-
-    def defineType(self, number):
-        prefix = number[1:4]
-        if prefix in ['MEH', 'MMH', 'ELH', 'EMH']:
-            return 'Hadware'
-        elif prefix == 'CON':
-            return 'Consumable'
-        else: return 'Part'

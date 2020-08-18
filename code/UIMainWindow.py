@@ -258,22 +258,14 @@ class MainWindow(qtw.QMainWindow):
 
         if currentSelection:                                                            # if an item is selected
             parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
-            row = len(parentItem.children)                                              # gets the row where the item needs to be added
+            def insertWrapper(node):
+                self.model.insertRows(len(parentItem.children), node, currentSelection)
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
                 self.newComponentEditor = PropEditor(parentItem)                           # opens up a popup version of PropEditor
-                # self.newComponentEditor.uiClass.setModel(self.classes)
-                # self.newComponentEditor.uiMaterial.setModel(self.materials)
-                # self.newComponentEditor.uiStatus.setModel(self.statuses)
-
-                self.newComponentEditor.index = currentSelection                        # pass in to the editor the index and row number for the submit signal of the editor
-                self.newComponentEditor.row = row
-
-                self.newComponentEditor.submit.connect(self.model.insertRows)           # connects the submit signal with the insertRows() function
+                self.newComponentEditor.submit.connect(insertWrapper)           # connects the submit signal with the insertRows() function
                 self.newComponentEditor.submit.connect(self.treeEditor.refreshView)     # and to the refreshView() function of the central widget
-
                 self.newComponentEditor.show()                                          # then the popup editor is shown
-
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
                     self, 
@@ -296,6 +288,9 @@ class MainWindow(qtw.QMainWindow):
         """Adds a hardware component from the hardware archive."""
 
         currentSelection = self.treeEditor.current                      # gets the current selected item
+        
+        def insertWrapper(node):
+            self.model.insertRows(currentSelection.row(), node, currentSelection)
 
         if currentSelection:                                                            # if an item is selected
             item = currentSelection.internalPointer()                                   # the item is extracted
@@ -303,16 +298,9 @@ class MainWindow(qtw.QMainWindow):
 
             if level < 5:                                                               # if the item is not at level 5 (leaf)
                 self.hardwareSelector = HardwareSelector(self.archive)                  # a popup window containing a hardware selector is opened with the archive as model
-                self.hardwareSelector.row = currentSelection.row()                      # the index and row parameters are passed to the selector for the submit signal
-                self.hardwareSelector.index = currentSelection
-
-                self.hardwareSelector.submit.connect(self.model.insertRows)             # then the submit signal is connected to the insertRows() function
+                self.hardwareSelector.submit.connect(insertWrapper)             # then the submit signal is connected to the insertRows() function
                 self.hardwareSelector.submit.connect(self.treeEditor.refreshView)       # and to the refreshView() function of the central widget
-
                 self.hardwareSelector.show()                                            # the popup is shown
-
-                self.treeEditor.refreshView()                                           # and the view is resized
-            
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
                     self, 
@@ -335,25 +323,16 @@ class MainWindow(qtw.QMainWindow):
         currentSelection = self.treeEditor.current                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
-            parentItem = currentSelection.internalPointer().copy()                             # the item where the item has to be added is extracted
-            parentItem.level = 4
-            row = len(parentItem.children)                                              # gets the row where the item needs to be added
+            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+            def insertWrapper(node):
+                self.model.insertRows(len(parentItem.children), node, currentSelection)
+                setattr(node, 'level', 5)
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
-                self.newComponentEditor = PropEditor(parentItem)                           # opens up a popup version of PropEditor
-                # self.newComponentEditor.uiClass.setModel(self.classes)
-                # self.newComponentEditor.uiMaterial.setModel(self.materials)
-                # self.newComponentEditor.uiStatus.setModel(self.statuses)
-
-                self.newComponentEditor.index = currentSelection                        # pass in to the editor the index and row number for the submit signal of the editor
-                self.newComponentEditor.row = row
-
-                self.newComponentEditor.submit.connect(self.model.insertRows)           # connects the submit signal with the insertRows() function
+                self.newComponentEditor = PropEditor(parentItem, 5)                           # opens up a popup version of PropEditor
+                self.newComponentEditor.submit.connect(insertWrapper)           # connects the submit signal with the insertRows() function
                 self.newComponentEditor.submit.connect(self.treeEditor.refreshView)     # and to the refreshView() function of the central widget
-                self.newComponentEditor.submit.connect(self.changeLevel)
-
                 self.newComponentEditor.show()                                          # then the popup editor is shown
-
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
                     self, 
@@ -495,38 +474,7 @@ class MainWindow(qtw.QMainWindow):
 
 # OTHER FUNCTIONS
 
-    # def addHardwareToArchive(self):
-    #     """Adds a hardware component to the hardware archive."""
-
-    #     self.newHardwareEditor = HardwareEditor(self.archive)                           # creates a popup hardware editor
-    #     self.newHardwareEditor.uiClass.setModel(self.classes)
-    #     self.newHardwareEditor.uiMaterial.setModel(self.materials)
-    #     self.newHardwareEditor.uiStatus.setModel(self.statuses)
-    #     self.newHardwareEditor.show()                                                   # shows the popup editor
-
     def removeBeforeMorph(self, rowNumber, item, index):
         """Removes the component in a certain position. Used for the morph hardware action."""
 
         self.model.removeRows(rowNumber, index)
-
-    # def refreshBillView(self):
-    #     sizes = {
-    #         0: 70,
-    #         1: 200,
-    #         2: 360,
-    #         3: 130,
-    #         4: 130,
-    #         5: 130,
-    #         6: 130,
-    #         7: 130,
-    #         8: 70,
-    #         9: 100,
-    #         10: 360
-    #     }
-    #     for column in range(self.model.bill.columnCount(qtc.QModelIndex())):
-    #         self.uiBillView.setColumnWidth(column, sizes[column])
-
-    def changeLevel(self, position, data, parent):
-        parent = parent.internalPointer()
-        item = parent.children[position]
-        setattr(item, 'level', 5)

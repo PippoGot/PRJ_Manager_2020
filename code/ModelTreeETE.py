@@ -95,7 +95,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
         if index.isValid() and role == qtc.Qt.EditRole:
             item = index.internalPointer()
-            setattr(item, self.headers[index.column()], value)
+            setattr(item, headers[index.column()], value)
             self.dataChanged.emit(index, index)
             return True
         return 
@@ -233,7 +233,7 @@ class ModelTree(qtc.QAbstractItemModel):
             int
         """
 
-        return len(self.headers)
+        return len(headers)
 
     def insertRows(self, position, item, parent = qtc.QModelIndex()):
         """
