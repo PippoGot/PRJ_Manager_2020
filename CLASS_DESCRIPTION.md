@@ -96,8 +96,6 @@ hardware components and consumables.
 
 # UIHardwareSelector.py <- ui_hardware_selector.ui
 
-TO ADD AN OPTION FOR SELECTING THE QUANTITY OF THE ITEM
-
 Class responsible for selecting a specific hardware component form the archive to be added in the list or
 to be changed inside the list. It is a popup window that emits a ComponentTree instance.
 

@@ -46,12 +46,12 @@ class MainWindow(qtw.QMainWindow):
         self.uiActionClear.triggered.connect(self.clearFile)
         # self.uiActionExportBOM.triggered.connect(self.exportBOM)
 
-        self.uiActionAddPart.triggered.connect(self.addPart)
-        self.uiActionAddHardwareToList.triggered.connect(self.addHardwareToList)
-        self.uiActionAddLeafPart.triggered.connect(self.addLeafPart)
-        self.uiActionMorphHardware.triggered.connect(self.morphHardware)
-        self.uiActionUpdateHardware.triggered.connect(self.updateHardware)
-        self.uiActionRemovePart.triggered.connect(self.removePart)
+        self.uiActionAddComponent.triggered.connect(self.addComponent)
+        self.uiActionAddSpecialComponent.triggered.connect(self.addSpecialComponent)
+        self.uiActionAddLeafComponent.triggered.connect(self.addLeafComponent)
+        self.uiActionMorphSpecialComponent.triggered.connect(self.morphSpecialComponent)
+        self.uiActionUpdateSpecialComponents.triggered.connect(self.updateSpecialComponents)
+        self.uiActionRemoveComponent.triggered.connect(self.removeComponent)
 
         self.uiActionHideDeprecated.triggered.connect(self.hideDeprecated)
 
@@ -242,7 +242,7 @@ class MainWindow(qtw.QMainWindow):
 
 # edit menu
 
-    def addPart(self):
+    def addComponent(self):
         """Adds a custom component to the model."""
 
         currentSelection = self.treeEditor.current                      # gets the current selected item
@@ -276,7 +276,7 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Ok
             )
 
-    def addHardwareToList(self):
+    def addSpecialComponent(self):
         """Adds a hardware component from the hardware archive."""
 
         currentSelection = self.treeEditor.current                      # gets the current selected item
@@ -313,7 +313,7 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Ok
             )
 
-    def addLeafPart(self):
+    def addLeafComponent(self):
         currentSelection = self.treeEditor.current                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
@@ -346,7 +346,7 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Ok
             )
 
-    def morphHardware(self):
+    def morphSpecialComponent(self):
         """Changes a selected hardware component with another hardware component of chice."""
 
         currentSelection = self.treeEditor.current                      # gets the current selected item
@@ -382,7 +382,7 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Ok
             )
 
-    def updateHardware(self):
+    def updateSpecialComponents(self):
         """
         Iterates over the hardware/consumables components and over the archive items.
         Then updates every present item in the list with the data in the archive.
@@ -421,7 +421,7 @@ class MainWindow(qtw.QMainWindow):
                             index = self.model.createIndex(row, sections[x], item)
                             self.model.setData(index, hardware[columns[x]])              # and updates them
 
-    def removePart(self):
+    def removeComponent(self):
         """Removes a component from the model."""
 
         currentSelection = self.treeEditor.current                      # gets the current selected item

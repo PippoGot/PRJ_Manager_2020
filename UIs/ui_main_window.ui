@@ -166,18 +166,21 @@
     <addaction name="uiActionUndo"/>
     <addaction name="uiActionRedo"/>
     <addaction name="separator"/>
-    <addaction name="uiActionAddPart"/>
-    <addaction name="uiActionAddHardwareToList"/>
-    <addaction name="uiActionAddLeafPart"/>
-    <addaction name="uiActionMorphHardware"/>
-    <addaction name="uiActionUpdateHardware"/>
-    <addaction name="uiActionRemovePart"/>
+    <addaction name="uiActionAddComponent"/>
+    <addaction name="uiActionAddLeafComponent"/>
+    <addaction name="uiActionAddJig"/>
+    <addaction name="uiActionAddSpecialComponent"/>
+    <addaction name="uiActionMorphSpecialComponent"/>
+    <addaction name="uiActionUpdateSpecialComponents"/>
+    <addaction name="uiActionRemoveComponent"/>
    </widget>
    <widget class="QMenu" name="uiViewMenu">
     <property name="title">
      <string>View</string>
     </property>
     <addaction name="uiActionHideDeprecated"/>
+    <addaction name="uiActionExpandAll"/>
+    <addaction name="uiActionCollapseAll"/>
    </widget>
    <addaction name="uiFileMenu"/>
    <addaction name="uiEditMenu"/>
@@ -209,12 +212,12 @@
    <addaction name="uiActionUndo"/>
    <addaction name="uiActionRedo"/>
    <addaction name="separator"/>
-   <addaction name="uiActionAddPart"/>
-   <addaction name="uiActionAddHardwareToList"/>
-   <addaction name="uiActionAddLeafPart"/>
-   <addaction name="uiActionMorphHardware"/>
-   <addaction name="uiActionUpdateHardware"/>
-   <addaction name="uiActionRemovePart"/>
+   <addaction name="uiActionAddComponent"/>
+   <addaction name="uiActionAddLeafComponent"/>
+   <addaction name="uiActionAddSpecialComponent"/>
+   <addaction name="uiActionMorphSpecialComponent"/>
+   <addaction name="uiActionUpdateSpecialComponents"/>
+   <addaction name="uiActionRemoveComponent"/>
    <addaction name="separator"/>
    <addaction name="uiActionHideDeprecated"/>
   </widget>
@@ -291,25 +294,25 @@
     <string>Ctrl+Shift+Z</string>
    </property>
   </action>
-  <action name="uiActionAddPart">
+  <action name="uiActionAddComponent">
    <property name="icon">
     <iconset>
      <normaloff>../resources/icons/small_flat/part.png</normaloff>../resources/icons/small_flat/part.png</iconset>
    </property>
    <property name="text">
-    <string>Add Part</string>
+    <string>Add Component</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
    </property>
   </action>
-  <action name="uiActionRemovePart">
+  <action name="uiActionRemoveComponent">
    <property name="icon">
     <iconset>
      <normaloff>../resources/icons/small_flat/remove.png</normaloff>../resources/icons/small_flat/remove.png</iconset>
    </property>
    <property name="text">
-    <string>Remove Part</string>
+    <string>Remove Component</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -324,28 +327,16 @@
     <string>Export Bill of Materials</string>
    </property>
   </action>
-  <action name="uiActionMorphHardware">
+  <action name="uiActionMorphSpecialComponent">
    <property name="icon">
     <iconset>
      <normaloff>../resources/icons/small_flat/morph.png</normaloff>../resources/icons/small_flat/morph.png</iconset>
    </property>
    <property name="text">
-    <string>Morph Hardware</string>
+    <string>Morph Special Component</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
-   </property>
-  </action>
-  <action name="uiActionAddHardwareToList">
-   <property name="icon">
-    <iconset>
-     <normaloff>../resources/icons/small_flat/hardware.png</normaloff>../resources/icons/small_flat/hardware.png</iconset>
-   </property>
-   <property name="text">
-    <string>Add Hardware</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+H</string>
    </property>
   </action>
   <action name="uiActionHideDeprecated">
@@ -378,25 +369,49 @@
     <string>Ctrl+Shift+X</string>
    </property>
   </action>
-  <action name="uiActionUpdateHardware">
+  <action name="uiActionUpdateSpecialComponents">
    <property name="icon">
     <iconset>
      <normaloff>../resources/icons/small_flat/update.png</normaloff>../resources/icons/small_flat/update.png</iconset>
    </property>
    <property name="text">
-    <string>Update Hardware</string>
+    <string>Update Special Components</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+U</string>
    </property>
   </action>
-  <action name="uiActionAddLeafPart">
+  <action name="uiActionAddLeafComponent">
    <property name="icon">
     <iconset>
      <normaloff>../resources/icons/small_flat/leaf.png</normaloff>../resources/icons/small_flat/leaf.png</iconset>
    </property>
    <property name="text">
-    <string>Add Leaf Part</string>
+    <string>Add Leaf Component</string>
+   </property>
+  </action>
+  <action name="uiActionAddJig">
+   <property name="text">
+    <string>Add Jig</string>
+   </property>
+  </action>
+  <action name="uiActionExpandAll">
+   <property name="text">
+    <string>Expand All</string>
+   </property>
+  </action>
+  <action name="uiActionCollapseAll">
+   <property name="text">
+    <string>Collapse All</string>
+   </property>
+  </action>
+  <action name="uiActionAddSpecialComponent">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/small_flat/hardware.png</normaloff>../resources/icons/small_flat/hardware.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Special Component</string>
    </property>
   </action>
  </widget>
