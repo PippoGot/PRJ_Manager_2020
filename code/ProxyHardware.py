@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from util import _36ToBase10
+from util import _36ToBase10, headers
 import re
 
 class HardwareProxyModel(qtc.QSortFilterProxyModel):
@@ -40,9 +40,9 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
             bool: whether to show or hide the row
         """
 
-        regexp = re.compile(self.filterRegExp().pattern())          # gets the regular expression for the filtering
-        rowString = self.sourceModel().stringAtRow(source_row)      # and the string of the current row
-    
+        regexp = re.compile(self.filterRegExp().pattern(), re.I)          # gets the regular expression for the filtering
+        rowString = self.stringAtRow(source_row)                    # and the string of the current row
+
         if regexp.search(rowString):                                # if the current row matches the regular expression
             return True                                             # returns True, so the row is shown
         else:                                                       # otherwise
@@ -89,3 +89,23 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
         11: 'seller',
         13: 'link'
     }
+
+    def stringAtRow(self, row):
+        """
+        Returns a string of the current row, with a space separating each data field.
+        This function is used to filter out the unwanted rows in the proxy model.
+
+        INPUT:
+            int - row: the selected row for the method to return the string
+
+        RETURN TYPE:
+            str: the returned row in string form
+        """
+
+        hList = self.sourceModel().hardwareList
+
+        output = ''                                                 # initialize an empty string
+        if row < len(hList) and len(hList) > 0:                     # if the row exists
+            for field in headers:                                   # for every field of the row
+                output += hList[row][field] + ' '                   # the corresponding string is attached to the output string 
+        return output                                               # then the output string is returned

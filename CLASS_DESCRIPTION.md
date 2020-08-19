@@ -20,10 +20,7 @@ Model for the components tree to be displayed in views.
 
 Proxy model for the tree model. Hides the unwanted columns and sorts the components in a specific order.
 
-# HardwareModel.py
-
-TO CHANGE THE DATA STRUCTURE WITH A "ModelTreeETE.py" CLASS FOR EASIER DATA MANAGING
-TO MOVE THE "stringAtRow" FUNCTION IN THE PROXY MODEL
+# ModelHardware.py
 
 Class for the management of the hardware archive. Such archive should be available for every assembly project.
 This is achieved through the storing of an internal .csv file with all the hardware components used in the previous
@@ -34,9 +31,7 @@ and current project. Adding and removing such components can be performed inside
 - calculates the number of the children to add: calculateNumber (move it in the ComponentTree)
 - represent a node as a string for the filtering function: stringAtRow (move it in the proxy model) 
 
-# HardwareProxyModel.py
-
-TO ADD THE "stringAtRow" FUNCTION
+# ProxyHardware.py
 
 Proxy model for the hardware model. Hides unwanted columns and sorts the components in a specific order.
 

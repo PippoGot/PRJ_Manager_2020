@@ -97,25 +97,18 @@ class HardwareSelector(qtw.QWidget):
         """When called, scans the buttons and filters the selected cathegory of items in the view."""
         
         text = self.uiSearchEntry.text()                                                    # extracts the entry text
-        textString = ''                                                                     # creates two empty strings
-        wordString = ''
-        if len(text) > 0:                                                                   # if the entry has text
-            words = text.split(' ')                                                         # it is split into words
-            for word in words:                                                              # and for every word
-                for letter in word:                                                         # for every letter in the word
-                    wordString += '(' + letter.upper() + '|' + letter.lower() + ')'         # creates a string to accept both the upper case letter and the lower case letter
-                textString += wordString + '([ -0-9a-zA-Z]+)?'                              # then the word string and the optional characters are added to the string
-        
+        textString = '.*(' + text.replace(' ', ').*(') + ')'                                # creates two empty strings
+
         if self.uiMechanicalButton.isChecked():                                             # then scans the buttons
-            filterString = '#MEH-[0-9A-Z]{3}([ -0-9a-zA-Z]+)?' + textString                 # and creates the filter string
+            filterString = '#MEH-[0-9A-Z]{3}' + textString                                  # and creates the filter string
         elif self.uiMeasuredButton.isChecked():
-            filterString = '#MMH-[0-9A-Z]{3}([ -0-9a-zA-Z]+)?' + textString
+            filterString = '#MMH-[0-9A-Z]{3}' + textString
         elif self.uiElectricalButton.isChecked():
-            filterString = '#ELH-[0-9A-Z]{3}([ -0-9a-zA-Z]+)?' + textString
+            filterString = '#ELH-[0-9A-Z]{3}' + textString
         elif self.uiConsumableButton.isChecked():
-            filterString = '#CON-[0-9A-Z]{3}([ -0-9a-zA-Z]+)?' + textString
+            filterString = '#CON-[0-9A-Z]{3}' + textString
         else:
-            filterString = '#EMH-[0-9A-Z]{3}([ -0-9a-zA-Z]+)?' + textString
+            filterString = '#EMH-[0-9A-Z]{3}' + textString
 
         self.proxyModel.setFilterRegExp(filterString)                                       # updates the filter expression
         self.refreshView()                                                                  # finally resizes the view to its content

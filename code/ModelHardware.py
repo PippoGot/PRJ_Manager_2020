@@ -300,21 +300,3 @@ class ModelHardware(qtc.QAbstractItemModel):
         """
 
         self.filename = filename                                                                # updates the filename parameter
-
-    def stringAtRow(self, row):
-        """
-        Returns a string of the current row, with a space separating each data field.
-        This function is used to filter out the unwanted rows in the proxy model.
-
-        INPUT:
-            int - row: the selected row for the method to return the string
-
-        RETURN TYPE:
-            str: the returned row in string form
-        """
-
-        output = ''                                                                             # initialize an empty string
-        if row < len(self.hardwareList) and len(self.hardwareList) > 0:                         # if the row exists
-            for key in list(self.hardwareList[row].keys()):                                     # for every field of the row
-                output += self.hardwareList[row][key] + ' '                                     # the corresponding string is attached to the output string 
-        return output                                                                           # then the output string is returned
