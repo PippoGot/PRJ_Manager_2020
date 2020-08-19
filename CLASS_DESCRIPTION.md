@@ -77,6 +77,10 @@ Actions to add:
 
 - Undo
 - Redo
+- Cut
+- Copy
+- Paste
+- Add placeholder
 
 TO IMPLEMENT:
 
