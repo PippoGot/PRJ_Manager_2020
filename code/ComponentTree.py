@@ -3,13 +3,34 @@ import csv
 from util import increment_number, special, headers
 
 class ComponentTree(Tree):
+    """Adds some specific functions for the managing of the components tree."""
+
     def __init__(self, name, attrs = {}):
+        """
+        Initializes a component node.
+
+        INPUT:
+            object - name: the name of the node
+            optional dict - attrs: the attributes to set
+        """
+
         super().__init__(name = name)
 
         if attrs:
             self.init_node_attrs(attrs)
 
     def calc_number(self, parent, level = None):
+        """
+        Calculates the number of the first free space available in the given node.
+
+        INPUT:
+            ComponentTree - parent: the node from which the number is calculated
+            optional int - level: overwriting of the level
+
+        RETURN TYPE:
+            str: the calculated number
+        """
+
         ct = 1
         numbers = []
         if not level:
@@ -28,6 +49,13 @@ class ComponentTree(Tree):
         return number
 
     def save_file(self, filename):
+        """
+        Saves a tree in a .csv file.
+
+        INPUT:
+            str - filename: the name of the file that will be saved
+        """
+
         with open(filename, 'w') as file:
             fieldnames = headers
             csv_writer = csv.DictWriter(file, fieldnames = fieldnames)
@@ -41,6 +69,13 @@ class ComponentTree(Tree):
                 csv_writer.writerow(line)
 
     def read_file(self, filename):
+        """
+        Reads a .csv file and converts it in a tree data structure.
+
+        INPUT:
+            str - filename: the name of the file to read 
+        """
+
         missingList = []                                                                    # empty list for the vacant items
 
         with open(filename, 'r') as file:                                                   # opens the file in read mode
@@ -72,24 +107,23 @@ class ComponentTree(Tree):
         the new tree item.
 
         INPUT:
-            Tree - parent: the parent of the item to add
+            ComponentTree - parent: the parent of the item to add
             dict - childDict: dictionary with the new item parameters
         """
 
-        childItem = ComponentTree('new')
+        childItem = ComponentTree('new', childDict)
         setattr(childItem, 'level', parent.level + 1)
-        childItem.init_node_attrs(childDict)
-        number = getattr(childItem, 'number')
-        prefix = number[1:4]
-        if prefix in special:
-            setattr(childItem, 'level', 5)
-        else:
-            setattr(childItem, 'number', childItem.calc_number(parent))
-            
         number = getattr(childItem, 'number')
         setattr(childItem, 'name', number)
         parent.add_child(childItem)
 
     def init_node_attrs(self, attrs_dict):
+        """
+        Initializes all the given attributes to the node.
+        
+        INPUT:
+            dict - attrs_dict: dictionary with the attributes names and values
+        """
+
         for key in attrs_dict.keys():
             setattr(self, key, attrs_dict[key])

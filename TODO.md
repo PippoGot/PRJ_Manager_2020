@@ -18,15 +18,15 @@
 - undo/redo actions
 
 - comment every file
-    -component tree
-    -model combobox
-    -model hardware
-    -model tree ete
-    -proxy hardware
-    -proxy tree
-    -ui component editor
-    -ui components page
-    -ui hardware selector
-    -ui hardware editor
-    -ui main window
-    -util
+    -component tree         (done)
+    -model combobox         (done)
+    -model hardware         (done)
+    -model tree ete         (done)
+    -proxy hardware         (done)
+    -proxy tree             (done)
+    -ui component editor    (done)
+    -ui components page     (done)
+    -ui hardware selector   (done)
+    -ui hardware editor     (done)
+    -ui main window         (done)
+    -util                   (done)

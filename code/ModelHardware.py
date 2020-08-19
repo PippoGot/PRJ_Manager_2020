@@ -4,21 +4,16 @@ from PyQt5 import QtCore as qtc
 import csv
 from util import increment_number, headers
 
-class HardwareModel(qtc.QAbstractItemModel):
+class ModelHardware(qtc.QAbstractItemModel):
     """
     This class create a model from the hardware archive file. It also manages the 
     data inside the model and let the user edit the archive file from the hardware editor.
     """
 
     def __init__(self):
-        """
-        Initialize the parameter for the model.
+        """Reads the archive file.""" 
 
-        PARAMETERS:
-            list - self.hardwareList: the list where the data will be stored
-        """ 
-
-        super(HardwareModel, self).__init__()                                                   # superclass constructor
+        super(ModelHardware, self).__init__()                                                   # superclass constructor
 
         self.hardwareList = []                                                                  # model data structure
         self.filename = 'D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/HardwareArchive.csv'        # this is the file location
@@ -42,7 +37,7 @@ class HardwareModel(qtc.QAbstractItemModel):
             return None                                                                         # returns None
         
         row = index.row()                                                                       # otherwise gets the index row
-        column = self.headers[index.column()]                                                   # converts the column to a keyword argument
+        column = headers[index.column()]                                                        # converts the column to a keyword argument
 
         if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                               # and then if the role is display or edit
             data = self.hardwareList[row][column]                                               # extract the corresponding data
@@ -68,8 +63,7 @@ class HardwareModel(qtc.QAbstractItemModel):
         if index.isValid():                                                                     # if the index isn't valid
             if role == qtc.Qt.EditRole:                                                         # and role is Edit
                 row = index.row()                                                               # gets the index row
-                fieldnames = headers                          # generates a numbered dictionary with keyword arguments
-                column = fieldnames[index.column()]                                             # and converts the index column
+                column = headers[index.column()]                                                # and converts the index column
 
                 self.hardwareList[row][column] = value                                          # changes the data in the given location
 
@@ -114,9 +108,7 @@ class HardwareModel(qtc.QAbstractItemModel):
         """
 
         if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:                     # if the orientation is horizontal and role is display
-            if self.headers:                                                                    # if the headers exists
-                return self.headers[section]                                                    # returns the corresponding header
-
+            return headers[section]                                                             # returns the corresponding header
         return None                                                                             # otherwise returns None
 
     def index(self, row, column, parent):
@@ -190,7 +182,7 @@ class HardwareModel(qtc.QAbstractItemModel):
             int
         """
 
-        return len(self.headers)                                                                # returns the number of item in the first row
+        return len(headers)                                                                     # returns the number of item in the first row
 
     def insertRows(self, item, parent = qtc.QModelIndex()):
         """
@@ -256,8 +248,6 @@ class HardwareModel(qtc.QAbstractItemModel):
         with open(self.filename, 'r') as archive:                                               # opens the file
             csv_reader = csv.DictReader(archive)                                                # creates a csv reader
 
-            self.headers = csv_reader.fieldnames                                                # stores the headers in a class variable
-
             for line in csv_reader:                                                             # then for every line in the file
                 self.insertRows(line)                                                           # it inserts a row in the file with the data contained in that line
 
@@ -268,7 +258,7 @@ class HardwareModel(qtc.QAbstractItemModel):
         """
 
         with open(self.filename, 'w') as archive:                                               # opens the file
-            csv_writer = csv.DictWriter(archive, fieldnames = self.headers)                     # creates a csv writer with the previously stored headers
+            csv_writer = csv.DictWriter(archive, fieldnames = headers)                          # creates a csv writer with the previously stored headers
 
             csv_writer.writeheader()                                                            # writes the headers at the top of the file
 
@@ -281,10 +271,10 @@ class HardwareModel(qtc.QAbstractItemModel):
         It returns the first free number for the given prefix type.
 
         INPUT:
-            prefix - str: the given prefix value, either MEH, ELH or EMH
+            str - number: the number to increment
 
         RETURN TYPE:
-            str: the calculated number in it's complete form
+            str: the calculated number
         """
 
         ct = 1                                                                                  # initialize a counter to 0
@@ -294,10 +284,10 @@ class HardwareModel(qtc.QAbstractItemModel):
         for item in hardwareList:                                                               # for every item in the data list
             hardwareNumbers.append(item['number'])                                              # adds it's number to the empty list
 
-        newNumber = increment_number(number, ct, 5)                                                    # then generates the first number
+        newNumber = increment_number(number, ct, 5)                                             # then generates the first number
         while newNumber in hardwareNumbers:                                                     # and while the number is in the list
             ct += 1                                                                             # increments the counter
-            newNumber = increment_number(number, ct, 5)                                                # and regenerates the number
+            newNumber = increment_number(number, ct, 5)                                         # and regenerates the number
 
         return newNumber                                                                        # when a non existing number is found it returns it
 

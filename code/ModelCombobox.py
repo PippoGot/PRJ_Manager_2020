@@ -15,11 +15,20 @@ class ModelCombobox(qtc.QStringListModel):
         super(ModelCombobox, self).__init__(data)
 
     def saveModel(self):
+        """Saves the items of this combobox in a .csv file."""
+        
         with open(self.filename, 'w') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(self.stringList())
     
     def readFile(self):
+        """
+        Opens a .csv file with stored values.
+        
+        RETURN TYPE:
+            list: the list of items for the combobox
+        """
+
         with open(self.filename, 'r') as file:
             csv_reader = csv.reader(file)
             return next(csv_reader)

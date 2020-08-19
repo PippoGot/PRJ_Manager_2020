@@ -4,18 +4,18 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from ProxyTree import ProxyTree
 
-class TreeEditor(qtw.QWidget):
+class ComponentsPage(qtw.QWidget):
     """
     This widget is the one managing the components list and editor. Displays the components
     and manages their modifications.
     """
 
     def __init__(self):
-        """Loads the .ui file and adds the editor widget to the UI."""
+        """Loads the .ui file."""
 
-        super(TreeEditor, self).__init__()                                                  # superclass constructor
+        super(ComponentsPage, self).__init__()                                              # superclass constructor
 
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_components_page.ui', self)     # loads the interface from the .ui file
+        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_components_page.ui', self)    # loads the interface from the .ui file
 
         self.mapper = qtw.QDataWidgetMapper()
         self.current = None
@@ -23,8 +23,7 @@ class TreeEditor(qtw.QWidget):
 
     def setModel(self, model):
         """
-        Sets the editor's and view's model, then refreshes the view resizing it to
-        it's content.
+        Sets the editor's and view's model, then refreshes the view.
 
         INPUT:
             ModelTree - model: the model that the widgets are set to
@@ -38,8 +37,8 @@ class TreeEditor(qtw.QWidget):
             self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)                              # automatically sorts the view before displaying
             self.uiComponentsView.setModel(self.treeProxyModel)                             # then sets the proxy model as the view model 
             
-            self.mapper.setModel(self.model)                                            # sets the mapper source model
-            self.mapper.addMapping(self.uiNumberID, 0)                                  # adds all the mappings of the widget
+            self.mapper.setModel(self.model)                                                # sets the mapper source model
+            self.mapper.addMapping(self.uiNumberID, 0)                                      # adds all the mappings of the widget
             self.mapper.addMapping(self.uiName, 2)
             self.mapper.addMapping(self.uiDescription, 3)
             self.mapper.addMapping(self.uiType, 4)
@@ -56,7 +55,7 @@ class TreeEditor(qtw.QWidget):
             self.treeSelection = self.uiComponentsView.selectionModel()                     # then it extracts the selection model from the view
             self.treeSelection.currentChanged.connect(self.mapTreeIndex)                    # and connects the signal of current changed to the map function
             
-            self.model.dataChanged.connect(self.mapper.revert)              # it connects the data changed signal to the revert function of the editor
+            self.model.dataChanged.connect(self.mapper.revert)                              # it connects the data changed signal to the revert function of the editor
 
             self.treeProxyModel.setFilterRegExp('Deprecated')
 
@@ -77,21 +76,21 @@ class TreeEditor(qtw.QWidget):
 
         index = self.treeProxyModel.mapToSource(index)                                      # converts the index
 
-        parent = index.parent()                                                       # extract the parent index
-        self.mapper.setRootIndex(parent)                                                # and sets the mapper indexes
+        parent = index.parent()                                                             # extract the parent index
+        self.mapper.setRootIndex(parent)                                                    # and sets the mapper indexes
         self.mapper.setCurrentModelIndex(index)
 
-        self.current = index                                                          # then updates the current parameter
+        self.current = index                                                                # then updates the current parameter
         self.uiComponentsEditor.setDisabled(False)
 
     def refreshView(self):
-        """Updates the view resizing it to the content."""
+        """Updates the view."""
 
         self.uiComponentsView.expandAll()                                                   # every item is expanded
         for column in range(self.treeProxyModel.columnCount(qtc.QModelIndex())):            # then every column is resized to it's content
             self.uiComponentsView.setColumnWidth(column, self.sizes[column])
         
-        self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)                              # automatically sorts the view before displaying
+        self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)                                  # automatically sorts the view before displaying
 
     sizes = {                                                                               # size dictionary
         0: 150,

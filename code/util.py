@@ -4,7 +4,7 @@ values = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 special = ['MEH', 'MMH', 'ELH', 'EMH', 'CON']
 
-headers = [                                                                             # default values for the headers
+headers = [                                                                     # default values for the headers
     'number', 
     'parent',
     'title', 
@@ -36,7 +36,7 @@ def _10ToBase36(number):
     
     while number > 0:                                                           # while the number is greater than 0
         number, result = divmod(number, 36)                                     # the number is divided by 36 and both the result and the rest are stored
-        output.append(values[result])                                     # the corresponding value is extracted from the dictionary and added to the output string
+        output.append(values[result])                                           # the corresponding value is extracted from the dictionary and added to the output string
     
     output.reverse()                                                            # the string characters order is reversed
     output = ''.join(output)                                                    # and the string is concatenated
@@ -57,8 +57,8 @@ def _36ToBase10(number):
     output = 0                                                                  # initialise an output number at 0
     x = 0
 
-    for char in number:                                                # for every character of the string passed as argument
-        output += values.index(char) * (36 ** x)    # the output number is incremented by the corresponding value multiplied by the weight of it's position
+    for char in number:                                                         # for every character of the string passed as argument
+        output += values.index(char) * (36 ** x)                                # the output number is incremented by the corresponding value multiplied by the weight of it's position
         x += 1
 
     return output                                                               # and the number is returned
@@ -124,18 +124,18 @@ def increment_number(number, amount, level):
     
     INPUT:
         str - number: the number to be incremented
-        int - children: value to add to the number to increment
+        int - amount: value to add to the number to increment
         int - level: value to decide how to increment the number
 
     RETURN TYPE:
         str: the incremented number
     """
 
-    if is_valid(number):                                                         # if the given number is valid
+    if is_valid(number):                                                        # if the given number is valid
         prefix = number[1:4]                                                    # extract the prefix from the original number                                                                 # otherwise the remaining part of the number the suffix
         suffix = number[5:]
 
-        newPrefix = increment_prefix(prefix, amount, level)                          # the new values are calculated
+        newPrefix = increment_prefix(prefix, amount, level)                     # the new values are calculated
         newSuffix = increment_suffix(suffix, amount, level)
 
         newNumber = '#' + newPrefix + '-' + newSuffix                           # the resulting number is recomposed
@@ -153,12 +153,12 @@ def is_valid(number):
         bool: whether the number is valid or not
     """
 
-    if len(number) != 8: return False                                                       # if the string has 8 characters
+    if len(number) != 8: return False                                           # if the string has 8 characters
 
-    number = number.replace('#', '')                                        # the non number characters # and - are removed
+    number = number.replace('#', '')                                            # the non number characters # and - are removed
     number = number.replace('-', '')
         
-    for x in number:                                                        # then for every remaining character
-        if x not in values: return False                                          # check if it is in the values dictionary
+    for x in number:                                                            # then for every remaining character
+        if x not in values: return False                                        # check if it is in the values dictionary
 
-    return True                                                             # if every character is in the dictionary returns True
+    return True                                                                 # if every character is in the dictionary returns True

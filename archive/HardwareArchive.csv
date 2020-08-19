@@ -1,4 +1,4 @@
-number,parent,title,description,type,manufacture,status,comment,priceUnit,quantity,quantityPackage,seller,kit,link
+number,parent,title,description,type,manufacture,status,comment,price,quantity,quantityPackage,seller,kit,link
 #MEH-001,number,M3x50mm Screw,"Cross slot, fully threaded",Hardware,Off the Shelf,Designed,-,0,1,1,Longhin,-,-
 #MEH-002,number,M3 washer,"1 mm thickness, 8 mm OD",Hardware,Off the Shelf,Not Designed,-,0,1,1,Longhin,-,-
 #MEH-003,number,M3 nut,5.5 mm smaller distance,Hardware,Off the Shelf,Not Designed,-,0,1,1,Brico,-,-

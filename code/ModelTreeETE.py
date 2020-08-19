@@ -18,10 +18,6 @@ class ModelTree(qtc.QAbstractItemModel):
 
         INPUT:
             str - filename: filename to read
-
-        PARAMETERS:
-            Tree - self.rootItem: highest level object
-            str - self.filename: name of the file for this model
         """
 
         super(ModelTree, self).__init__()
@@ -31,7 +27,7 @@ class ModelTree(qtc.QAbstractItemModel):
         if filename:                                                                        # creates the first item in one of two ways
             self.first = self.readFile(filename)                                            # from a file
         else:
-            self.first = ComponentTree('#000-000', self.base)                                                             # or by deafult
+            self.first = ComponentTree('#000-000', self.base)                               # or by deafult
             
         setattr(self.first, 'level', 1)
 
@@ -74,7 +70,7 @@ class ModelTree(qtc.QAbstractItemModel):
         item = index.internalPointer()
 
         if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                           # then if the role is display or edit
-            return getattr(item, headers[index.column()], None)                        # returns the data stored under the given index
+            return getattr(item, headers[index.column()], None)                             # returns the data stored under the given index
 
     def setData(self, index, value, role = qtc.Qt.EditRole):
         """
@@ -115,7 +111,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
         if not index.isValid():                                                             # if the index is not valid                                                        
             return qtc.Qt.NoItemFlags                                                       # returns NoItemFlags
-        if index.column() == 4 or index.column() == 1 or index.column() == 0:                                      # if the index column is either 0 or 1
+        if index.column() == 4 or index.column() == 1 or index.column() == 0:               # if the index column is either 0 or 1
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable                           # the item is both enabled and selectable
         else:                                                                               # otherwise
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable   # the object is also editable
@@ -136,7 +132,7 @@ class ModelTree(qtc.QAbstractItemModel):
         """
 
         if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:                 # if the orientation is horizontal and the role is display
-            return headers[section].title()                                                    # returns the root data under the given index
+            return headers[section].title()                                                 # returns the root data under the given index
         return None                                                                         # otherwise returns None
 
     def index(self, row, column, parent):
@@ -197,7 +193,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
         row = parentItem.up.children.index(parentItem)
 
-        return self.createIndex(row, 0, parentItem)                            # otherwise it creates and returns the parent item index 
+        return self.createIndex(row, 0, parentItem)                                         # otherwise it creates and returns the parent item index 
 
     def rowCount(self, parent):
         """
@@ -241,7 +237,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
         PARAMETERS:
             position – int
-            rows – int
+            item – ComponentTree
             parent – QModelIndex
 
         RETURN TYPE:
@@ -269,7 +265,6 @@ class ModelTree(qtc.QAbstractItemModel):
 
         PARAMETERS:
             position – int
-            rows – int
             parent – QModelIndex
 
         RETURN TYPE:
@@ -293,6 +288,15 @@ class ModelTree(qtc.QAbstractItemModel):
 # CUSTOM FUNCTIONS
 
     def swapComponent(self, position, newNode, parent = qtc.QModelIndex()):
+        """
+        Removes a component and then adds another component in it's place.
+
+        INPUT:
+            int - position: the position of the component to remove and to add
+            ComponentTree - newNode: the component to add
+            QModelIndex - parent: the index of the parent
+        """
+
         self.removeRows(position, parent)
         self.insertRows(position, newNode, parent)
 
@@ -313,8 +317,8 @@ class ModelTree(qtc.QAbstractItemModel):
         INPUT:
             str - filename: name of the file to read
 
-        OUTPUT:
-            Tree: tree extracted from thew file
+        RETURN TYPE:
+            ComponentTree: the tree extracted from the file
         """
 
         return self.rootItem.read_file(filename)

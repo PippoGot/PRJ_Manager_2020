@@ -2,11 +2,11 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from UIComponentsPage import TreeEditor
-from UIComponentEditor import PropEditor
+from UIComponentsPage import ComponentsPage
+from UIComponentEditor import ComponentEditor
 from UIHardwareSelector import HardwareSelector
 from UIHardwareEditor import HardwareEditor
-from ModelHardware import HardwareModel
+from ModelHardware import ModelHardware
 from ModelTreeETE import ModelTree
 from ModelCombobox import ModelCombobox
 
@@ -24,16 +24,16 @@ class MainWindow(qtw.QMainWindow):
 
         super(MainWindow, self).__init__()                                              # superclass constructor
         
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_main_window.ui', self)        # loads the UI from the .ui file
+        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_main_window.ui', self)    # loads the UI from the .ui file
 
         self.filename = None                                                            # initialize the filename to None
-        self.archive = HardwareModel()                                                  # creates the models from the archive and stores them in a class parameter
+        self.archive = ModelHardware()                                                  # creates the models from the archive and stores them in a class parameter
         # self.classes = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/classes.csv')
         # self.materials = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/materials.csv')
         # self.statuses = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/statuses.csv')
         self.model = None                                                               # the model class parameter is set to None
 
-        self.treeEditor = TreeEditor()                                                  # creates the tree editor
+        self.treeEditor = ComponentsPage()                                              # creates the tree editor
         self.uiTreePage.layout().addWidget(self.treeEditor)
 
         self.hardwareEditor = HardwareEditor(self.archive)                              # creates the hardware editor
@@ -55,7 +55,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.uiActionHideDeprecated.triggered.connect(self.hideDeprecated)
 
-        self.showMaximized()                                                             # finally shows the window
+        self.showMaximized()                                                            # finally shows the window
 
 # ACTION FUNCTIONS
 # file menu
@@ -161,7 +161,7 @@ class MainWindow(qtw.QMainWindow):
                         qtw.QMessageBox.Ok
                     )          
 
-                self.filename = filename                                                    # then the filename parameter is updated
+                self.filename = filename                                                # then the filename parameter is updated
 
         else:                                                                           # if a model is not present
             self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
@@ -232,7 +232,7 @@ class MainWindow(qtw.QMainWindow):
     def addComponent(self):
         """Adds a custom component to the model."""
 
-        currentSelection = self.treeEditor.current                      # gets the current selected item
+        currentSelection = self.treeEditor.current                                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
             parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
@@ -241,8 +241,8 @@ class MainWindow(qtw.QMainWindow):
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
-                self.newComponentEditor = PropEditor(parentItem)                           # opens up a popup version of PropEditor
-                self.newComponentEditor.submit.connect(insertWrapper)           # connects the submit signal with the insertRows() function
+                self.newComponentEditor = ComponentEditor(parentItem)                   # opens up a popup version of PropEditor
+                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
                 self.newComponentEditor.show()                                          # then the popup editor is shown
 
             else:                                                                       # if the component is not of the appropriate level
@@ -266,7 +266,7 @@ class MainWindow(qtw.QMainWindow):
     def addSpecialComponent(self):
         """Adds a hardware component from the hardware archive."""
 
-        currentSelection = self.treeEditor.current                      # gets the current selected item
+        currentSelection = self.treeEditor.current                                      # gets the current selected item
         
         def insertWrapper(node):
             self.model.insertRows(currentSelection.row(), node, currentSelection)
@@ -279,7 +279,7 @@ class MainWindow(qtw.QMainWindow):
 
             if level < 5:                                                               # if the item is not at level 5 (leaf)
                 self.hardwareSelector = HardwareSelector(self.archive)                  # a popup window containing a hardware selector is opened with the archive as model
-                self.hardwareSelector.submit.connect(insertWrapper)             # then the submit signal is connected to the insertRows() function
+                self.hardwareSelector.submit.connect(insertWrapper)                     # then the submit signal is connected to the insertRows() function
                 self.hardwareSelector.show()                                            # the popup is shown
 
             else:                                                                       # if the component is not of the appropriate level
@@ -301,7 +301,7 @@ class MainWindow(qtw.QMainWindow):
             )
 
     def addLeafComponent(self):
-        currentSelection = self.treeEditor.current                      # gets the current selected item
+        currentSelection = self.treeEditor.current                                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
             parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
@@ -311,8 +311,8 @@ class MainWindow(qtw.QMainWindow):
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
-                self.newComponentEditor = PropEditor(parentItem, 5)                           # opens up a popup version of PropEditor
-                self.newComponentEditor.submit.connect(insertWrapper)           # connects the submit signal with the insertRows() function
+                self.newComponentEditor = ComponentEditor(parentItem, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
                 self.newComponentEditor.show()                                          # then the popup editor is shown
 
             else:                                                                       # if the component is not of the appropriate level
@@ -334,9 +334,9 @@ class MainWindow(qtw.QMainWindow):
             )
 
     def morphSpecialComponent(self):
-        """Changes a selected hardware component with another hardware component of chice."""
+        """Changes a selected hardware component with another hardware component of choice."""
 
-        currentSelection = self.treeEditor.current                      # gets the current selected item
+        currentSelection = self.treeEditor.current                                      # gets the current selected item
         def morphWrapper(node):
             self.model.swapComponent(currentSelection.row(), node, currentSelection.parent())
             setattr(node, 'level', 5)
@@ -348,7 +348,7 @@ class MainWindow(qtw.QMainWindow):
 
             if level == 5:                                                              # if the item is at level 5 (leaf)
                 self.hardwareSelector = HardwareSelector(self.archive)                  # a popup window containing a hardware selector is opened with the archive as model
-                self.hardwareSelector.submit.connect(morphWrapper)             # then the submit signal is connected to the insertRows() function
+                self.hardwareSelector.submit.connect(morphWrapper)                      # then the submit signal is connected to the insertRows() function
                 self.hardwareSelector.show()                                            # the popup is shown
             
             else:                                                                       # if the component is not of the appropriate level
@@ -375,7 +375,7 @@ class MainWindow(qtw.QMainWindow):
         Then updates every present item in the list with the data in the archive.
         """
 
-        columns = [                                                                      # default values for the headers
+        columns = [                                                                     # default values for the headers
             'title', 
             'description',
             'type',
@@ -390,18 +390,18 @@ class MainWindow(qtw.QMainWindow):
         sections = [2, 3, 4, 5, 6, 8, 10, 11, 13]
 
         if self.model:
-            for item in self.model.rootItem.iter_leaves():                               # iterates over the hardware and the leaves
+            for item in self.model.rootItem.iter_leaves():                              # iterates over the hardware and the leaves
                 for hardware in self.archive.hardwareList:
-                    if item.number == hardware['number']:                                # if a number corresponds to the archive counterpart
+                    if item.number == hardware['number']:                               # if a number corresponds to the archive counterpart
                         row = item.up.children.index(item)
-                        for x in range(len(columns)):                                    # iterates over the parameters of the item
+                        for x in range(len(columns)):                                   # iterates over the parameters of the item
                             index = self.model.createIndex(row, sections[x], item)
-                            self.model.setData(index, hardware[columns[x]])              # and updates them
+                            self.model.setData(index, hardware[columns[x]])             # and updates them
 
     def removeComponent(self):
         """Removes a component from the model."""
 
-        currentSelection = self.treeEditor.current                      # gets the current selected item
+        currentSelection = self.treeEditor.current                                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
             item = currentSelection.internalPointer()                                   # it extracts the item that needs to be removed
@@ -409,7 +409,7 @@ class MainWindow(qtw.QMainWindow):
             parent = currentSelection.parent()                                          # and it's parent
 
             if item.level != 1:                                                         # then if the item isn't at level 1 (project root)
-                self.model.removeRows(row, parent)                                   # it removes it
+                self.model.removeRows(row, parent)                                      # it removes it
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
                     self, 
