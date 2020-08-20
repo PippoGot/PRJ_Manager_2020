@@ -101,7 +101,7 @@ class HardwareEditor(qtw.QWidget):
             'manufacture': self.uiNewManufacture.currentText(),
             'status': self.uiNewStatus.currentText(),
             'comment': self.uiNewComment.toPlainText(),
-            'priceUnit': self.uiNewPriceUnit.text(),
+            'price': self.uiNewPriceUnit.text(),
             'quantity': self.uiNewQuantityNeeded.text(),
             'quantityPackage': self.uiNewQuantityUnit.text(),
             'seller': self.uiNewSeller.text(),
@@ -122,6 +122,8 @@ class HardwareEditor(qtw.QWidget):
         parent = self.current.parent()                                                          # extract the parent index
         self.mapper.setRootIndex(parent)                                                        # and sets the mapper indexes
         self.mapper.setCurrentModelIndex(self.current)
+
+        self.changeManufactureWidget(self.uiCurrentType.text(), self.uiCurrentManufacture, self.uiCurrentNumberID)
 
     def removeHardware(self):
         """Removes the selected item from the archive model."""
@@ -189,3 +191,36 @@ class HardwareEditor(qtw.QWidget):
             self.uiNewType.setText('Consumables')
         else:
             self.uiNewType.setText('Hardware')
+
+        self.changeManufactureWidget(self.uiNewType.text(), self.uiNewManufacture, self.uiNewNumberID)
+
+    def changeManufactureWidget(self, nodeType, widgetPtr, numberPtr):
+        layout = widgetPtr.parentWidget().layout()
+
+        def changeWidget(widget, widgetPointer, text = None):
+            layout.removeWidget(widgetPointer)
+            widgetPointer.close()
+            layout.removeRow(2)
+
+            if widget == 'LineEdit':
+                widgetPointer = qtw.QLineEdit()
+                widgetPointer.setReadOnly(True)
+                widgetPointer.setText(text)
+            elif widget == 'ComboBox':
+                widgetPointer = qtw.QComboBox()
+                widgetPointer.setCurrentIndex(0)
+
+            layout.insertRow(2, 'Manufacture', widgetPointer)
+            layout.update()
+
+        if nodeType == 'Project' or nodeType == 'Assembly':
+            changeWidget('LineEdit', widgetPtr, 'Assembled')
+        elif nodeType == 'Hardware' or nodeType == 'Consumables':
+            if numberPtr.text()[1:4] == 'MMH':
+                changeWidget('LineEdit', widgetPtr, 'Cut to Length')
+            else:
+                changeWidget('LineEdit', widgetPtr, 'Off the Shelf')
+        elif nodeType == 'Placeholder':
+            changeWidget('LineEdit', widgetPtr, 'None')
+        else:
+            changeWidget('ComboBox', widgetPtr)

@@ -83,6 +83,39 @@ class ComponentsPage(qtw.QWidget):
         self.current = index                                                                # then updates the current parameter
         self.uiComponentsEditor.setDisabled(False)
 
+        self.changeManufactureWidget(self.uiType.text(), self.uiManufacture, self.uiNumberID)
+
+    def changeManufactureWidget(self, nodeType, widgetPtr, numberPtr):
+        layout = widgetPtr.parentWidget().layout()
+
+        def changeWidget(widget, widgetPointer, text = None):
+            layout.removeWidget(widgetPointer)
+            widgetPointer.close()
+            layout.removeRow(2)
+
+            if widget == 'LineEdit':
+                widgetPointer = qtw.QLineEdit()
+                widgetPointer.setReadOnly(True)
+                widgetPointer.setText(text)
+            elif widget == 'ComboBox':
+                widgetPointer = qtw.QComboBox()
+                widgetPointer.setCurrentIndex(0)
+
+            layout.insertRow(2, 'Manufacture', widgetPointer)
+            layout.update()
+
+        if nodeType == 'Project' or nodeType == 'Assembly':
+            changeWidget('LineEdit', widgetPtr, 'Assembled')
+        elif nodeType == 'Hardware' or nodeType == 'Consumables':
+            if numberPtr.text()[1:4] == 'MMH':
+                changeWidget('LineEdit', widgetPtr, 'Cut to Length')
+            else:
+                changeWidget('LineEdit', widgetPtr, 'Off the Shelf')
+        elif nodeType == 'Placeholder':
+            changeWidget('LineEdit', widgetPtr, 'None')
+        else:
+            changeWidget('ComboBox', widgetPtr)
+
     def refreshView(self):
         """Updates the view."""
 

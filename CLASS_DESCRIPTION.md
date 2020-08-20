@@ -8,8 +8,6 @@ Subclass of the Tree class. Adds some specific functions for the managing of the
 
 # ModelTreeETE.py
 
-TO CHANGE THE BEHAVIOR OF FLAGS BASED ON THE ROW
-
 Model for the components tree to be displayed in views.
 
 - manages all the model functions needed to add and remove components and to display the component tree
@@ -85,8 +83,6 @@ TO IMPLEMENT:
 - Collapse all
 
 # UIComponentsPage.py <- ui_components_page.ui
-
-TO CHANGE THE EDITOR SECTION BASED ON THE SELECTED LINE
 
 Class responsible of the displaying and editing of the components tree.
 Takes a ModelTreeETE class for its view and mapper.

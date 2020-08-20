@@ -106,6 +106,6 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
 
         output = ''                                                 # initialize an empty string
         if row < len(hList) and len(hList) > 0:                     # if the row exists
-            for field in headers:                                   # for every field of the row
-                output += hList[row][field] + ' '                   # the corresponding string is attached to the output string 
+            for key in hList[row].keys():                           # for every field of the row
+                output += ' ' + hList[row][key]                     # the corresponding string is attached to the output string 
         return output                                               # then the output string is returned

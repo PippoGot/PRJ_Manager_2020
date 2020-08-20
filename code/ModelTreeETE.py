@@ -108,11 +108,21 @@ class ModelTree(qtc.QAbstractItemModel):
         RETURN TYPE:
             ItemFlags
         """
+        
+        notEditable = [
+            'Project',
+            'Assembly',
+            'Hardware',
+            'Placeholder',
+            'Consumables'
+        ]
 
         if not index.isValid():                                                             # if the index is not valid                                                        
             return qtc.Qt.NoItemFlags                                                       # returns NoItemFlags
         if index.column() == 4 or index.column() == 1 or index.column() == 0:               # if the index column is either 0 or 1
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable                           # the item is both enabled and selectable
+        elif index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in notEditable:
+            return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable
         else:                                                                               # otherwise
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable   # the object is also editable
 
