@@ -2,7 +2,11 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from ComponentTree import ComponentTree
-from util import increment_number, headers
+from util import increment_number
+from constants import HEADERS as headers
+from constants import NOT_EDITABLE_TYPES as notEditableTypes
+from constants import NOT_EDITABLE_COLUMNS as notEditableColumns
+from constants import DEFAULT_FIRST_NODE as base
 
 class ModelTree(qtc.QAbstractItemModel):
     """
@@ -27,28 +31,11 @@ class ModelTree(qtc.QAbstractItemModel):
         if filename:                                                                        # creates the first item in one of two ways
             self.first = self.readFile(filename)                                            # from a file
         else:
-            self.first = ComponentTree('#000-000', self.base)                               # or by deafult
+            self.first = ComponentTree('#000-000', base)                               # or by deafult
             
         setattr(self.first, 'level', 1)
 
         self.rootItem.add_child(self.first)
-
-    base = {                                                                                # default values for the first node
-        'number': '#000-000', 
-        'parent': '',
-        'title': 'no name', 
-        'description': 'no description',
-        'type': 'Project',
-        'manufacture': 'Assembled',
-        'status': '-',
-        'comment':'-',
-        'priceUnit': 0,
-        'quantity': 1,
-        'quantityPackage': 1,
-        'seller': '-',
-        'kit': '-',
-        'link': '-'
-    }
 
 # MODEL FUNCTIONS
 
@@ -108,20 +95,12 @@ class ModelTree(qtc.QAbstractItemModel):
         RETURN TYPE:
             ItemFlags
         """
-        
-        notEditable = [
-            'Project',
-            'Assembly',
-            'Hardware',
-            'Placeholder',
-            'Consumables'
-        ]
+
+        condition = (index.column() in notEditableColumns) or (index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in notEditableTypes)
 
         if not index.isValid():                                                             # if the index is not valid                                                        
             return qtc.Qt.NoItemFlags                                                       # returns NoItemFlags
-        if index.column() == 4 or index.column() == 1 or index.column() == 0:               # if the index column is either 0 or 1
-            return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable                           # the item is both enabled and selectable
-        elif index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in notEditable:
+        if condition:                                                                       # if the index column is either 0 or 1
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable
         else:                                                                               # otherwise
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable   # the object is also editable

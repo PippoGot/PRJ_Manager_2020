@@ -1,7 +1,9 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from util import _36ToBase10, headers
+from util import _36ToBase10
+from constants import HEADERS as headers
+from constants import COLUMN_LIST_HARDWARE as listaColonne
 import re
 
 class HardwareProxyModel(qtc.QSortFilterProxyModel):
@@ -22,7 +24,7 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
             bool: whether to show or hide the column
         """
 
-        if source_column not in self.listaColonne.keys():           # if the column has to be hidden
+        if source_column not in listaColonne.keys():           # if the column has to be hidden
             return False                                            # returns False
         else:                                                       # otherwise
             return True                                             # returns True
@@ -77,18 +79,6 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
             
             return left > right                                     # then return left > right
         return False                                                # otherwise returns False
-
-    listaColonne = {                                                # the dictionary containing the columns to be shown
-        0: 'number', 
-        2: 'name',
-        3: 'description',
-        4: 'type',
-        5: 'manufacture',
-        8: 'price/unit',
-        10: 'qtyx',
-        11: 'seller',
-        13: 'link'
-    }
 
     def stringAtRow(self, row):
         """

@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from ProxyTree import ProxyTree
+from constants import COMPONENTS_PAGE_SIZES as sizes
 
 class ComponentsPage(qtw.QWidget):
     """
@@ -121,18 +122,6 @@ class ComponentsPage(qtw.QWidget):
 
         self.uiComponentsView.expandAll()                                                   # every item is expanded
         for column in range(self.treeProxyModel.columnCount(qtc.QModelIndex())):            # then every column is resized to it's content
-            self.uiComponentsView.setColumnWidth(column, self.sizes[column])
+            self.uiComponentsView.setColumnWidth(column, sizes[column])
         
         self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)                                  # automatically sorts the view before displaying
-
-    sizes = {                                                                               # size dictionary
-        0: 150,
-        1: 200,
-        2: 340,
-        3: 130,
-        4: 130,
-        5: 130,
-        6: 340,
-        7: 60,
-        8: 60
-    }

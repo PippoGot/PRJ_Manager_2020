@@ -10,5 +10,3 @@
 - expand/collapse all actions
 - undo/redo actions
 - special components filter
-
-- constants.py file for storing all the data used

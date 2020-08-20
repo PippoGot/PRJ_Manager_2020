@@ -21,5 +21,3 @@ number,parent,title,description,type,manufacture,status,comment,price,quantity,q
 #EMH-002,,Makita Router,Makita router tool,Hardware,Off the Shelf,Designed,...,0,1,1,Amazon,,-
 #MEH-00I,,M8x30mm Bolt,Hex Bolt,Hardware,Off the Shelf,Designed,...,0,1,1,Bricoman,,-
 #MEH-00J,,M8x80mm Bolt,"Hex Bolt, fully threaded",Hardware,Off the Shelf,Designed,...,0,1,1,Bricoman,,-
-#CON-001,,-,-,Consumables,,,-,0,1,1,-,,-
-#MMH-001,,-,-,Hardware,,,-,0,1,1,-,,-

@@ -2,7 +2,8 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 import csv
-from util import increment_number, headers
+from util import increment_number
+from constants import HEADERS as headers
 
 class ModelHardware(qtc.QAbstractItemModel):
     """

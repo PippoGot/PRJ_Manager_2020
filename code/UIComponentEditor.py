@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from ComponentTree import ComponentTree
+from constants import TYPES_FROM_EDITOR as types
 
 class ComponentEditor(qtw.QWidget):
     """
@@ -67,14 +68,6 @@ class ComponentEditor(qtw.QWidget):
 
         self.uiName.setText('-')
         self.uiDescription.setPlainText('-')
-
-        types = {
-            1: 'Project',
-            2: 'Assembly',
-            3: 'Assembly',
-            4: 'Assembly',
-            5: 'Part'
-        }
 
         self.uiType.setText(types[parent.level + 1])
         self.uiComment.setPlainText('-')

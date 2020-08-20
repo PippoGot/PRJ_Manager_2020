@@ -94,8 +94,6 @@ It is a popup window that emits a ComponentTree instance.
 
 # UIHardwareEditor.py <- ui_hardware_editor_page.ui
 
-TO CHANGE THE VIEW INTO A TREEVIEW WHEN CHANGING THE HARDWARE MODEL TO A TREE MODEL
-
 Class responsible for the editing and displaying of the hardware archive, as well as adding and removing new
 hardware components and consumables.
 

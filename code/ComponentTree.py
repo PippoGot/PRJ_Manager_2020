@@ -1,6 +1,7 @@
 from ete3 import Tree
 import csv
-from util import increment_number, special, headers
+from util import increment_number
+from constants import HEADERS as headers
 
 class ComponentTree(Tree):
     """Adds some specific functions for the managing of the components tree."""

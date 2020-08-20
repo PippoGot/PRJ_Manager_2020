@@ -1,26 +1,6 @@
+from constants import VALUES_36_10 as values
+
 # NUMBER INCREMENT FUNCTIONS
-
-values = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
-special = ['MEH', 'MMH', 'ELH', 'EMH', 'CON']
-
-headers = [                                                                     # default values for the headers
-    'number', 
-    'parent',
-    'title', 
-    'description',
-    'type',
-    'manufacture',
-    'status',
-    'comment',
-    'price',
-    'quantity',
-    'quantityPackage',
-    'seller',
-    'kit',
-    'link'
-]
-
 def _10ToBase36(number):
     """
     Converts a number from base 10 (integer) to base 36 (string).
