@@ -76,10 +76,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="uiNewNumberID"/>
+       <widget class="QLineEdit" name="uiNewNumberID">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QWidget" name="" native="true">
+       <widget class="QWidget" name="widget" native="true">
         <layout class="QFormLayout" name="formLayout">
          <property name="horizontalSpacing">
           <number>5</number>
@@ -539,10 +543,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="uiCurrentNumberID"/>
+       <widget class="QLineEdit" name="uiCurrentNumberID">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QWidget" name="" native="true">
+       <widget class="QWidget" name="widget" native="true">
         <layout class="QFormLayout" name="formLayout_3">
          <property name="horizontalSpacing">
           <number>5</number>

@@ -62,25 +62,24 @@ Current preformable actions:
 - Morph special component
 - Update special components (TO IMPROVE WHEN CHANGING THE HARDWARE MODEL WITH A TREE DATA STRUCTURE)
 - Remove component
+- Add jig
 
 - Show deprecated
+- Expand all
+- Collapse all
 
 Actions to add:
 - Export bill of materials
 
 - Undo
 - Redo
+
+TO IMPLEMENT:
 - Cut
 - Copy
 - Paste
 - Add placeholder
 
-TO IMPLEMENT:
-
-- Add jig
-
-- Expand all
-- Collapse all
 
 # UIComponentsPage.py <- ui_components_page.ui
 

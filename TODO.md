@@ -4,9 +4,10 @@
 - bill model and bill data structure
 - export bill of material action
 
-- add jig action
-- cut/copy/paste actions
-- add placeholder action
-- expand/collapse all actions
-- undo/redo actions
-- special components filter
+- implement cut/copy/paste actions
+- implement placeholder action
+- implement undo/redo actions
+- implement special components filter
+
+- add jig action icon
+- expand/collapse all actions icons

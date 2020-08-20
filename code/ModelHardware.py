@@ -3,7 +3,10 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 import csv
 from util import increment_number
+from ComponentTree import ComponentTree
 from constants import HEADERS as headers
+from constants import NOT_EDITABLE_TYPES as notEditableTypes
+from constants import NOT_EDITABLE_COLUMNS as notEditableColumns
 
 class ModelHardware(qtc.QAbstractItemModel):
     """
@@ -86,9 +89,11 @@ class ModelHardware(qtc.QAbstractItemModel):
             ItemFlags
         """
 
+        condition = (index.column() in notEditableColumns) or (index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in notEditableTypes)
+
         if not index.isValid():                                                                 # if the index isn't valid                                                       
             return qtc.Qt.NoItemFlags                                                           # returns NoItemFlags
-        if index.column() == 1 or index.column() == 0:                                          # if the index column is either 0 or 1
+        if condition:                                                                           # if the index column is either 0 or 1
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable                               # the item is enabled and selectable
         else:                                                                                   # otherwise
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable       # the item is also editable
@@ -109,7 +114,7 @@ class ModelHardware(qtc.QAbstractItemModel):
         """
 
         if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:                     # if the orientation is horizontal and role is display
-            return headers[section]                                                             # returns the corresponding header
+            return headers[section].title()                                                     # returns the corresponding header
         return None                                                                             # otherwise returns None
 
     def index(self, row, column, parent):

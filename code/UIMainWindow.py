@@ -9,6 +9,9 @@ from UIHardwareEditor import HardwareEditor
 from ModelHardware import ModelHardware
 from ModelTreeETE import ModelTree
 from ModelCombobox import ModelCombobox
+from ComponentTree import ComponentTree
+from constants import SECTIONS_TO_UPDATE as sections
+from constants import COLUMNS_TO_UPDATE as columns
 
 class MainWindow(qtw.QMainWindow):
     """
@@ -52,8 +55,11 @@ class MainWindow(qtw.QMainWindow):
         self.uiActionMorphSpecialComponent.triggered.connect(self.morphSpecialComponent)
         self.uiActionUpdateSpecialComponents.triggered.connect(self.updateSpecialComponents)
         self.uiActionRemoveComponent.triggered.connect(self.removeComponent)
+        self.uiActionAddJig.triggered.connect(self.addJig)
 
         self.uiActionHideDeprecated.triggered.connect(self.hideDeprecated)
+        self.uiActionExpandAll.triggered.connect(self.treeEditor.uiComponentsView.expandAll)
+        self.uiActionCollapseAll.triggered.connect(self.treeEditor.uiComponentsView.collapseAll)
 
         self.showMaximized()                                                            # finally shows the window
 
@@ -375,20 +381,6 @@ class MainWindow(qtw.QMainWindow):
         Then updates every present item in the list with the data in the archive.
         """
 
-        columns = [                                                                     # default values for the headers
-            'title', 
-            'description',
-            'type',
-            'manufacture',
-            'status',
-            'priceUnit',
-            'quantityPackage',
-            'seller',
-            'link'
-        ]
-
-        sections = [2, 3, 4, 5, 6, 8, 10, 11, 13]
-
         if self.model:
             for item in self.model.rootItem.iter_leaves():                              # iterates over the hardware and the leaves
                 for hardware in self.archive.hardwareList:
@@ -419,6 +411,42 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
         
+        else:                                                                           # if nothing is selected
+            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+                self, 
+                'Warning!', 
+                'No item currently selected.', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+
+    def addJig(self):
+        currentSelection = self.treeEditor.current                                      # gets the current selected item
+
+        if currentSelection:                                                            # if an item is selected
+            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+            def insertWrapper(node):
+                self.model.insertRows(len(parentItem.children), node, currentSelection)
+                setattr(node, 'level', 4)
+                self.treeEditor.refreshView()
+
+            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+                jigsList = self.model.rootItem.search_nodes(type = 'Jig')
+                dummyParent = ComponentTree('', {'number': '#JIG-000', 'level': -1, 'children': jigsList})
+
+                self.newComponentEditor = ComponentEditor(dummyParent, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
+                self.newComponentEditor.show()                                          # then the popup editor is shown
+
+            else:                                                                       # if the component is not of the appropriate level
+                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                    self, 
+                    'Warning!', 
+                    'The selected item is not of an appropriate level!', 
+                    qtw.QMessageBox.Ok, 
+                    qtw.QMessageBox.Ok
+                )
+
         else:                                                                           # if nothing is selected
             self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
                 self, 

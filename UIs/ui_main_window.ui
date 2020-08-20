@@ -166,9 +166,14 @@
     <addaction name="uiActionUndo"/>
     <addaction name="uiActionRedo"/>
     <addaction name="separator"/>
+    <addaction name="uiActionCut"/>
+    <addaction name="uiActionCopy"/>
+    <addaction name="uiActionPaste"/>
+    <addaction name="separator"/>
     <addaction name="uiActionAddComponent"/>
     <addaction name="uiActionAddLeafComponent"/>
     <addaction name="uiActionAddJig"/>
+    <addaction name="uiActionAddPlaceholder"/>
     <addaction name="uiActionAddSpecialComponent"/>
     <addaction name="uiActionMorphSpecialComponent"/>
     <addaction name="uiActionUpdateSpecialComponents"/>
@@ -412,6 +417,26 @@
    </property>
    <property name="text">
     <string>Add Special Component</string>
+   </property>
+  </action>
+  <action name="uiActionCut">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="uiActionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="uiActionPaste">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
+  <action name="uiActionAddPlaceholder">
+   <property name="text">
+    <string>Add Placeholder</string>
    </property>
   </action>
  </widget>

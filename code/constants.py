@@ -80,7 +80,7 @@ COLUMN_LIST_TREE = {
 
 # types to assign in the initialization of a popoup editor
 
-TYPES_FROM_EDITOR = ['', 'Project', 'Assembly', 'Assembly', 'Assembly', 'Part']
+TYPES_FROM_EDITOR = ['Jig', 'Project', 'Assembly', 'Assembly', 'Assembly', 'Part']
 
 # column sizes of the components page
 
@@ -97,3 +97,19 @@ SPECIAL_PREFIXES = ['MEH', 'MMH', 'ELH', 'EMH', 'CON']
 # string list of values for number conversion
 
 VALUES_36_10 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+
+COLUMNS_TO_UPDATE = [
+    'title', 
+    'description',
+    'type',
+    'manufacture',
+    'status',
+    'price',
+    'quantityPackage',
+    'seller',
+    'link'
+]
+
+
+SECTIONS_TO_UPDATE = [2, 3, 4, 5, 6, 8, 10, 11, 13]
