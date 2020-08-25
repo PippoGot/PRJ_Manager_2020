@@ -1,0 +1,6 @@
+number,parent,title,description,type,manufacture,status,comment,price,quantity,quantityPackage,seller,kit,link,hashn
+#000-000,,-,-,Project,Assembled,-,-,0,1,1,-,-,-,68499004
+#100-000,68499004,-,-,Assembly,,,-,,1,1,-,,-,6864
+#100-000,68499004,-,-,Assembly,,,-,,1,1,-,,-,4078
+#110-000,6864,-,-,Assembly,,,-,,1,1,-,,-,2438
+#110-000,4078,-,-,Assembly,,,-,,1,1,-,,-,2026

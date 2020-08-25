@@ -1,8 +1,10 @@
+import random
+
 # default values of the first node of any project tree
 
 DEFAULT_FIRST_NODE = {
     'number': '#000-000', 
-    'parent': '',
+    'parent': None,
     'title': '-', 
     'description': '-',
     'type': 'Project',
@@ -14,7 +16,8 @@ DEFAULT_FIRST_NODE = {
     'quantityPackage': 1,
     'seller': '-',
     'kit': '-',
-    'link': '-'
+    'link': '-',
+    'hashn': random.randint(0, 99999999)
 }
 
 # default headers value
@@ -33,7 +36,8 @@ HEADERS = [
     'quantityPackage',
     'seller',
     'kit',
-    'link'
+    'link',
+    'hashn'
 ]
 
 # components types that cant have their manufacture edited
@@ -98,6 +102,7 @@ SPECIAL_PREFIXES = ['MEH', 'MMH', 'ELH', 'EMH', 'CON']
 
 VALUES_36_10 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
+# columns to update when calling update special components
 
 COLUMNS_TO_UPDATE = [
     'title', 
@@ -111,5 +116,6 @@ COLUMNS_TO_UPDATE = [
     'link'
 ]
 
+# sections to update when calling update special components
 
 SECTIONS_TO_UPDATE = [2, 3, 4, 5, 6, 8, 10, 11, 13]

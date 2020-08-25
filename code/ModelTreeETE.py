@@ -31,10 +31,9 @@ class ModelTree(qtc.QAbstractItemModel):
         if filename:                                                                        # creates the first item in one of two ways
             self.first = self.readFile(filename)                                            # from a file
         else:
-            self.first = ComponentTree('#000-000', base)                               # or by deafult
+            self.first = ComponentTree('#000-000', base)                                    # or by deafult
             
-        setattr(self.first, 'level', 1)
-
+        self.first.add_feature('level', 1)
         self.rootItem.add_child(self.first)
 
 # MODEL FUNCTIONS
@@ -78,7 +77,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
         if index.isValid() and role == qtc.Qt.EditRole:
             item = index.internalPointer()
-            setattr(item, headers[index.column()], value)
+            item.add_feature(headers[index.column()], value)
             self.dataChanged.emit(index, index)
             return True
         return 
@@ -240,9 +239,9 @@ class ModelTree(qtc.QAbstractItemModel):
 
         self.beginInsertRows(parent.siblingAtColumn(0), position, position)
 
-        setattr(item, 'level', parentItem.level + 1)
-        setattr(item, 'parent', parentItem.number)
+        item.add_features(level = parentItem.level + 1, parent = parentItem.hashn)
         success = parentItem.add_child(item)
+        item.update_hash()
 
         self.endInsertRows()
 
@@ -268,11 +267,11 @@ class ModelTree(qtc.QAbstractItemModel):
         self.beginRemoveRows(parent.siblingAtColumn(0), position, position)
 
         childItem = parentItem.children[position]
-        parentItem.remove_child(childItem)
+        success = childItem.detach()
 
         self.endRemoveRows()
 
-        return True
+        return success
 
 # CUSTOM FUNCTIONS
 
@@ -315,4 +314,4 @@ class ModelTree(qtc.QAbstractItemModel):
     def __repr__(self):
         """Enables the user to represent the model with the print() function."""
 
-        return str(self.rootItem.get_ascii(attributes=['name', 'number', 'level'], show_internal=True))
+        return str(self.rootItem.get_ascii(attributes=['number', 'level'], show_internal=True))

@@ -35,6 +35,7 @@ class MainWindow(qtw.QMainWindow):
         # self.materials = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/materials.csv')
         # self.statuses = ModelCombobox('D:/Data/_PROGETTI/Apps/PRJ_Manager/archive/statuses.csv')
         self.model = None                                                               # the model class parameter is set to None
+        self.copied = None
 
         self.treeEditor = ComponentsPage()                                              # creates the tree editor
         self.uiTreePage.layout().addWidget(self.treeEditor)
@@ -56,6 +57,9 @@ class MainWindow(qtw.QMainWindow):
         self.uiActionUpdateSpecialComponents.triggered.connect(self.updateSpecialComponents)
         self.uiActionRemoveComponent.triggered.connect(self.removeComponent)
         self.uiActionAddJig.triggered.connect(self.addJig)
+        self.uiActionCut.triggered.connect(self.cut)
+        self.uiActionCopy.triggered.connect(self.copy)
+        self.uiActionPaste.triggered.connect(self.paste)
 
         self.uiActionHideDeprecated.triggered.connect(self.hideDeprecated)
         self.uiActionExpandAll.triggered.connect(self.treeEditor.uiComponentsView.expandAll)
@@ -276,7 +280,8 @@ class MainWindow(qtw.QMainWindow):
         
         def insertWrapper(node):
             self.model.insertRows(currentSelection.row(), node, currentSelection)
-            setattr(node, 'level', 5)
+            node.add_feature('level', 5)
+            node.update_hash()
             self.treeEditor.refreshView()
 
         if currentSelection:                                                            # if an item is selected
@@ -307,13 +312,16 @@ class MainWindow(qtw.QMainWindow):
             )
 
     def addLeafComponent(self):
+        """Adds a level 5 component to the tree:"""
+
         currentSelection = self.treeEditor.current                                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
             parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
             def insertWrapper(node):
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
-                setattr(node, 'level', 5)
+                node.add_feature('level', 5)
+                node.update_hash()
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
@@ -345,7 +353,8 @@ class MainWindow(qtw.QMainWindow):
         currentSelection = self.treeEditor.current                                      # gets the current selected item
         def morphWrapper(node):
             self.model.swapComponent(currentSelection.row(), node, currentSelection.parent())
-            setattr(node, 'level', 5)
+            node.add_feature('level', 5)
+            node.update_hash()
             self.treeEditor.refreshView()
 
         if currentSelection:                                                            # if an item is selected
@@ -421,13 +430,16 @@ class MainWindow(qtw.QMainWindow):
             )
 
     def addJig(self):
+        """Adds a jig component to the tree."""
+
         currentSelection = self.treeEditor.current                                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
             parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
             def insertWrapper(node):
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
-                setattr(node, 'level', 4)
+                node.add_feature('level', 4)
+                node.update_hash()
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
@@ -437,6 +449,86 @@ class MainWindow(qtw.QMainWindow):
                 self.newComponentEditor = ComponentEditor(dummyParent, 5)                # opens up a popup version of PropEditor
                 self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
                 self.newComponentEditor.show()                                          # then the popup editor is shown
+
+            else:                                                                       # if the component is not of the appropriate level
+                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                    self, 
+                    'Warning!', 
+                    'The selected item is not of an appropriate level!', 
+                    qtw.QMessageBox.Ok, 
+                    qtw.QMessageBox.Ok
+                )
+
+        else:                                                                           # if nothing is selected
+            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+                self, 
+                'Warning!', 
+                'No item currently selected.', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+
+    def cut(self):
+        """Removes and store a component for later pasting."""
+
+        currentSelection = self.treeEditor.current
+
+        if currentSelection:                                                            # if an item is selected
+            item = currentSelection.internalPointer()                                   # it extracts the item that needs to be removed
+            row = item.up.children.index(item)                                          # it's row
+            parent = currentSelection.parent()                                          # and it's parent
+
+            if item.level != 1:                                                         # then if the item isn't at level 1 (project root)
+                self.copied = self.model.removeRows(row, parent)
+            else:                                                                       # if the component is not of the appropriate level
+                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                    self, 
+                    'Warning!', 
+                    'The selected item is not of an appropriate level!', 
+                    qtw.QMessageBox.Ok, 
+                    qtw.QMessageBox.Ok
+                )
+        
+        else:                                                                           # if nothing is selected
+            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+                self, 
+                'Warning!', 
+                'No item currently selected.', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+
+    def copy(self):
+        """Creates and stores a copy of a component to paste it in another component."""
+
+        currentSelection = self.treeEditor.current
+
+        if currentSelection:                                                            # if an item is selected
+            item = currentSelection.internalPointer()                                   # it extracts the item that needs to be removed                                                     # then if the item isn't at level 1 (project root)
+            self.copied = item.copy()
+        
+        else:                                                                           # if nothing is selected
+            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+                self, 
+                'Warning!', 
+                'No item currently selected.', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+
+    def paste(self):
+        """Adds the cut or copied component to this components' children."""
+        
+        currentSelection = self.treeEditor.current                                      # gets the current selected item
+
+        if currentSelection:                                                            # if an item is selected
+            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+
+            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+                self.model.insertRows(len(parentItem.children), self.copied, currentSelection)
+                self.copied.update_hash()
+                self.copied = self.copied.copy()
+                self.treeEditor.refreshView()
 
             else:                                                                       # if the component is not of the appropriate level
                 self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified

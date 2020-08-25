@@ -1,6 +1,6 @@
 from ete3 import Tree
 import csv
-from util import increment_number
+from util import increment_number, calc_hash
 from constants import HEADERS as headers
 
 class ComponentTree(Tree):
@@ -84,11 +84,10 @@ class ComponentTree(Tree):
 
             firstItem = next(csv_reader)
             first = ComponentTree(firstItem['number'], firstItem)
+            first.add_feature('level', 1)
 
-            setattr(first, 'level', 1)
-            
             for item in csv_reader:
-                parentList = first.search_nodes(name = item['parent'])
+                parentList = first.search_nodes(hashn = item['parent'])
                 if len(parentList) > 0:
                     self.addInto(parentList[0], item)
                 else:
@@ -96,10 +95,11 @@ class ComponentTree(Tree):
 
             while len(missingList) > 0:
                 for item in missingList:
-                    parentList = first.search_nodes(name = item['parent'])
+                    parentList = first.search_nodes(hashn = item['parent'])
                     if len(parentList) > 0:
                         self.addInto(parentList[0], item)
                         missingList.remove(item)
+
         return first
 
     def addInto(self, parent, childDict):
@@ -112,10 +112,8 @@ class ComponentTree(Tree):
             dict - childDict: dictionary with the new item parameters
         """
 
-        childItem = ComponentTree('new', childDict)
-        setattr(childItem, 'level', parent.level + 1)
-        number = getattr(childItem, 'number')
-        setattr(childItem, 'name', number)
+        childItem = ComponentTree(childDict['number'], childDict)
+        childItem.add_feature('level', parent.level + 1)
         parent.add_child(childItem)
 
     def init_node_attrs(self, attrs_dict):
@@ -127,4 +125,32 @@ class ComponentTree(Tree):
         """
 
         for key in attrs_dict.keys():
-            setattr(self, key, attrs_dict[key])
+            self.add_feature(key, attrs_dict[key])
+
+    def update_hash(self):
+        """Updates the hash numbers of this component and of all of his children recursively."""
+
+        self.add_feature('parent', self.up.hashn)
+        self.add_feature('hashn', calc_hash(self.up.hashn, self.number))
+
+        for child in self.children:
+            child.update_hash()
+
+    def copy(self):
+        """
+        Returns a copy of this component. Copies all of his features and childrens.
+
+        RETURN TYPE:
+            ComponentTree: copy of the component
+        """
+
+        newNode = ComponentTree(self.number)
+
+        for feature in self.features:
+            newNode.add_feature(feature, getattr(self, feature, None))
+
+        for child in self.children:
+            newChild = child.copy()
+            newNode.add_child(newChild)
+
+        return newNode

@@ -1,4 +1,5 @@
 from constants import VALUES_36_10 as values
+import random
 
 # NUMBER INCREMENT FUNCTIONS
 def _10ToBase36(number):
@@ -142,3 +143,26 @@ def is_valid(number):
         if x not in values: return False                                        # check if it is in the values dictionary
 
     return True                                                                 # if every character is in the dictionary returns True
+
+def calc_hash(parent_number, self_number):
+    """
+    Calculates a number to hash the components.
+
+    INPUT:
+        int - parent_number: the hash number of the parent
+        str - self_number: the string number of the current component
+
+    RETURN TYPE:
+        int: the calculated hash number 
+    """
+    
+    if not parent_number:
+        parent_number = 0
+        
+    self_number = self_number.replace('#', '')
+    self_number = self_number.replace('-', '')
+    self_number = _36ToBase10(self_number) * 36 ** 2
+
+    output_hash = (parent_number + self_number + random.randint(0, 99999999)) % 10007
+
+    return output_hash

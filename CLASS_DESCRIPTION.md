@@ -59,10 +59,13 @@ Current preformable actions:
 - Add component
 - Add special component
 - Add leaf component
+- Add jig
 - Morph special component
 - Update special components (TO IMPROVE WHEN CHANGING THE HARDWARE MODEL WITH A TREE DATA STRUCTURE)
 - Remove component
-- Add jig
+- Cut
+- Copy
+- Paste
 
 - Show deprecated
 - Expand all
@@ -75,9 +78,6 @@ Actions to add:
 - Redo
 
 TO IMPLEMENT:
-- Cut
-- Copy
-- Paste
 - Add placeholder
 
 
