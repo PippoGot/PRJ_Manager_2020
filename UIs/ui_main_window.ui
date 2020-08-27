@@ -217,14 +217,22 @@
    <addaction name="uiActionUndo"/>
    <addaction name="uiActionRedo"/>
    <addaction name="separator"/>
+   <addaction name="uiActionCut"/>
+   <addaction name="uiActionCopy"/>
+   <addaction name="uiActionPaste"/>
+   <addaction name="separator"/>
    <addaction name="uiActionAddComponent"/>
-   <addaction name="uiActionAddLeafComponent"/>
    <addaction name="uiActionAddSpecialComponent"/>
+   <addaction name="uiActionAddLeafComponent"/>
+   <addaction name="uiActionAddJig"/>
+   <addaction name="uiActionAddPlaceholder"/>
    <addaction name="uiActionMorphSpecialComponent"/>
    <addaction name="uiActionUpdateSpecialComponents"/>
    <addaction name="uiActionRemoveComponent"/>
    <addaction name="separator"/>
    <addaction name="uiActionHideDeprecated"/>
+   <addaction name="uiActionCollapseAll"/>
+   <addaction name="uiActionExpandAll"/>
   </widget>
   <action name="uiActionNew">
    <property name="icon">
@@ -320,7 +328,7 @@
     <string>Remove Component</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+X</string>
+    <string>Del</string>
    </property>
   </action>
   <action name="uiActionExportBOM">
@@ -396,16 +404,28 @@
    </property>
   </action>
   <action name="uiActionAddJig">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/small_flat/jig.png</normaloff>../resources/icons/small_flat/jig.png</iconset>
+   </property>
    <property name="text">
     <string>Add Jig</string>
    </property>
   </action>
   <action name="uiActionExpandAll">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/small_flat/expand.png</normaloff>../resources/icons/small_flat/expand.png</iconset>
+   </property>
    <property name="text">
     <string>Expand All</string>
    </property>
   </action>
   <action name="uiActionCollapseAll">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/small_flat/collapse.png</normaloff>../resources/icons/small_flat/collapse.png</iconset>
+   </property>
    <property name="text">
     <string>Collapse All</string>
    </property>
@@ -420,21 +440,46 @@
    </property>
   </action>
   <action name="uiActionCut">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/small_flat/cut.png</normaloff>../resources/icons/small_flat/cut.png</iconset>
+   </property>
    <property name="text">
     <string>Cut</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
   </action>
   <action name="uiActionCopy">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/small_flat/copy.png</normaloff>../resources/icons/small_flat/copy.png</iconset>
+   </property>
    <property name="text">
     <string>Copy</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
   </action>
   <action name="uiActionPaste">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/small_flat/paste.png</normaloff>../resources/icons/small_flat/paste.png</iconset>
+   </property>
    <property name="text">
     <string>Paste</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
   </action>
   <action name="uiActionAddPlaceholder">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/small_flat/placeholder.png</normaloff>../resources/icons/small_flat/placeholder.png</iconset>
+   </property>
    <property name="text">
     <string>Add Placeholder</string>
    </property>

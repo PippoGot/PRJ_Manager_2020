@@ -84,7 +84,7 @@ COLUMN_LIST_TREE = {
 
 # types to assign in the initialization of a popoup editor
 
-TYPES_FROM_EDITOR = ['Jig', 'Project', 'Assembly', 'Assembly', 'Assembly', 'Part']
+TYPES_FROM_EDITOR = ['Jig', 'Project', 'Assembly', 'Assembly', 'Assembly', 'Part', 'Placeholder']
 
 # column sizes of the components page
 

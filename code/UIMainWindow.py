@@ -43,6 +43,7 @@ class MainWindow(qtw.QMainWindow):
         self.hardwareEditor = HardwareEditor(self.archive)                              # creates the hardware editor
         self.uiHardwarePage.layout().addWidget(self.hardwareEditor)
 
+        # FILE MENU ACTIONS
         self.uiActionNew.triggered.connect(self.newFile)                                # connects the actions to their respective functions
         self.uiActionOpen.triggered.connect(self.openFile)
         self.uiActionSave.triggered.connect(self.saveFile)
@@ -50,17 +51,24 @@ class MainWindow(qtw.QMainWindow):
         self.uiActionClear.triggered.connect(self.clearFile)
         # self.uiActionExportBOM.triggered.connect(self.exportBOM)
 
+        # EDIT MENU ACTIONS
         self.uiActionAddComponent.triggered.connect(self.addComponent)
         self.uiActionAddSpecialComponent.triggered.connect(self.addSpecialComponent)
         self.uiActionAddLeafComponent.triggered.connect(self.addLeafComponent)
+        self.uiActionAddJig.triggered.connect(self.addJig)
+        self.uiActionAddPlaceholder.triggered.connect(self.addPlaceholder)
+
         self.uiActionMorphSpecialComponent.triggered.connect(self.morphSpecialComponent)
         self.uiActionUpdateSpecialComponents.triggered.connect(self.updateSpecialComponents)
         self.uiActionRemoveComponent.triggered.connect(self.removeComponent)
-        self.uiActionAddJig.triggered.connect(self.addJig)
+
         self.uiActionCut.triggered.connect(self.cut)
         self.uiActionCopy.triggered.connect(self.copy)
         self.uiActionPaste.triggered.connect(self.paste)
+        # self.uiActionUndo.triggered.connect(self.undo)
+        # self.uiActionRedo.triggered.connect(self.redo)
 
+        # VIEW MENU ACTIONS
         self.uiActionHideDeprecated.triggered.connect(self.hideDeprecated)
         self.uiActionExpandAll.triggered.connect(self.treeEditor.uiComponentsView.expandAll)
         self.uiActionCollapseAll.triggered.connect(self.treeEditor.uiComponentsView.collapseAll)
@@ -347,6 +355,84 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Ok
             )
 
+    def addJig(self):
+        """Adds a jig component to the tree."""
+
+        currentSelection = self.treeEditor.current                                      # gets the current selected item
+
+        if currentSelection:                                                            # if an item is selected
+            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+            def insertWrapper(node):
+                self.model.insertRows(len(parentItem.children), node, currentSelection)
+                node.add_feature('level', 4)
+                node.update_hash()
+                self.treeEditor.refreshView()
+
+            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+                jigsList = self.model.rootItem.search_nodes(type = 'Jig')
+                dummyParent = ComponentTree('', {'number': '#JIG-000', 'level': -1, 'children': jigsList})
+
+                self.newComponentEditor = ComponentEditor(dummyParent, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
+                self.newComponentEditor.show()                                          # then the popup editor is shown
+
+            else:                                                                       # if the component is not of the appropriate level
+                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                    self, 
+                    'Warning!', 
+                    'The selected item is not of an appropriate level!', 
+                    qtw.QMessageBox.Ok, 
+                    qtw.QMessageBox.Ok
+                )
+
+        else:                                                                           # if nothing is selected
+            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+                self, 
+                'Warning!', 
+                'No item currently selected.', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+    
+    def addPlaceholder(self):
+        """Adds a placeholder component to the tree."""
+
+        currentSelection = self.treeEditor.current                                      # gets the current selected item
+
+        if currentSelection:                                                            # if an item is selected
+            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+            def insertWrapper(node):
+                self.model.insertRows(len(parentItem.children), node, currentSelection)
+                node.add_feature('level', 4)
+                node.update_hash()
+                self.treeEditor.refreshView()
+
+            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+                placeholderList = self.model.rootItem.search_nodes(type = 'Placeholder')
+                dummyParent = ComponentTree('', {'number': '#PLC-000', 'level': 5, 'children': placeholderList})
+
+                self.newComponentEditor = ComponentEditor(dummyParent, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
+                self.newComponentEditor.show()                                          # then the popup editor is shown
+
+            else:                                                                       # if the component is not of the appropriate level
+                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                    self, 
+                    'Warning!', 
+                    'The selected item is not of an appropriate level!', 
+                    qtw.QMessageBox.Ok, 
+                    qtw.QMessageBox.Ok
+                )
+
+        else:                                                                           # if nothing is selected
+            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+                self, 
+                'Warning!', 
+                'No item currently selected.', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+
     def morphSpecialComponent(self):
         """Changes a selected hardware component with another hardware component of choice."""
 
@@ -420,45 +506,6 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
         
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
-                self, 
-                'Warning!', 
-                'No item currently selected.', 
-                qtw.QMessageBox.Ok, 
-                qtw.QMessageBox.Ok
-            )
-
-    def addJig(self):
-        """Adds a jig component to the tree."""
-
-        currentSelection = self.treeEditor.current                                      # gets the current selected item
-
-        if currentSelection:                                                            # if an item is selected
-            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
-            def insertWrapper(node):
-                self.model.insertRows(len(parentItem.children), node, currentSelection)
-                node.add_feature('level', 4)
-                node.update_hash()
-                self.treeEditor.refreshView()
-
-            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
-                jigsList = self.model.rootItem.search_nodes(type = 'Jig')
-                dummyParent = ComponentTree('', {'number': '#JIG-000', 'level': -1, 'children': jigsList})
-
-                self.newComponentEditor = ComponentEditor(dummyParent, 5)                # opens up a popup version of PropEditor
-                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
-                self.newComponentEditor.show()                                          # then the popup editor is shown
-
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
-                    self, 
-                    'Warning!', 
-                    'The selected item is not of an appropriate level!', 
-                    qtw.QMessageBox.Ok, 
-                    qtw.QMessageBox.Ok
-                )
-
         else:                                                                           # if nothing is selected
             self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
                 self, 

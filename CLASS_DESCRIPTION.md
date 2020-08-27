@@ -60,6 +60,7 @@ Current preformable actions:
 - Add special component
 - Add leaf component
 - Add jig
+- Add placeholder
 - Morph special component
 - Update special components (TO IMPROVE WHEN CHANGING THE HARDWARE MODEL WITH A TREE DATA STRUCTURE)
 - Remove component
@@ -78,7 +79,7 @@ Actions to add:
 - Redo
 
 TO IMPLEMENT:
-- Add placeholder
+- Add existing component
 
 
 # UIComponentsPage.py <- ui_components_page.ui
@@ -103,7 +104,11 @@ to be changed inside the list. It is a popup window that emits a ComponentTree i
 
 # util.py
 
-Class with general purpose functions and data.
+File with general purpose functions.
+
+# constants.py
+
+File with general purpose data.
 
 # MainApp.py
 
