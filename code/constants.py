@@ -79,7 +79,20 @@ COLUMN_LIST_TREE = {
     6: 'status',
     7: 'comment',
     9: 'quantity',
+    11: 'seller'
+}
+
+# columns to show in the bill page
+
+COLUMN_LIST_BILL = {
+    0: 'number', 
+    2: 'title', 
+    3: 'description',
+    8: 'price',
+    9: 'quantity',
+    10: 'quantityPackage',
     11: 'seller',
+    13: 'link'
 }
 
 # types to assign in the initialization of a popoup editor

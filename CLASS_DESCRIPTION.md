@@ -33,16 +33,18 @@ and current project. Adding and removing such components can be performed inside
 
 Proxy model for the hardware model. Hides unwanted columns and sorts the components in a specific order.
 
+# ProxyBill.py
+
+Class to remap the data needed in the bill page. Takes the original tree model as source model.
+Additionally calculates the total quantity of the represented item.
+
+# ProxyBillSortFilter.py
+
+Provides sorting and filtering for the bill page model (ProxyBill).
+
 # ModelCombobox.py
 
 Subclass of QStringListModel. Adds read and write capabilities to store a combobox list.
-
-# ModelBill.py
-
-TO DESIGN THE BASIC DATA STRUCTURE FOR THE MANAGING OF THE MODEL AND THE MODEL CLASS
-
-This class generates a data structure (similiar to a list) from all of the leaf (level 5) components.
-It's purpose is to have a bill of material for the ordering of components without having to count the parts by hand.
 
 # UIMainWindow.py <- ui_main_window.ui
 
@@ -101,6 +103,12 @@ hardware components and consumables.
 
 Class responsible for selecting a specific hardware component form the archive to be added in the list or
 to be changed inside the list. It is a popup window that emits a ComponentTree instance.
+
+# UIBillPage.py <- ui_bill_page.ui
+
+Class responsible for the bill of materials page.
+Transforms the tree model to show only the level 5 components with no deprecated parents
+and shows the total quantity needed.
 
 # util.py
 

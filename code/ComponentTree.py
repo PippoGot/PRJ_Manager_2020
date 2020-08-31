@@ -154,3 +154,43 @@ class ComponentTree(Tree):
             newNode.add_child(newChild)
 
         return newNode
+
+    def calc_quantity(self, node):
+        sameNodeList = self.get_valid_leaves_list(number = node.number)
+
+        quantity = 0
+        for element in sameNodeList:
+            elementQuantity = int(getattr(element, 'quantity', 1))
+            
+            for p in element.iter_ancestors():
+                elementQuantity *= int(getattr(p, 'quantity', 1))
+
+            quantity += elementQuantity
+
+        return quantity
+
+    def get_valid_leaves_list(self, **kwargs):
+        leavesList = self.search_nodes(level = 5, **kwargs)
+
+        for element in leavesList:
+            if element.status == 'Deprecated':
+                leavesList.remove(element)
+            else:
+                for p in element.iter_ancestors():
+                    status = getattr(p, 'status', '')
+                    if status == 'Deprecated':
+                        sameNodeList.remove(element)
+                        break
+
+        return leavesList
+
+    def get_unique_leaves_list(self):
+        validLeaves = self.get_valid_leaves_list()
+        uniqueLeaves = []
+        uniqueNumbers = []
+
+        for element in validLeaves:
+            if element.number not in uniqueNumbers:
+                uniqueLeaves.append(element)
+                uniqueNumbers.append(element.number)
+        return uniqueLeaves
