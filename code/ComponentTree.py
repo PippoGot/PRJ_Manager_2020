@@ -1,7 +1,9 @@
 from ete3 import Tree
 import csv
+import math
 from util import increment_number, calc_hash
 from constants import HEADERS as headers
+from constants import BILL_HEADERS
 
 class ComponentTree(Tree):
     """Adds some specific functions for the managing of the components tree."""
@@ -156,6 +158,16 @@ class ComponentTree(Tree):
         return newNode
 
     def calc_quantity(self, node):
+        """
+        Calculates and returns the quantity of a given node inside this subtree.
+
+        INPUT:
+            ComponentTree - node: component to search
+
+        RETURN TYPE:
+            int: calculated quantity of the given component
+        """
+
         sameNodeList = self.get_valid_leaves_list(number = node.number)
 
         quantity = 0
@@ -169,7 +181,36 @@ class ComponentTree(Tree):
 
         return quantity
 
+    def calc_price(self, node):
+        """
+        Calculates and returns the total price of the component based on the total quantity needed.
+
+        INPUT:
+            ComponentTree - node: the component to calculate the price of
+
+        RETURN TYPE:
+            float: the calculated total price
+        """
+
+        quantity = self.calc_quantity(node)
+        singlePrice = int(node.price)
+        singleQuantity = int(node.quantityPackage)
+
+        totalPrice = math.ceil(quantity / singleQuantity) * singlePrice
+
+        return totalPrice
+
     def get_valid_leaves_list(self, **kwargs):
+        """
+        Returns a list of components of level 5 and with no deprecated ancestors.
+
+        INPUT:
+            **kwargs: other searching criteria
+
+        RETURN TYPE:
+            list: the list with the found elements
+        """
+
         leavesList = self.search_nodes(level = 5, **kwargs)
 
         for element in leavesList:
@@ -185,6 +226,14 @@ class ComponentTree(Tree):
         return leavesList
 
     def get_unique_leaves_list(self):
+        """
+        Returns a list of components of level 5 and with no deprecated ancestors and also with
+        no duplicates, based on the numbers.
+
+        RETURN TYPE:
+            list: the list with the matching elements
+        """
+
         validLeaves = self.get_valid_leaves_list()
         uniqueLeaves = []
         uniqueNumbers = []
@@ -193,4 +242,36 @@ class ComponentTree(Tree):
             if element.number not in uniqueNumbers:
                 uniqueLeaves.append(element)
                 uniqueNumbers.append(element.number)
+
         return uniqueLeaves
+
+    def export_bill(self, filename):
+        """
+        Saves a .csv file with the classic bill of material data inside.
+
+        INPUT:
+            str - filename: the name of the file to save
+        """
+
+        componentsList = self.get_unique_leaves_list()
+        billList = []
+        billElement = {}
+
+        for element in componentsList:
+            for header in BILL_HEADERS:
+                billElement[header] = getattr(element, header)
+            
+            billElement['quantity'] = self.calc_quantity(element)
+            billElement['totalPrice'] = self.calc_price(element)
+
+            billList.append(billElement)
+
+        with open(filename, 'w') as file:
+            fieldnames = BILL_HEADERS + ['totalPrice']
+            csv_writer = csv.DictWriter(file, fieldnames = fieldnames)
+
+            csv_writer.writeheader()
+
+            for item in billList:
+                csv_writer.writerow(item)
+

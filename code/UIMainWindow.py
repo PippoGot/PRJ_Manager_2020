@@ -50,7 +50,7 @@ class MainWindow(qtw.QMainWindow):
         self.uiActionSave.triggered.connect(self.saveFile)
         self.uiActionSaveAs.triggered.connect(self.saveAsFile)
         self.uiActionClear.triggered.connect(self.clearFile)
-        # self.uiActionExportBOM.triggered.connect(self.exportBOM)
+        self.uiActionExportBOM.triggered.connect(self.exportBOM)
 
         # EDIT MENU ACTIONS
         self.uiActionAddComponent.triggered.connect(self.addComponent)
@@ -193,39 +193,38 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Ok
             )
 
-    # def exportBOM(self):
-    #     if self.model:
-    #         filename, _ = qtw.QFileDialog.getSaveFileName(                              # opens up a popup window to select the destination folder
-    #             self, 
-    #             "Select the file to save to...", 
-    #             qtc.QDir.homePath(),
-    #             'CSV Documents (*.csv)'
-    #         )
+    def exportBOM(self):
+        """Exports the bill of material of the current project"""
+        
+        if self.model:
+            filename, _ = qtw.QFileDialog.getSaveFileName(                              # opens up a popup window to select the destination folder
+                self, 
+                "Select the file to save to...", 
+                qtc.QDir.homePath(),
+                'CSV Documents (*.csv)'
+            )
 
-    #         if filename:                                                                # then if a filename is given
-    #             try:
-    #                 self.model.bill.exportBill(filename)                                       # the file is saved
-    #                 self.classes.saveModel()
-    #                 self.materials.saveModel()
-    #                 self.statuses.saveModel()
+            if filename:                                                                # then if a filename is given
+                try:
+                    self.model.exportBOM(filename)
 
-    #             except Exception as e:                                                  # if a problem occurs during the operation a message box is shown
-    #                     self.msgBox = qtw.QMessageBox.critical(                         # informing the user of the problem
-    #                     self, 
-    #                     'Critical Error!', 
-    #                     f'Could not save the file at {filename}\nbecause "{e}" exception occurred!', 
-    #                     qtw.QMessageBox.Ok, 
-    #                     qtw.QMessageBox.Ok
-    #                 )          
+                except Exception as e:                                                  # if a problem occurs during the operation a message box is shown
+                        self.msgBox = qtw.QMessageBox.critical(                         # informing the user of the problem
+                        self, 
+                        'Critical Error!', 
+                        f'Could not save the file at {filename}\nbecause "{e}" exception occurred!', 
+                        qtw.QMessageBox.Ok, 
+                        qtw.QMessageBox.Ok
+                    )          
 
-    #     else:                                                                           # if a model is not present
-    #         self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
-    #             self, 
-    #             'Warning!', 
-    #             'No file currently open.', 
-    #             qtw.QMessageBox.Ok, 
-    #             qtw.QMessageBox.Ok
-    #         )
+        else:                                                                           # if a model is not present
+            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+                self, 
+                'Warning!', 
+                'No file currently open.', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
 
     def clearFile(self):
         """Resets the current open file, as well as the components view."""

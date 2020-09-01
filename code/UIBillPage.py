@@ -6,6 +6,8 @@ from ProxyBill import ProxyBill as Bill
 from ProxyBillSortFilter import ProxyBillSortFilter as ProxyBill
 
 class BillPage(qtw.QWidget):
+    """Class for the bill page."""
+
     def __init__(self, model):
         """Loads the .ui file."""
 
@@ -15,7 +17,13 @@ class BillPage(qtw.QWidget):
 
         self.setModel(model)
 
-    def setModel(self, model):        
+    def setModel(self, model):     
+        """Sets the model for the bill page.   
+
+        INPUT:
+            QAbstractItemModel - model: the model of the page
+        """
+        
         self.sourceModel = model
 
         self.model = Bill()

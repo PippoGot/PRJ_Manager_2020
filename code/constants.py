@@ -40,6 +40,20 @@ HEADERS = [
     'hashn'
 ]
 
+# values for the bill of material csv file
+
+BILL_HEADERS = [
+    'number',
+    'title', 
+    'description', 
+    'price',
+    'quantity',
+    'quantityPackage',
+    'seller',
+    'kit',
+    'link'
+]
+
 # components types that cant have their manufacture edited
 
 NOT_EDITABLE_TYPES = [

@@ -56,6 +56,7 @@ Current preformable actions:
 - Open file
 - Save file
 - Save As file
+- Export bill of materials
 - Clear file
 
 - Add component
@@ -75,7 +76,6 @@ Current preformable actions:
 - Collapse all
 
 Actions to add:
-- Export bill of materials
 
 - Undo
 - Redo

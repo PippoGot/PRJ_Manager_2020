@@ -298,6 +298,16 @@ class ModelTree(qtc.QAbstractItemModel):
 
         self.rootItem.save_file(filename)
 
+    def exportBOM(self, filename):
+        """
+        Exports the bill of material of this model.
+
+        INPUT:
+            str - filename: the name of the file to create
+        """
+
+        self.rootItem.export_bill(filename)
+
     def readFile(self, filename):
         """
         Reads a .csv file and transforms it, if possible, into a tree data structure.

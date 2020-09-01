@@ -2,14 +2,10 @@
 
 - change update hash to check for existing hashes
 
-- export bill of material action
 - total price data
-- comment 
-    - ProxyBill
-    - ProxyBillSortFilter
-    - UIMainWindow
-    - ComponentTree
-    - UIBillPage
+- figure out the bill model bug
+
+- resize columns based on content for every view
 
 - implement undo/redo actions
 - implement special components filter
