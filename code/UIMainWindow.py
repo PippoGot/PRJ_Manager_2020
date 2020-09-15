@@ -293,7 +293,7 @@ class MainWindow(qtw.QMainWindow):
         def insertWrapper(node):
             node.add_feature('level', 5)
             self.model.insertRows(currentSelection.row(), node, currentSelection)
-            node.update_hash()
+            node.update_hash(self.model.rootItem)
             self.treeEditor.refreshView()
 
         if currentSelection:                                                            # if an item is selected
@@ -333,7 +333,7 @@ class MainWindow(qtw.QMainWindow):
             def insertWrapper(node):
                 node.add_feature('level', 5)
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
-                node.update_hash()
+                node.update_hash(self.model.rootItem)
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
@@ -369,7 +369,7 @@ class MainWindow(qtw.QMainWindow):
             def insertWrapper(node):
                 node.add_feature('level', 4)
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
-                node.update_hash()
+                node.update_hash(self.model.rootItem)
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
@@ -408,7 +408,7 @@ class MainWindow(qtw.QMainWindow):
             def insertWrapper(node):
                 node.add_feature('level', 4)
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
-                node.update_hash()
+                node.update_hash(self.model.rootItem)
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
@@ -444,7 +444,7 @@ class MainWindow(qtw.QMainWindow):
         def morphWrapper(node):
             self.model.swapComponent(currentSelection.row(), node, currentSelection.parent())
             node.add_feature('level', 5)
-            node.update_hash()
+            node.update_hash(self.model.rootItem)
             self.treeEditor.refreshView()
 
         if currentSelection:                                                            # if an item is selected
@@ -555,8 +555,18 @@ class MainWindow(qtw.QMainWindow):
         currentSelection = self.treeEditor.current
 
         if currentSelection:                                                            # if an item is selected
-            item = currentSelection.internalPointer()                                   # it extracts the item that needs to be removed                                                     # then if the item isn't at level 1 (project root)
-            self.copied = item.copy()
+            item = currentSelection.internalPointer()                                   # it extracts the item that needs to be removed  
+
+            if item.level != 1:                                                         # then if the item isn't at level 1 (project root)                                              
+                self.copied = item.copy()
+            else:                                                                       # if the component is not of the appropriate level
+                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                    self, 
+                    'Warning!', 
+                    'The selected item is not of an appropriate level!', 
+                    qtw.QMessageBox.Ok, 
+                    qtw.QMessageBox.Ok
+                )
         
         else:                                                                           # if nothing is selected
             self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
@@ -577,7 +587,7 @@ class MainWindow(qtw.QMainWindow):
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
                 self.model.insertRows(len(parentItem.children), self.copied, currentSelection)
-                self.copied.update_hash()
+                self.copied.update_hash(self.model.rootItem)
                 self.copied = self.copied.copy()
                 self.treeEditor.refreshView()
 
@@ -608,7 +618,7 @@ class MainWindow(qtw.QMainWindow):
             if self.uiActionHideDeprecated.isChecked():
                 self.treeEditor.treeProxyModel.setFilterRegExp('Deprecated')
             else:
-                self.treeEditor.treeProxyModel.setFilterRegExp('')
+                self.treeEditor.treeProxyModel.setFilterRegExp(None)
             self.treeEditor.refreshView()
 
 # OTHER FUNCTIONS

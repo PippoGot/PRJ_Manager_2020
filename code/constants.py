@@ -117,10 +117,6 @@ TYPES_FROM_EDITOR = ['Jig', 'Project', 'Assembly', 'Assembly', 'Assembly', 'Part
 
 COMPONENTS_PAGE_SIZES = [150, 200, 340, 130, 130, 130, 340, 60, 60]
 
-# column sizes of the hardware editor page
-
-HARDWARE_EDITOR_SIZES = [70, 200, 360, 130, 130, 130, 130, 70, 355]
-
 # special prefixes used to calculate a number (not needed for now)
 
 SPECIAL_PREFIXES = ['MEH', 'MMH', 'ELH', 'EMH', 'CON']

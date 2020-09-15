@@ -241,7 +241,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
         item.add_features(parent = parentItem.hashn)
         success = parentItem.add_child(item)
-        item.update_hash()
+        item.update_hash(self.rootItem)
 
         self.endInsertRows()
 

@@ -129,14 +129,21 @@ class ComponentTree(Tree):
         for key in attrs_dict.keys():
             self.add_feature(key, attrs_dict[key])
 
-    def update_hash(self):
+    def update_hash(self, root):
         """Updates the hash numbers of this component and of all of his children recursively."""
 
         self.add_feature('parent', self.up.hashn)
+
+        hashn = calc_hash(self.up.hashn, self.number)
+        ex_hash = root.search_nodes(hashn = hashn)
+        while len(ex_hash) > 0:
+            hashn = calc_hash(self.up.hashn, self.number)
+            ex_hash = root.search_nodes(hashn = hashn)
+            
         self.add_feature('hashn', calc_hash(self.up.hashn, self.number))
 
         for child in self.children:
-            child.update_hash()
+            child.update_hash(root)
 
     def copy(self):
         """
@@ -220,7 +227,7 @@ class ComponentTree(Tree):
                 for p in element.iter_ancestors():
                     status = getattr(p, 'status', '')
                     if status == 'Deprecated':
-                        sameNodeList.remove(element)
+                        leavesList.remove(element)
                         break
 
         return leavesList

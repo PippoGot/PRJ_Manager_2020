@@ -3,7 +3,6 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from ProxyHardware import HardwareProxyModel
-from constants import HARDWARE_EDITOR_SIZES as sizes
 
 class HardwareEditor(qtw.QWidget):
     """
@@ -144,8 +143,8 @@ class HardwareEditor(qtw.QWidget):
     def refreshView(self):
         """Updates the view."""
 
-        for column in range(self.proxyModel.columnCount(qtc.QModelIndex())):                    # every column is resized to it's content
-            self.uiHardwareView.setColumnWidth(column, sizes[column])
+        self.uiHardwareView.resizeColumnsToContents()
+        self.uiHardwareView.horizontalHeader().setStretchLastSection(True)
 
     def changeFilter(self):
         """When called, scans the buttons and filters the selected cathegory of items in the view."""

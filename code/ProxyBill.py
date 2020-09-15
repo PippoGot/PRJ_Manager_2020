@@ -147,7 +147,10 @@ class ProxyBill(qtc.QIdentityProxyModel):
             return None                                                                     # returns None
 
         element = index.internalPointer()
-        quantity = self.sourceModel().rootItem.calc_quantity(element)
+        if element.level == 5:
+            quantity = self.sourceModel().rootItem.calc_quantity(element)
+        else:
+            quantity = element.quantity
 
         if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                           # then if the role is display or edit
             if index.column() == 9:
