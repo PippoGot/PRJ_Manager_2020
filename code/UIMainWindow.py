@@ -34,15 +34,21 @@ class MainWindow(qtw.QMainWindow):
         self.archive = ModelHardware()                                                  # creates the models from the archive and stores them in a class parameter
         self.model = None                                                               # the model class parameter is set to None
         self.copied = None
+        self.statuses = ModelCombobox('D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/statuses.csv')
+        self.manufactures = ModelCombobox('D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/manufactures.csv')
 
-        self.treeEditor = ComponentsPage()                                              # creates the tree editor
+
+        self.treeEditor = ComponentsPage(self.manufactures)                                              # creates the tree editor
         self.uiTreePage.layout().addWidget(self.treeEditor)
+        self.treeEditor.uiStatus.setModel(self.statuses)
 
         self.hardwareEditor = HardwareEditor(self.archive)                              # creates the hardware editor
+        self.hardwareEditor.uiCurrentStatus.setModel(self.statuses)
+        self.hardwareEditor.uiNewStatus.setModel(self.statuses)
         self.uiHardwarePage.layout().addWidget(self.hardwareEditor)
 
-        self.billPage = BillPage(self.model)
-        self.uiBillPage.layout().addWidget(self.billPage)
+        # self.billPage = BillPage(self.model)
+        # self.uiBillPage.layout().addWidget(self.billPage)
 
         # FILE MENU ACTIONS
         self.uiActionNew.triggered.connect(self.newFile)                                # connects the actions to their respective functions
@@ -99,7 +105,7 @@ class MainWindow(qtw.QMainWindow):
         self.model = ModelTree()                                                        # the model parameter is updated with the new model created
         self.treeEditor.setModel(self.model)                                            # and passed to the central widget
         self.filename = None                                                            # then the filename is reset
-        self.billPage.setModel(self.model)
+        # self.billPage.setModel(self.model)
 
     def openFile(self):
         """Opens and read a .csv file, then creates the corresponding model."""
@@ -129,7 +135,7 @@ class MainWindow(qtw.QMainWindow):
                 self.model = ModelTree(filename)
                 self.treeEditor.setModel(self.model)
                 self.filename = filename
-                self.billPage.setModel(self.model)
+                # self.billPage.setModel(self.model)
 
             except Exception as e:                                                      # if a problem during the process occurs a message box is created
                 self.msgBox = qtw.QMessageBox.critical(                                 # informing the user of the problem
@@ -246,7 +252,7 @@ class MainWindow(qtw.QMainWindow):
         self.filename = None
         self.model = None
         self.treeEditor.setModel(None)
-        self.billPage.setModel(self.model)
+        # self.billPage.setModel(self.model)
 
 # edit menu
 
@@ -263,7 +269,8 @@ class MainWindow(qtw.QMainWindow):
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
-                self.newComponentEditor = ComponentEditor(parentItem)                   # opens up a popup version of PropEditor
+                self.newComponentEditor = ComponentEditor(parentItem, self.manufactures)                   # opens up a popup version of PropEditor
+                self.newComponentEditor.uiStatus.setModel(self.statuses)
                 self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
                 self.newComponentEditor.show()                                          # then the popup editor is shown
 
@@ -337,7 +344,8 @@ class MainWindow(qtw.QMainWindow):
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
-                self.newComponentEditor = ComponentEditor(parentItem, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor = ComponentEditor(parentItem, self.manufactures, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor.uiStatus.setModel(self.statuses)
                 self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
                 self.newComponentEditor.show()                                          # then the popup editor is shown
 
@@ -376,7 +384,8 @@ class MainWindow(qtw.QMainWindow):
                 jigsList = self.model.rootItem.search_nodes(type = 'Jig')
                 dummyParent = ComponentTree('', {'number': '#JIG-000', 'level': -1, 'children': jigsList})
 
-                self.newComponentEditor = ComponentEditor(dummyParent, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures)                # opens up a popup version of PropEditor
+                self.newComponentEditor.uiStatus.setModel(self.statuses)
                 self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
                 self.newComponentEditor.show()                                          # then the popup editor is shown
 
@@ -415,7 +424,8 @@ class MainWindow(qtw.QMainWindow):
                 placeholderList = self.model.rootItem.search_nodes(type = 'Placeholder')
                 dummyParent = ComponentTree('', {'number': '#PLC-000', 'level': 5, 'children': placeholderList})
 
-                self.newComponentEditor = ComponentEditor(dummyParent, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures)                # opens up a popup version of PropEditor
+                self.newComponentEditor.uiStatus.setModel(self.statuses)
                 self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
                 self.newComponentEditor.show()                                          # then the popup editor is shown
 

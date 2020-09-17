@@ -11,7 +11,7 @@ class ComponentsPage(qtw.QWidget):
     and manages their modifications.
     """
 
-    def __init__(self):
+    def __init__(self, manufacture_model):
         """Loads the .ui file."""
 
         super(ComponentsPage, self).__init__()                                              # superclass constructor
@@ -21,6 +21,7 @@ class ComponentsPage(qtw.QWidget):
         self.mapper = qtw.QDataWidgetMapper()
         self.current = None
         self.uiComponentsEditor.setDisabled(True)
+        self.manufactures = manufacture_model
 
     def setModel(self, model):
         """
@@ -101,6 +102,7 @@ class ComponentsPage(qtw.QWidget):
             elif widget == 'ComboBox':
                 widgetPointer = qtw.QComboBox()
                 widgetPointer.setCurrentIndex(0)
+                widgetPointer.setModel(self.manufactures)
 
             layout.insertRow(2, 'Manufacture', widgetPointer)
             layout.update()

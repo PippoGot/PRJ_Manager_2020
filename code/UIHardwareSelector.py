@@ -116,5 +116,7 @@ class HardwareSelector(qtw.QWidget):
     def refreshView(self):
         """Updates the view."""
 
-        self.uiHardwareView.resizeColumnsToContents()
+        for column in range(self.model.columnCount(qtc.QModelIndex())):
+            if column != self.model.columnCount(qtc.QModelIndex()):
+                self.uiHardwareView.resizeColumnToContents(column)
         self.uiHardwareView.horizontalHeader().setStretchLastSection(True)

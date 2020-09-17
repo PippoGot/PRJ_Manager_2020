@@ -13,7 +13,7 @@ class ComponentEditor(qtw.QWidget):
 
     submit = qtc.pyqtSignal(ComponentTree)                                                  # signal for the submit button
     
-    def __init__(self, parent, level = None):
+    def __init__(self, parent, manufacture_model, level = None):
         """Loads the .ui file, and connects the buttons to their respective functions.
 
         INPUT:
@@ -25,6 +25,7 @@ class ComponentEditor(qtw.QWidget):
         uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_component_editor.ui', self)   # loads the UI from the .ui file
 
         self.mapper = qtw.QDataWidgetMapper()                                               # creates the mapper object
+        self.manufactures = manufacture_model
 
         self.uiCancelButton.clicked.connect(self.close)                                     # connects the buttons to their respective functions
         self.uiSubmitButton.clicked.connect(self.onSubmit)
@@ -39,7 +40,7 @@ class ComponentEditor(qtw.QWidget):
             'title': self.uiName.text(), 
             'description': self.uiDescription.toPlainText(),
             'type': self.uiType.text(),
-            'manufacture': self.uiManufacture.currentText(),
+            'manufacture': self.calc_manufacture(self.uiType.text()),
             'status': self.uiStatus.currentText(),
             'comment': self.uiComment.toPlainText(),
             'priceUnit': self.uiPriceUnit.text(),
@@ -69,7 +70,10 @@ class ComponentEditor(qtw.QWidget):
         self.uiName.setText('-')
         self.uiDescription.setPlainText('-')
 
-        self.uiType.setText(types[parent.level + 1])
+        if not level:
+            level = parent.level + 1
+
+        self.uiType.setText(types[level])
         self.uiComment.setPlainText('-')
         self.uiPriceUnit.setText('0')
         self.uiSeller.setText('-')
@@ -91,10 +95,12 @@ class ComponentEditor(qtw.QWidget):
                 widgetPointer.setText(text)
             elif widget == 'ComboBox':
                 widgetPointer = qtw.QComboBox()
+                widgetPointer.setModel(self.manufactures)
                 widgetPointer.setCurrentIndex(0)
 
             layout.insertRow(2, 'Manufacture', widgetPointer)
             layout.update()
+            self.uiManufacture = widgetPointer
 
         if nodeType == 'Project' or nodeType == 'Assembly':
             changeWidget('LineEdit', widgetPtr, 'Assembled')
@@ -107,3 +113,9 @@ class ComponentEditor(qtw.QWidget):
             changeWidget('LineEdit', widgetPtr, 'None')
         else:
             changeWidget('ComboBox', widgetPtr)
+
+    def calc_manufacture(self, nodeType):
+        if nodeType == 'Project' or nodeType == 'Assembly':
+            return 'Assembled'
+        else:
+            return self.uiManufacture.currentText()

@@ -64,6 +64,7 @@ class HardwareEditor(qtw.QWidget):
         self.mapper.addMapping(self.uiCurrentLink, 13)
 
         self.updateNumber()
+        self.uiCurrentComponentEditor.setDisabled(True)
 
     def updateNumber(self):
         """
@@ -88,7 +89,6 @@ class HardwareEditor(qtw.QWidget):
 
         self.initFields()
         self.changeFilter()                                                                     # changes the filter
-        self.refreshView()
 
     def addHardwareToArchive(self):
         """Adds a new hardware item to the archive and resets the values for a new item."""
@@ -98,7 +98,7 @@ class HardwareEditor(qtw.QWidget):
             'title': self.uiNewName.text(), 
             'description': self.uiNewDescription.toPlainText(),
             'type': self.uiNewType.text(),
-            'manufacture': self.uiNewManufacture.currentText(),
+            'manufacture': self.uiNewManufacture.text(),
             'status': self.uiNewStatus.currentText(),
             'comment': self.uiNewComment.toPlainText(),
             'price': self.uiNewPriceUnit.text(),
@@ -119,11 +119,12 @@ class HardwareEditor(qtw.QWidget):
         self.currentSelection = self.selectionModel.selectedIndexes()                           # the class parameter is updated with the current selected indexes
         self.current = self.proxyModel.mapToSource(self.selectionModel.currentIndex())
         self.uiRemoveButton.setDisabled(False)                                                  # and the button is enabled
+        self.uiCurrentComponentEditor.setDisabled(False)
         parent = self.current.parent()                                                          # extract the parent index
         self.mapper.setRootIndex(parent)                                                        # and sets the mapper indexes
         self.mapper.setCurrentModelIndex(self.current)
 
-        self.changeManufactureWidget(self.uiCurrentType.text(), self.uiCurrentManufacture, self.uiCurrentNumberID)
+        self.changeManufacture(self.uiCurrentNumberID.text(), self.uiCurrentManufacture)
 
     def removeHardware(self):
         """Removes the selected item from the archive model."""
@@ -143,7 +144,9 @@ class HardwareEditor(qtw.QWidget):
     def refreshView(self):
         """Updates the view."""
 
-        self.uiHardwareView.resizeColumnsToContents()
+        for column in range(self.archive.columnCount(qtc.QModelIndex())):
+            if column != self.archive.columnCount(qtc.QModelIndex()):
+                self.uiHardwareView.resizeColumnToContents(column)
         self.uiHardwareView.horizontalHeader().setStretchLastSection(True)
 
     def changeFilter(self):
@@ -164,6 +167,7 @@ class HardwareEditor(qtw.QWidget):
             filterString = '#EMH-[0-9A-Z]{3}' + textString
 
         self.proxyModel.setFilterRegExp(filterString)                                           # updates the filter expression
+        self.refreshView()
 
     def initFields(self):
         """Resets all the editor values to a default value."""
@@ -180,35 +184,10 @@ class HardwareEditor(qtw.QWidget):
         else:
             self.uiNewType.setText('Hardware')
 
-        self.changeManufactureWidget(self.uiNewType.text(), self.uiNewManufacture, self.uiNewNumberID)
+        self.changeManufacture(self.uiNewNumberID.text(), self.uiNewManufacture)
 
-    def changeManufactureWidget(self, nodeType, widgetPtr, numberPtr):
-        layout = widgetPtr.parentWidget().layout()
-
-        def changeWidget(widget, widgetPointer, text = None):
-            layout.removeWidget(widgetPointer)
-            widgetPointer.close()
-            layout.removeRow(2)
-
-            if widget == 'LineEdit':
-                widgetPointer = qtw.QLineEdit()
-                widgetPointer.setReadOnly(True)
-                widgetPointer.setText(text)
-            elif widget == 'ComboBox':
-                widgetPointer = qtw.QComboBox()
-                widgetPointer.setCurrentIndex(0)
-
-            layout.insertRow(2, 'Manufacture', widgetPointer)
-            layout.update()
-
-        if nodeType == 'Project' or nodeType == 'Assembly':
-            changeWidget('LineEdit', widgetPtr, 'Assembled')
-        elif nodeType == 'Hardware' or nodeType == 'Consumables':
-            if numberPtr.text()[1:4] == 'MMH':
-                changeWidget('LineEdit', widgetPtr, 'Cut to Length')
-            else:
-                changeWidget('LineEdit', widgetPtr, 'Off the Shelf')
-        elif nodeType == 'Placeholder':
-            changeWidget('LineEdit', widgetPtr, 'None')
+    def changeManufacture(self, number, widgetPtr):
+        if number[1:4] == 'MMH':
+            widgetPtr.setText('Cut to length')
         else:
-            changeWidget('ComboBox', widgetPtr)
+            widgetPtr.setText('Off the shelf')

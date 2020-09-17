@@ -51,7 +51,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QWidget" name="widget" native="true">
+         <widget class="QWidget" name="manufactureContainer" native="true">
           <layout class="QFormLayout" name="formLayout">
            <property name="horizontalSpacing">
             <number>5</number>
