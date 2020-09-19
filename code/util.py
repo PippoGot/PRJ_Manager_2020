@@ -163,6 +163,8 @@ def calc_hash(parent_number, self_number):
     self_number = self_number.replace('-', '')
     self_number = _36ToBase10(self_number) * 36 ** 2
 
+    parent_number = int(parent_number)
+
     output_hash = (parent_number + self_number + random.randint(0, 99999999)) % 10007
 
     return output_hash

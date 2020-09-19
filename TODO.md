@@ -3,13 +3,15 @@
 
 - implement undo/redo actions
 - implement special components filter
-- actions disabled in different pages
-
 - fix hide deprecated action
+- fix export bill action
 
-- styled row for each level
+- resource file
+- remove useless comments
 
 - automated pricing in the components page
-- don't display price, quantity unit, seller, kit for the level < 5 components
+- don't display price, quantity unit, seller, kit for the level < 5 components in the component editor
+
+- search bar in components page
 
 DONE:

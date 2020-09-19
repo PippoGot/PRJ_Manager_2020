@@ -105,6 +105,7 @@ class MainWindow(qtw.QMainWindow):
         self.model = ModelTree()                                                        # the model parameter is updated with the new model created
         self.treeEditor.setModel(self.model)                                            # and passed to the central widget
         self.filename = None                                                            # then the filename is reset
+        self.treeEditor.current = None
         # self.billPage.setModel(self.model)
 
     def openFile(self):
@@ -135,6 +136,7 @@ class MainWindow(qtw.QMainWindow):
                 self.model = ModelTree(filename)
                 self.treeEditor.setModel(self.model)
                 self.filename = filename
+                self.treeEditor.current = None
                 # self.billPage.setModel(self.model)
 
             except Exception as e:                                                      # if a problem during the process occurs a message box is created
@@ -252,12 +254,23 @@ class MainWindow(qtw.QMainWindow):
         self.filename = None
         self.model = None
         self.treeEditor.setModel(None)
+        self.treeEditor.current = None
         # self.billPage.setModel(self.model)
 
 # edit menu
 
     def addComponent(self):
         """Adds a custom component to the model."""
+
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
 
         currentSelection = self.treeEditor.current                                      # gets the current selected item
 
@@ -294,6 +307,16 @@ class MainWindow(qtw.QMainWindow):
 
     def addSpecialComponent(self):
         """Adds a hardware component from the hardware archive."""
+
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
 
         currentSelection = self.treeEditor.current                                      # gets the current selected item
         
@@ -333,6 +356,16 @@ class MainWindow(qtw.QMainWindow):
     def addLeafComponent(self):
         """Adds a level 5 component to the tree:"""
 
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
+
         currentSelection = self.treeEditor.current                                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
@@ -344,6 +377,8 @@ class MainWindow(qtw.QMainWindow):
                 self.treeEditor.refreshView()
 
             if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+                parentItem = parentItem.copy()
+                parentItem.level = 4
                 self.newComponentEditor = ComponentEditor(parentItem, self.manufactures, 5)                # opens up a popup version of PropEditor
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
                 self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
@@ -370,6 +405,16 @@ class MainWindow(qtw.QMainWindow):
     def addJig(self):
         """Adds a jig component to the tree."""
 
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
+
         currentSelection = self.treeEditor.current                                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
@@ -384,7 +429,7 @@ class MainWindow(qtw.QMainWindow):
                 jigsList = self.model.rootItem.search_nodes(type = 'Jig')
                 dummyParent = ComponentTree('', {'number': '#JIG-000', 'level': -1, 'children': jigsList})
 
-                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures)                # opens up a popup version of PropEditor
+                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures, 5)                # opens up a popup version of PropEditor
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
                 self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
                 self.newComponentEditor.show()                                          # then the popup editor is shown
@@ -410,6 +455,16 @@ class MainWindow(qtw.QMainWindow):
     def addPlaceholder(self):
         """Adds a placeholder component to the tree."""
 
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
+
         currentSelection = self.treeEditor.current                                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
@@ -424,7 +479,7 @@ class MainWindow(qtw.QMainWindow):
                 placeholderList = self.model.rootItem.search_nodes(type = 'Placeholder')
                 dummyParent = ComponentTree('', {'number': '#PLC-000', 'level': 5, 'children': placeholderList})
 
-                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures)                # opens up a popup version of PropEditor
+                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures, 5)                # opens up a popup version of PropEditor
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
                 self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
                 self.newComponentEditor.show()                                          # then the popup editor is shown
@@ -449,6 +504,16 @@ class MainWindow(qtw.QMainWindow):
 
     def morphSpecialComponent(self):
         """Changes a selected hardware component with another hardware component of choice."""
+
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
 
         currentSelection = self.treeEditor.current                                      # gets the current selected item
         def morphWrapper(node):
@@ -490,6 +555,16 @@ class MainWindow(qtw.QMainWindow):
         Then updates every present item in the list with the data in the archive.
         """
 
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
+
         if self.model:
             for item in self.model.rootItem.iter_leaves():                              # iterates over the hardware and the leaves
                 for hardware in self.archive.hardwareList:
@@ -501,6 +576,16 @@ class MainWindow(qtw.QMainWindow):
 
     def removeComponent(self):
         """Removes a component from the model."""
+
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
 
         currentSelection = self.treeEditor.current                                      # gets the current selected item
 
@@ -532,6 +617,16 @@ class MainWindow(qtw.QMainWindow):
     def cut(self):
         """Removes and store a component for later pasting."""
 
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
+
         currentSelection = self.treeEditor.current
 
         if currentSelection:                                                            # if an item is selected
@@ -562,6 +657,16 @@ class MainWindow(qtw.QMainWindow):
     def copy(self):
         """Creates and stores a copy of a component to paste it in another component."""
 
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
+
         currentSelection = self.treeEditor.current
 
         if currentSelection:                                                            # if an item is selected
@@ -589,7 +694,17 @@ class MainWindow(qtw.QMainWindow):
 
     def paste(self):
         """Adds the cut or copied component to this components' children."""
-        
+
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
+
         currentSelection = self.treeEditor.current                                      # gets the current selected item
 
         if currentSelection:                                                            # if an item is selected
@@ -623,6 +738,16 @@ class MainWindow(qtw.QMainWindow):
 
     def hideDeprecated(self):
         """Choose whether to see or not deprecated items."""
+
+        if self.uiTabWidget.currentIndex() != 0:
+            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+                self, 
+                'Warning!', 
+                'You are not in the proper page!', 
+                qtw.QMessageBox.Ok, 
+                qtw.QMessageBox.Ok
+            )
+            return
 
         if self.model:
             if self.uiActionHideDeprecated.isChecked():

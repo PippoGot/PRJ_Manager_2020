@@ -7,6 +7,7 @@ from constants import HEADERS as headers
 from constants import NOT_EDITABLE_TYPES as notEditableTypes
 from constants import NOT_EDITABLE_COLUMNS as notEditableColumns
 from constants import DEFAULT_FIRST_NODE as base
+from constants import TYPE_COLORS
 
 class ModelTree(qtc.QAbstractItemModel):
     """
@@ -57,6 +58,11 @@ class ModelTree(qtc.QAbstractItemModel):
 
         if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                           # then if the role is display or edit
             return getattr(item, headers[index.column()], None)                             # returns the data stored under the given index
+        elif role == qtc.Qt.BackgroundRole:
+            tp = item.type
+            if tp == 'Assembly':
+                tp += str(item.level - 1)
+            return TYPE_COLORS[tp]
 
     def setData(self, index, value, role = qtc.Qt.EditRole):
         """

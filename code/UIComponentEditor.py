@@ -70,8 +70,8 @@ class ComponentEditor(qtw.QWidget):
         self.uiName.setText('-')
         self.uiDescription.setPlainText('-')
 
-        if not level:
-            level = parent.level + 1
+        level = parent.level + 1
+        
 
         self.uiType.setText(types[level])
         self.uiComment.setPlainText('-')
@@ -117,5 +117,7 @@ class ComponentEditor(qtw.QWidget):
     def calc_manufacture(self, nodeType):
         if nodeType == 'Project' or nodeType == 'Assembly':
             return 'Assembled'
+        elif nodeType == 'Placeholder':
+            return None
         else:
             return self.uiManufacture.currentText()

@@ -1,4 +1,5 @@
 import random
+from PyQt5 import QtGui as qtg
 
 # default values of the first node of any project tree
 
@@ -142,3 +143,16 @@ COLUMNS_TO_UPDATE = [
 # sections to update when calling update special components
 
 SECTIONS_TO_UPDATE = [2, 3, 4, 5, 6, 8, 10, 11, 13]
+
+# colors based on the node type
+
+TYPE_COLORS = {
+    'Project': qtg.QColor(255, 126, 77),
+    'Assembly1': qtg.QColor(255, 164, 89),
+    'Assembly2': qtg.QColor(255, 197, 76),
+    'Assembly3': qtg.QColor(255, 230, 121),
+    'Part': qtg.QColor(120, 120, 120),
+    'Hardware': qtg.QColor(204, 205, 204),
+    'Jig': qtg.QColor(74, 189, 255),
+    'Placeholder': qtg.QColor(146, 222, 255)
+}
