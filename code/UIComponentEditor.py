@@ -11,7 +11,7 @@ class ComponentEditor(qtw.QWidget):
     needs to be added.
     """
 
-    submit = qtc.pyqtSignal(ComponentTree)                                                  # signal for the submit button
+    submit = qtc.pyqtSignal(ComponentTree)                                            
     
     def __init__(self, parent, manufacture_model, level = None):
         """Loads the .ui file, and connects the buttons to their respective functions.
@@ -20,14 +20,14 @@ class ComponentEditor(qtw.QWidget):
             ComponentTree - parent: item to calculate the number from
             optional int - level: value for level overwriting
         """
-        super(ComponentEditor, self).__init__()                                             # superclass constructor
+        super(ComponentEditor, self).__init__()                                   
 
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_component_editor.ui', self)   # loads the UI from the .ui file
+        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_component_editor.ui', self)
 
-        self.mapper = qtw.QDataWidgetMapper()                                               # creates the mapper object
+        self.mapper = qtw.QDataWidgetMapper()                                    
         self.manufactures = manufacture_model
 
-        self.uiCancelButton.clicked.connect(self.close)                                     # connects the buttons to their respective functions
+        self.uiCancelButton.clicked.connect(self.close)                                  
         self.uiSubmitButton.clicked.connect(self.onSubmit)
 
         self.initFields(parent, level)
@@ -35,7 +35,7 @@ class ComponentEditor(qtw.QWidget):
     def onSubmit(self):
         """Emits the ComponentTree object with the current data."""
 
-        data = {                                                                            # gathers the component data
+        data = {                                                                           
             'number': self.uiNumberID.text(),
             'title': self.uiName.text(), 
             'description': self.uiDescription.toPlainText(),
@@ -43,7 +43,7 @@ class ComponentEditor(qtw.QWidget):
             'manufacture': self.calc_manufacture(self.uiType.text()),
             'status': self.uiStatus.currentText(),
             'comment': self.uiComment.toPlainText(),
-            'priceUnit': self.uiPriceUnit.text(),
+            'price': self.uiPriceUnit.text(),
             'quantity': self.uiQuantityNeeded.text(),
             'quantityPackage': self.uiQuantityUnit.text(),
             'seller': self.uiSeller.text(),
@@ -53,8 +53,8 @@ class ComponentEditor(qtw.QWidget):
 
         newComponent = ComponentTree(self.uiNumberID, data)
 
-        self.submit.emit(newComponent)                                                      # the signal is emitted
-        self.close()                                                                        # the window is closed
+        self.submit.emit(newComponent)                                                 
+        self.close()                                                                 
 
     def initFields(self, parent, level):
         """Initializes the fields when a new popup is opened.

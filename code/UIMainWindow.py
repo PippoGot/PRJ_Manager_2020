@@ -26,23 +26,23 @@ class MainWindow(qtw.QMainWindow):
         then connects the menu actions to the respective functions.
         """
 
-        super(MainWindow, self).__init__()                                              # superclass constructor
+        super(MainWindow, self).__init__()
         
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_main_window.ui', self)    # loads the UI from the .ui file
+        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_main_window.ui', self)
 
-        self.filename = None                                                            # initialize the filename to None
-        self.archive = ModelHardware()                                                  # creates the models from the archive and stores them in a class parameter
-        self.model = None                                                               # the model class parameter is set to None
+        self.filename = None     
+        self.archive = ModelHardware()
+        self.model = None 
         self.copied = None
         self.statuses = ModelCombobox('D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/statuses.csv')
         self.manufactures = ModelCombobox('D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/manufactures.csv')
 
 
-        self.treeEditor = ComponentsPage(self.manufactures)                                              # creates the tree editor
+        self.treeEditor = ComponentsPage(self.manufactures) 
         self.uiTreePage.layout().addWidget(self.treeEditor)
         self.treeEditor.uiStatus.setModel(self.statuses)
 
-        self.hardwareEditor = HardwareEditor(self.archive)                              # creates the hardware editor
+        self.hardwareEditor = HardwareEditor(self.archive)
         self.hardwareEditor.uiCurrentStatus.setModel(self.statuses)
         self.hardwareEditor.uiNewStatus.setModel(self.statuses)
         self.uiHardwarePage.layout().addWidget(self.hardwareEditor)
@@ -51,7 +51,7 @@ class MainWindow(qtw.QMainWindow):
         # self.uiBillPage.layout().addWidget(self.billPage)
 
         # FILE MENU ACTIONS
-        self.uiActionNew.triggered.connect(self.newFile)                                # connects the actions to their respective functions
+        self.uiActionNew.triggered.connect(self.newFile)
         self.uiActionOpen.triggered.connect(self.openFile)
         self.uiActionSave.triggered.connect(self.saveFile)
         self.uiActionSaveAs.triggered.connect(self.saveAsFile)
@@ -80,7 +80,7 @@ class MainWindow(qtw.QMainWindow):
         self.uiActionExpandAll.triggered.connect(self.treeEditor.uiComponentsView.expandAll)
         self.uiActionCollapseAll.triggered.connect(self.treeEditor.uiComponentsView.collapseAll)
 
-        self.showMaximized()                                                            # finally shows the window
+        self.showMaximized()
 
 # ACTION FUNCTIONS
 # file menu
@@ -88,8 +88,8 @@ class MainWindow(qtw.QMainWindow):
     def newFile(self):
         """Creates a new model, for a new file."""
 
-        if not self.filename and self.model:                                            # if another file is open and not saved
-            self.msgBox = qtw.QMessageBox.warning(                                      # creates a message box to ask the user if the file needs to be saved
+        if not self.filename and self.model:      
+            self.msgBox = qtw.QMessageBox.warning(      
                 self, 
                 'File not saved...', 
                 'Save changes to current file?', 
@@ -97,22 +97,22 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Yes
             )
 
-            if self.msgBox == qtw.QMessageBox.Yes:                                      # if the answer is yes
-                self.saveFile()                                                         # it opens a popup window to save it first
+            if self.msgBox == qtw.QMessageBox.Yes:
+                self.saveFile()                    
             elif self.msgBox == qtw.QMessageBox.Cancel:
                 return
 
-        self.model = ModelTree()                                                        # the model parameter is updated with the new model created
-        self.treeEditor.setModel(self.model)                                            # and passed to the central widget
-        self.filename = None                                                            # then the filename is reset
+        self.model = ModelTree()                                                
+        self.treeEditor.setModel(self.model)                                     
+        self.filename = None                                                     
         self.treeEditor.current = None
         # self.billPage.setModel(self.model)
 
     def openFile(self):
         """Opens and read a .csv file, then creates the corresponding model."""
 
-        if not self.filename and self.model:                                            # if another file is open and not saved
-            self.msgBox = qtw.QMessageBox.warning(                                      # creates a message box to ask the user if the file needs to be saved
+        if not self.filename and self.model:                                      
+            self.msgBox = qtw.QMessageBox.warning(                                      
                 self, 
                 'File not saved...', 
                 'Save changes to current file?', 
@@ -120,10 +120,10 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Yes
             )
 
-            if self.msgBox == qtw.QMessageBox.Yes:                                      # if the answer is yes
-                self.saveFile()                                                         # it opens a popup window to save it first
+            if self.msgBox == qtw.QMessageBox.Yes:                         
+                self.saveFile()                                               
 
-        filename, _ = qtw.QFileDialog.getOpenFileName(                                  # then opens up a popup window to get the filename to open
+        filename, _ = qtw.QFileDialog.getOpenFileName(                        
             self, 
             "Select a file to open...", 
             qtc.QDir.homePath(), 
@@ -131,16 +131,16 @@ class MainWindow(qtw.QMainWindow):
             'CSV Documents (*.csv)'
         )
 
-        if filename:                                                                    # if a filename is picked
-            try:                                                                        # tries to read the model inside it
+        if filename:                                                                 
+            try:                                                                
                 self.model = ModelTree(filename)
                 self.treeEditor.setModel(self.model)
                 self.filename = filename
                 self.treeEditor.current = None
                 # self.billPage.setModel(self.model)
 
-            except Exception as e:                                                      # if a problem during the process occurs a message box is created
-                self.msgBox = qtw.QMessageBox.critical(                                 # informing the user of the problem
+            except Exception as e:                                           
+                self.msgBox = qtw.QMessageBox.critical(                         
                     self, 
                     'Critical Error!', 
                     f'Could not open the file at {filename}\nbecause "{e}" exception occurred!', 
@@ -151,14 +151,14 @@ class MainWindow(qtw.QMainWindow):
     def saveFile(self):
         """Saves the current file."""
 
-        if self.model:                                                                  # if a model is present to be saved
-            if self.filename:                                                           # if a filename is present
-                self.model.saveFile(self.filename)                                      # it saves the current file with this filename
-            else:                                                                       # otherwise
-                self.saveAsFile()                                                       # it calls the saveAsFile() function
+        if self.model:                                                            
+            if self.filename:                                                   
+                self.model.saveFile(self.filename)                                    
+            else:                                                         
+                self.saveAsFile()                                                    
 
-        else:                                                                           # if a model is not present
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                              
+            self.msgBox = qtw.QMessageBox.warning(                            
                 self, 
                 'Warning!', 
                 'No file currently open.', 
@@ -169,20 +169,20 @@ class MainWindow(qtw.QMainWindow):
     def saveAsFile(self):
         """Saves the file with a different filename from the original, or a new file."""
 
-        if self.model:                                                                  # if a model is present to be saved
-            filename, _ = qtw.QFileDialog.getSaveFileName(                              # opens up a popup window to select the destination folder
+        if self.model:                                                
+            filename, _ = qtw.QFileDialog.getSaveFileName(                  
                 self, 
                 "Select the file to save to...", 
                 qtc.QDir.homePath(),
                 'CSV Documents (*.csv)'
             )
 
-            if filename:                                                                # then if a filename is given
+            if filename:                                                        
                 try:
-                    self.model.saveFile(filename)                                       # the file is saved
+                    self.model.saveFile(filename)                      
 
-                except Exception as e:                                                  # if a problem occurs during the operation a message box is shown
-                        self.msgBox = qtw.QMessageBox.critical(                         # informing the user of the problem
+                except Exception as e:                                              
+                        self.msgBox = qtw.QMessageBox.critical(                   
                         self, 
                         'Critical Error!', 
                         f'Could not save the file at {filename}\nbecause "{e}" exception occurred!', 
@@ -190,10 +190,10 @@ class MainWindow(qtw.QMainWindow):
                         qtw.QMessageBox.Ok
                     )          
 
-                self.filename = filename                                                # then the filename parameter is updated
+                self.filename = filename                                         
 
-        else:                                                                           # if a model is not present
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                                    
+            self.msgBox = qtw.QMessageBox.warning(                             
                 self, 
                 'Warning!', 
                 'No file currently open.', 
@@ -205,19 +205,19 @@ class MainWindow(qtw.QMainWindow):
         """Exports the bill of material of the current project"""
         
         if self.model:
-            filename, _ = qtw.QFileDialog.getSaveFileName(                              # opens up a popup window to select the destination folder
+            filename, _ = qtw.QFileDialog.getSaveFileName(              
                 self, 
                 "Select the file to save to...", 
                 qtc.QDir.homePath(),
                 'CSV Documents (*.csv)'
             )
 
-            if filename:                                                                # then if a filename is given
+            if filename:                                                    
                 try:
                     self.model.exportBOM(filename)
 
-                except Exception as e:                                                  # if a problem occurs during the operation a message box is shown
-                        self.msgBox = qtw.QMessageBox.critical(                         # informing the user of the problem
+                except Exception as e:                                           
+                        self.msgBox = qtw.QMessageBox.critical(                 
                         self, 
                         'Critical Error!', 
                         f'Could not save the file at {filename}\nbecause "{e}" exception occurred!', 
@@ -225,8 +225,8 @@ class MainWindow(qtw.QMainWindow):
                         qtw.QMessageBox.Ok
                     )          
 
-        else:                                                                           # if a model is not present
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                                    
+            self.msgBox = qtw.QMessageBox.warning(                                   
                 self, 
                 'Warning!', 
                 'No file currently open.', 
@@ -237,8 +237,8 @@ class MainWindow(qtw.QMainWindow):
     def clearFile(self):
         """Resets the current open file, as well as the components view."""
 
-        if self.model:                                                                  # if another file is open and not saved
-            self.msgBox = qtw.QMessageBox.warning(                                      # creates a message box to ask the user if the file needs to be saved
+        if self.model:                                                            
+            self.msgBox = qtw.QMessageBox.warning(                               
                 self, 
                 'File not saved...', 
                 'Save changes to current file?', 
@@ -246,7 +246,7 @@ class MainWindow(qtw.QMainWindow):
                 qtw.QMessageBox.Yes
             )
 
-            if self.msgBox == qtw.QMessageBox.Yes:                                      # if the answer is yes
+            if self.msgBox == qtw.QMessageBox.Yes:                                 
                 self.saveFile() 
             elif self.msgBox == qtw.QMessageBox.Cancel:
                 return
@@ -263,7 +263,7 @@ class MainWindow(qtw.QMainWindow):
         """Adds a custom component to the model."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(                     
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -272,23 +272,23 @@ class MainWindow(qtw.QMainWindow):
             )
             return
 
-        currentSelection = self.treeEditor.current                                      # gets the current selected item
+        currentSelection = self.treeEditor.current                          
 
-        if currentSelection:                                                            # if an item is selected
-            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+        if currentSelection:                                               
+            parentItem = currentSelection.internalPointer()              
             def insertWrapper(node):
                 node.add_feature('level', parentItem.level + 1)
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
                 self.treeEditor.refreshView()
 
-            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
-                self.newComponentEditor = ComponentEditor(parentItem, self.manufactures)                   # opens up a popup version of PropEditor
+            if parentItem.level < 5:                                         
+                self.newComponentEditor = ComponentEditor(parentItem, self.manufactures)        
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
-                self.newComponentEditor.show()                                          # then the popup editor is shown
+                self.newComponentEditor.submit.connect(insertWrapper)               
+                self.newComponentEditor.show()                               
 
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            else:                                                                     
+                self.msgBox = qtw.QMessageBox.warning(                                 
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -296,8 +296,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
 
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                     
+            self.msgBox = qtw.QMessageBox.warning(                 
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -309,7 +309,7 @@ class MainWindow(qtw.QMainWindow):
         """Adds a hardware component from the hardware archive."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(       
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -318,7 +318,7 @@ class MainWindow(qtw.QMainWindow):
             )
             return
 
-        currentSelection = self.treeEditor.current                                      # gets the current selected item
+        currentSelection = self.treeEditor.current                 
         
         def insertWrapper(node):
             node.add_feature('level', 5)
@@ -326,17 +326,17 @@ class MainWindow(qtw.QMainWindow):
             node.update_hash(self.model.rootItem)
             self.treeEditor.refreshView()
 
-        if currentSelection:                                                            # if an item is selected
-            item = currentSelection.internalPointer()                                   # the item is extracted
-            level = item.level                                                          # and it's level calculated
+        if currentSelection:                                  
+            item = currentSelection.internalPointer()                 
+            level = item.level                                                      
 
-            if level < 5:                                                               # if the item is not at level 5 (leaf)
-                self.hardwareSelector = HardwareSelector(self.archive)                  # a popup window containing a hardware selector is opened with the archive as model
-                self.hardwareSelector.submit.connect(insertWrapper)                     # then the submit signal is connected to the insertRows() function
-                self.hardwareSelector.show()                                            # the popup is shown
+            if level < 5:                                                          
+                self.hardwareSelector = HardwareSelector(self.archive)           
+                self.hardwareSelector.submit.connect(insertWrapper)                 
+                self.hardwareSelector.show()                         
 
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            else:                                                        
+                self.msgBox = qtw.QMessageBox.warning(                
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -344,8 +344,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
 
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                                
+            self.msgBox = qtw.QMessageBox.warning(                            
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -357,7 +357,7 @@ class MainWindow(qtw.QMainWindow):
         """Adds a level 5 component to the tree:"""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(                    
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -366,26 +366,26 @@ class MainWindow(qtw.QMainWindow):
             )
             return
 
-        currentSelection = self.treeEditor.current                                      # gets the current selected item
+        currentSelection = self.treeEditor.current                             
 
-        if currentSelection:                                                            # if an item is selected
-            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+        if currentSelection:                                             
+            parentItem = currentSelection.internalPointer()                       
             def insertWrapper(node):
                 node.add_feature('level', 5)
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
                 node.update_hash(self.model.rootItem)
                 self.treeEditor.refreshView()
 
-            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+            if parentItem.level < 5:                                              
                 parentItem = parentItem.copy()
                 parentItem.level = 4
-                self.newComponentEditor = ComponentEditor(parentItem, self.manufactures, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor = ComponentEditor(parentItem, self.manufactures, 5)  
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
-                self.newComponentEditor.show()                                          # then the popup editor is shown
+                self.newComponentEditor.submit.connect(insertWrapper)             
+                self.newComponentEditor.show()                                
 
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            else:                                                                  
+                self.msgBox = qtw.QMessageBox.warning(                         
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -393,8 +393,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
 
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                                     
+            self.msgBox = qtw.QMessageBox.warning(                            
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -406,7 +406,7 @@ class MainWindow(qtw.QMainWindow):
         """Adds a jig component to the tree."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(       
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -415,27 +415,27 @@ class MainWindow(qtw.QMainWindow):
             )
             return
 
-        currentSelection = self.treeEditor.current                                      # gets the current selected item
+        currentSelection = self.treeEditor.current                        
 
-        if currentSelection:                                                            # if an item is selected
-            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+        if currentSelection:                                        
+            parentItem = currentSelection.internalPointer()                          
             def insertWrapper(node):
                 node.add_feature('level', 4)
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
                 node.update_hash(self.model.rootItem)
                 self.treeEditor.refreshView()
 
-            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+            if parentItem.level < 5:                                     
                 jigsList = self.model.rootItem.search_nodes(type = 'Jig')
                 dummyParent = ComponentTree('', {'number': '#JIG-000', 'level': -1, 'children': jigsList})
 
-                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures, 5)           
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
-                self.newComponentEditor.show()                                          # then the popup editor is shown
+                self.newComponentEditor.submit.connect(insertWrapper)         
+                self.newComponentEditor.show()                                
 
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            else:                                                                   
+                self.msgBox = qtw.QMessageBox.warning(                 
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -443,8 +443,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
 
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                                 
+            self.msgBox = qtw.QMessageBox.warning(                   
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -456,7 +456,7 @@ class MainWindow(qtw.QMainWindow):
         """Adds a placeholder component to the tree."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(               
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -465,27 +465,27 @@ class MainWindow(qtw.QMainWindow):
             )
             return
 
-        currentSelection = self.treeEditor.current                                      # gets the current selected item
+        currentSelection = self.treeEditor.current                            
 
-        if currentSelection:                                                            # if an item is selected
-            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+        if currentSelection:                                     
+            parentItem = currentSelection.internalPointer()  
             def insertWrapper(node):
                 node.add_feature('level', 4)
                 self.model.insertRows(len(parentItem.children), node, currentSelection)
                 node.update_hash(self.model.rootItem)
                 self.treeEditor.refreshView()
 
-            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+            if parentItem.level < 5:                                          
                 placeholderList = self.model.rootItem.search_nodes(type = 'Placeholder')
                 dummyParent = ComponentTree('', {'number': '#PLC-000', 'level': 5, 'children': placeholderList})
 
-                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures, 5)                # opens up a popup version of PropEditor
+                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures, 5)          
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(insertWrapper)                   # connects the submit signal with the insertRows() function
-                self.newComponentEditor.show()                                          # then the popup editor is shown
+                self.newComponentEditor.submit.connect(insertWrapper)               
+                self.newComponentEditor.show()                                  
 
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            else:                                                                  
+                self.msgBox = qtw.QMessageBox.warning(             
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -493,8 +493,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
 
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                                 
+            self.msgBox = qtw.QMessageBox.warning(                               
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -506,7 +506,7 @@ class MainWindow(qtw.QMainWindow):
         """Changes a selected hardware component with another hardware component of choice."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(                 
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -515,24 +515,24 @@ class MainWindow(qtw.QMainWindow):
             )
             return
 
-        currentSelection = self.treeEditor.current                                      # gets the current selected item
+        currentSelection = self.treeEditor.current                          
         def morphWrapper(node):
             self.model.swapComponent(currentSelection.row(), node, currentSelection.parent())
             node.add_feature('level', 5)
             node.update_hash(self.model.rootItem)
             self.treeEditor.refreshView()
 
-        if currentSelection:                                                            # if an item is selected
-            item = currentSelection.internalPointer()                                   # the item is extracted
-            level = item.level                                                          # and it's level calculated
+        if currentSelection:                                                    
+            item = currentSelection.internalPointer()                          
+            level = item.level                                    
 
-            if level == 5:                                                              # if the item is at level 5 (leaf)
-                self.hardwareSelector = HardwareSelector(self.archive)                  # a popup window containing a hardware selector is opened with the archive as model
-                self.hardwareSelector.submit.connect(morphWrapper)                      # then the submit signal is connected to the insertRows() function
-                self.hardwareSelector.show()                                            # the popup is shown
+            if level == 5:                                              
+                self.hardwareSelector = HardwareSelector(self.archive)           
+                self.hardwareSelector.submit.connect(morphWrapper)                  
+                self.hardwareSelector.show()                               
             
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            else:                                                                
+                self.msgBox = qtw.QMessageBox.warning(                 
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -540,8 +540,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
 
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                                   
+            self.msgBox = qtw.QMessageBox.warning(                       
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -556,7 +556,7 @@ class MainWindow(qtw.QMainWindow):
         """
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(         
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -566,19 +566,19 @@ class MainWindow(qtw.QMainWindow):
             return
 
         if self.model:
-            for item in self.model.rootItem.iter_leaves():                              # iterates over the hardware and the leaves
+            for item in self.model.rootItem.iter_leaves():                         
                 for hardware in self.archive.hardwareList:
-                    if item.number == hardware['number']:                               # if a number corresponds to the archive counterpart
+                    if item.number == hardware['number']:                       
                         row = item.up.children.index(item)
-                        for x in range(len(columns)):                                   # iterates over the parameters of the item
+                        for x in range(len(columns)):                                 
                             index = self.model.createIndex(row, sections[x], item)
-                            self.model.setData(index, hardware[columns[x]])             # and updates them
+                            self.model.setData(index, hardware[columns[x]])        
 
     def removeComponent(self):
         """Removes a component from the model."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(                    
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -587,17 +587,17 @@ class MainWindow(qtw.QMainWindow):
             )
             return
 
-        currentSelection = self.treeEditor.current                                      # gets the current selected item
+        currentSelection = self.treeEditor.current                              
 
-        if currentSelection:                                                            # if an item is selected
-            item = currentSelection.internalPointer()                                   # it extracts the item that needs to be removed
-            row = item.up.children.index(item)                                          # it's row
-            parent = currentSelection.parent()                                          # and it's parent
+        if currentSelection:                                               
+            item = currentSelection.internalPointer()                                  
+            row = item.up.children.index(item)                         
+            parent = currentSelection.parent()                               
 
-            if item.level != 1:                                                         # then if the item isn't at level 1 (project root)
-                self.model.removeRows(row, parent)                                      # it removes it
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            if item.level != 1:                         
+                self.model.removeRows(row, parent)                             
+            else:                                                                  
+                self.msgBox = qtw.QMessageBox.warning(                    
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -605,8 +605,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
         
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                                 
+            self.msgBox = qtw.QMessageBox.warning(                              
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -618,7 +618,7 @@ class MainWindow(qtw.QMainWindow):
         """Removes and store a component for later pasting."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(                         
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -629,15 +629,15 @@ class MainWindow(qtw.QMainWindow):
 
         currentSelection = self.treeEditor.current
 
-        if currentSelection:                                                            # if an item is selected
-            item = currentSelection.internalPointer()                                   # it extracts the item that needs to be removed
-            row = item.up.children.index(item)                                          # it's row
-            parent = currentSelection.parent()                                          # and it's parent
+        if currentSelection:                                                    
+            item = currentSelection.internalPointer()                               
+            row = item.up.children.index(item)                            
+            parent = currentSelection.parent()                              
 
-            if item.level != 1:                                                         # then if the item isn't at level 1 (project root)
+            if item.level != 1:                                                      
                 self.copied = self.model.removeRows(row, parent)
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            else:                                                                
+                self.msgBox = qtw.QMessageBox.warning(                        
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -645,8 +645,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
         
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                     
+            self.msgBox = qtw.QMessageBox.warning(                                
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -658,7 +658,7 @@ class MainWindow(qtw.QMainWindow):
         """Creates and stores a copy of a component to paste it in another component."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(                            
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -669,13 +669,13 @@ class MainWindow(qtw.QMainWindow):
 
         currentSelection = self.treeEditor.current
 
-        if currentSelection:                                                            # if an item is selected
-            item = currentSelection.internalPointer()                                   # it extracts the item that needs to be removed  
+        if currentSelection:                                                   
+            item = currentSelection.internalPointer()       
 
-            if item.level != 1:                                                         # then if the item isn't at level 1 (project root)                                              
+            if item.level != 1:                                                                                         
                 self.copied = item.copy()
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            else:                                                            
+                self.msgBox = qtw.QMessageBox.warning(                             
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -683,8 +683,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
         
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                     
+            self.msgBox = qtw.QMessageBox.warning(                              
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -696,7 +696,7 @@ class MainWindow(qtw.QMainWindow):
         """Adds the cut or copied component to this components' children."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(                    
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -705,19 +705,19 @@ class MainWindow(qtw.QMainWindow):
             )
             return
 
-        currentSelection = self.treeEditor.current                                      # gets the current selected item
+        currentSelection = self.treeEditor.current                           
 
-        if currentSelection:                                                            # if an item is selected
-            parentItem = currentSelection.internalPointer()                             # the item where the item has to be added is extracted
+        if currentSelection:                                              
+            parentItem = currentSelection.internalPointer()                           
 
-            if parentItem.level < 5:                                                    # then if the level of the item is less than 5 (not a leaf node)
+            if parentItem.level < 5:                                              
                 self.model.insertRows(len(parentItem.children), self.copied, currentSelection)
                 self.copied.update_hash(self.model.rootItem)
                 self.copied = self.copied.copy()
                 self.treeEditor.refreshView()
 
-            else:                                                                       # if the component is not of the appropriate level
-                self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            else:                                                               
+                self.msgBox = qtw.QMessageBox.warning(                           
                     self, 
                     'Warning!', 
                     'The selected item is not of an appropriate level!', 
@@ -725,8 +725,8 @@ class MainWindow(qtw.QMainWindow):
                     qtw.QMessageBox.Ok
                 )
 
-        else:                                                                           # if nothing is selected
-            self.msgBox = qtw.QMessageBox.warning(                                      # the user is notified
+        else:                                                                 
+            self.msgBox = qtw.QMessageBox.warning(                              
                 self, 
                 'Warning!', 
                 'No item currently selected.', 
@@ -740,7 +740,7 @@ class MainWindow(qtw.QMainWindow):
         """Choose whether to see or not deprecated items."""
 
         if self.uiTabWidget.currentIndex() != 0:
-            self.msgBox = qtw.QMessageBox.warning(                                  # the user is notified
+            self.msgBox = qtw.QMessageBox.warning(                    
                 self, 
                 'Warning!', 
                 'You are not in the proper page!', 
@@ -757,3 +757,11 @@ class MainWindow(qtw.QMainWindow):
             self.treeEditor.refreshView()
 
 # OTHER FUNCTIONS
+
+def checkPage(self):
+    #checks if we are in the right page before performing the action
+    pass
+
+def checkModel(self):
+    #checks if a model is present
+    pass

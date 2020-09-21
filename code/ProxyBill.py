@@ -96,18 +96,18 @@ class ProxyBill(qtc.QIdentityProxyModel):
             QModelIndex
         """
 
-        if not self.hasIndex(row, column, parent):                                          # if the given index doesn't exist
-            return qtc.QModelIndex()                                                        # returns an invalid index
-        else:                                                                               # if the index is not valid
-            parentItem = self.sourceModel().rootItem                                        # the parent item is set to the root item
+        if not self.hasIndex(row, column, parent):                                 
+            return qtc.QModelIndex()                                              
+        else:                                                                     
+            parentItem = self.sourceModel().rootItem                                 
 
         leafList = parentItem.get_unique_leaves_list()
         if row >= len(leafList) or row < 0: return qtc.QModelIndex()
 
-        childItem = leafList[row]                                                           # the child item is the child of the parent item at the given index row
+        childItem = leafList[row]                                                   
 
-        if childItem:                                                                       # if the child item exists
-            return self.createIndex(row, column, childItem)                                 # creates and returns it's index
+        if childItem:                                                               
+            return self.createIndex(row, column, childItem)                          
 
         return qtc.QModelIndex()
 
@@ -129,7 +129,7 @@ class ProxyBill(qtc.QIdentityProxyModel):
             QModelIndex
         """
 
-        return qtc.QModelIndex()                                                            # an invalid index is return
+        return qtc.QModelIndex()                                               
 
     def data(self, index, role):        
         """
@@ -143,8 +143,8 @@ class ProxyBill(qtc.QIdentityProxyModel):
             object
         """
 
-        if not index.isValid():                                                             # if the index is not valid
-            return None                                                                     # returns None
+        if not index.isValid():                                                   
+            return None                                                 
 
         element = index.internalPointer()
         if element.level == 5:
@@ -152,10 +152,10 @@ class ProxyBill(qtc.QIdentityProxyModel):
         else:
             quantity = element.quantity
 
-        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                           # then if the role is display or edit
+        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                      
             if index.column() == 9:
                 return quantity
-            return getattr(element, headers[index.column()], None)                             # returns the data stored under the given index
+            return getattr(element, headers[index.column()], None)                    
 
     def headerData(self, section, orientation, role):
         """
@@ -172,8 +172,8 @@ class ProxyBill(qtc.QIdentityProxyModel):
             object
         """
 
-        if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:                 # if the orientation is horizontal and the role is display
-            return headers[section].title()                                                 # returns the root data under the given index
+        if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:         
+            return headers[section].title()                                         
         return None  
 
     def flags(self, index):
@@ -189,7 +189,7 @@ class ProxyBill(qtc.QIdentityProxyModel):
             ItemFlags
         """
 
-        if not index.isValid():                                                             # if the index is not valid                                                        
-            return qtc.Qt.NoItemFlags                                                       # returns NoItem
+        if not index.isValid():                                                                                                       
+            return qtc.Qt.NoItemFlags                                    
         else:
             return qtc.Qt.ItemIsEnabled

@@ -11,9 +11,9 @@ class BillPage(qtw.QWidget):
     def __init__(self, model):
         """Loads the .ui file."""
 
-        super(BillPage, self).__init__()                                              # superclass constructor
+        super(BillPage, self).__init__()                                       
 
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_bill_page.ui', self)    # loads the interface from the .ui file
+        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_bill_page.ui', self)   
 
         self.setModel(model)
 

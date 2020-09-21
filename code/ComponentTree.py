@@ -79,10 +79,10 @@ class ComponentTree(Tree):
             str - filename: the name of the file to read 
         """
 
-        missingList = []                                                                    # empty list for the vacant items
+        missingList = []                                                       
 
-        with open(filename, 'r') as file:                                                   # opens the file in read mode
-            csv_reader = csv.DictReader(file)                                               # creates a csv reader
+        with open(filename, 'r') as file:                                          
+            csv_reader = csv.DictReader(file)                                    
 
             firstItem = next(csv_reader)
             first = ComponentTree(firstItem['number'], firstItem)
@@ -271,7 +271,7 @@ class ComponentTree(Tree):
             billElement['quantity'] = self.calc_quantity(element)
             billElement['totalPrice'] = self.calc_price(element)
 
-            billList.append(billElement)
+            billList.append(billElement.copy())
 
         with open(filename, 'w') as file:
             fieldnames = BILL_HEADERS + ['totalPrice']

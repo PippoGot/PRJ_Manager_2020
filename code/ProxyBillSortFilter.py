@@ -22,7 +22,7 @@ class ProxyBillSortFilter(qtc.QSortFilterProxyModel):
             bool: whether to show or hide the column
         """
 
-        if source_column not in listaColonne.keys():                            # if the column has to be hidden
-            return False                                                        # returns False
-        else:                                                                   # otherwise
-            return True                                                         # returns True
+        if source_column not in listaColonne.keys():                    
+            return False                                                 
+        else:                                                           
+            return True                                                  

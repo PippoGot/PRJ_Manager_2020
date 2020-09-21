@@ -12,7 +12,7 @@ class HardwareSelector(qtw.QWidget):
     Emits the signal containing all the data when a component needs to be added.
     """
 
-    submit = qtc.pyqtSignal(ComponentTree)                                    # signal emitted when submit is pressed
+    submit = qtc.pyqtSignal(ComponentTree)                                
 
     def __init__(self, archive):
         """Loads the .ui file, connects the buttons to the respective functions, 
@@ -22,11 +22,11 @@ class HardwareSelector(qtw.QWidget):
             HardwareModel - archive: model that connects to the hardware archive
         """
 
-        super(HardwareSelector, self).__init__()                                            # superclass constructor    
+        super(HardwareSelector, self).__init__()                            
         
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_hardware_selector.ui', self)  # loads the UI from the .ui file
+        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_hardware_selector.ui', self) 
 
-        self.uiCancelButton.clicked.connect(self.close)                                     # connects the buttons to the respective functions
+        self.uiCancelButton.clicked.connect(self.close)              
         self.uiOkButton.clicked.connect(self.onSubmit)
 
         self.uiMechanicalButton.clicked.connect(self.changeFilter)
@@ -36,27 +36,27 @@ class HardwareSelector(qtw.QWidget):
         self.uiConsumableButton.clicked.connect(self.changeFilter)
         self.uiSearchEntry.textChanged.connect(self.changeFilter)
 
-        self.current = None                                                                 # initialize the parameter current to None
+        self.current = None                                                           
         self.currentSelection = None
-        self.uiOkButton.setDisabled(True)                                                   # and disables the ok and remove buttons
+        self.uiOkButton.setDisabled(True)                                           
 
-        self.model = archive                                                                # save the archive model in a class parameter
-        self.proxyModel = HardwareProxyModel()                                              # creates a hardware proxy model
-        self.proxyModel.setSourceModel(self.model)                                          # and sets the original model as it's source model
+        self.model = archive                                                           
+        self.proxyModel = HardwareProxyModel()                                    
+        self.proxyModel.setSourceModel(self.model)                                      
         self.proxyModel.setSortCaseSensitivity(qtc.Qt.CaseInsensitive)
-        self.proxyModel.sort(0, qtc.Qt.DescendingOrder)                                     # automatically sorts the view before displaying
-        self.uiHardwareView.setModel(self.proxyModel)                                       # and sets the proxy model as the view source model
+        self.proxyModel.sort(0, qtc.Qt.DescendingOrder)                               
+        self.uiHardwareView.setModel(self.proxyModel)                          
 
-        self.selectionModel = self.uiHardwareView.selectionModel()                          # then extract the selection model from the view
-        self.selectionModel.currentChanged.connect(self.setCurrentIndex)                    # and connects the current changed signal to the update function
-        self.selectionModel.selectionChanged.connect(self.setCurrentSelection)              # and the selection changed signal is connected to the respective function
+        self.selectionModel = self.uiHardwareView.selectionModel()            
+        self.selectionModel.currentChanged.connect(self.setCurrentIndex)                 
+        self.selectionModel.selectionChanged.connect(self.setCurrentSelection)             
 
         self.changeFilter()
 
     def setCurrentSelection(self):
         """Updates the archive selection."""
 
-        self.currentSelection = self.selectionModel.selectedIndexes()                       # the class parameter is updated with the current selected indexes
+        self.currentSelection = self.selectionModel.selectedIndexes()              
 
     def setCurrentIndex(self, index):
         """
@@ -66,8 +66,8 @@ class HardwareSelector(qtw.QWidget):
             QModelIndex - index: the index of the current selected item
         """
 
-        self.current = index                                                                # updates the parameter
-        self.uiOkButton.setDisabled(False)                                                  # and enables the ok buttons
+        self.current = index                                                       
+        self.uiOkButton.setDisabled(False)                                
 
     def onSubmit(self):
         """
@@ -76,8 +76,8 @@ class HardwareSelector(qtw.QWidget):
         as class parameters before emitting the signal.
         """
 
-        if self.currentSelection and len(self.currentSelection) > 1:                        # if more than one item is selected
-            self.msgBox = qtw.QMessageBox.warning(                                          # the user is notified
+        if self.currentSelection and len(self.currentSelection) > 1:                 
+            self.msgBox = qtw.QMessageBox.warning(                           
                 self, 
                 'Warning!', 
                 'Multiple items currently selected.\nSelect only one item to add', 
@@ -85,22 +85,22 @@ class HardwareSelector(qtw.QWidget):
                 qtw.QMessageBox.Ok
             )
 
-        else:                                                                               # otherwise
-            index = self.proxyModel.mapToSource(self.current)                               # the index is mapped from the proxy model to the original model
-            data = index.internalPointer()                                                  # the data is extracted
+        else:                                                        
+            index = self.proxyModel.mapToSource(self.current)                         
+            data = index.internalPointer()                              
             newComponent = ComponentTree(data['number'], data)
             newComponent.quantity = self.uiSelectQuantity.text()
-            self.submit.emit(newComponent)                                                  # the signal is emitted
-            self.close()                                                                    # and the selector is closed
+            self.submit.emit(newComponent)                                         
+            self.close()                                                              
 
     def changeFilter(self):
         """When called, scans the buttons and filters the selected cathegory of items in the view."""
         
-        text = self.uiSearchEntry.text()                                                    # extracts the entry text
-        textString = '.*(' + text.replace(' ', ').*(') + ')'                                # creates two empty strings
+        text = self.uiSearchEntry.text()                                              
+        textString = '.*(' + text.replace(' ', ').*(') + ')'                          
 
-        if self.uiMechanicalButton.isChecked():                                             # then scans the buttons
-            filterString = '#MEH-[0-9A-Z]{3}' + textString                                  # and creates the filter string
+        if self.uiMechanicalButton.isChecked():                                      
+            filterString = '#MEH-[0-9A-Z]{3}' + textString                 
         elif self.uiMeasuredButton.isChecked():
             filterString = '#MMH-[0-9A-Z]{3}' + textString
         elif self.uiElectricalButton.isChecked():
@@ -110,8 +110,8 @@ class HardwareSelector(qtw.QWidget):
         else:
             filterString = '#EMH-[0-9A-Z]{3}' + textString
 
-        self.proxyModel.setFilterRegExp(filterString)                                       # updates the filter expression
-        self.refreshView()                                                                  # finally resizes the view to its content
+        self.proxyModel.setFilterRegExp(filterString)                                
+        self.refreshView()                                                             
 
     def refreshView(self):
         """Updates the view."""

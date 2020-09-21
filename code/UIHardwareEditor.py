@@ -18,11 +18,11 @@ class HardwareEditor(qtw.QWidget):
             ModelHardware - archive: model that connects to the hardware archive
         """
         
-        super(HardwareEditor, self).__init__()                                                  # superclass constructor
+        super(HardwareEditor, self).__init__()                                          
 
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_hardware_editor_page.ui', self)   # loads the UI from the .ui file
+        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_hardware_editor_page.ui', self)  
 
-        self.uiSubmitButton.clicked.connect(self.addHardwareToArchive)                          # connects the buttons to their functions
+        self.uiSubmitButton.clicked.connect(self.addHardwareToArchive)                    
         self.uiRemoveButton.clicked.connect(self.removeHardware)
 
         self.uiMEHCheck.clicked.connect(self.updateNumber)
@@ -32,24 +32,24 @@ class HardwareEditor(qtw.QWidget):
         self.uiCONCheck.clicked.connect(self.updateNumber)
         self.uiSearchEntry.textChanged.connect(self.changeFilter)
 
-        self.uiRemoveButton.setDisabled(True)                                                   # the remove button is set disabled by default
+        self.uiRemoveButton.setDisabled(True)                                               
 
-        self.current = None                                                                     # the parameter current is initialized as None
-        self.prefix = 'MEH'                                                                     # prefix as MEH
+        self.current = None                                                                  
+        self.prefix = 'MEH'                                                 
 
-        self.archive = archive                                                                  # the hardware model is stored in a class parameter
-        self.proxyModel = HardwareProxyModel()                                                  # the proxy model is created
-        self.proxyModel.setSourceModel(self.archive)                                            # and the archive is set as the original model
-        self.proxyModel.sort(0, qtc.Qt.DescendingOrder)                                         # automatically sorts the view before displaying
-        self.uiHardwareView.setModel(self.proxyModel)                                           # then the proxy model is set as the view model
+        self.archive = archive                                                              
+        self.proxyModel = HardwareProxyModel()                                        
+        self.proxyModel.setSourceModel(self.archive)                                        
+        self.proxyModel.sort(0, qtc.Qt.DescendingOrder)                                   
+        self.uiHardwareView.setModel(self.proxyModel)                          
 
-        self.selectionModel = self.uiHardwareView.selectionModel()                              # the view's selection model is extracted
-        self.selectionModel.selectionChanged.connect(self.setCurrentSelection)                  # and the selection changed signal is connected to the respective function
+        self.selectionModel = self.uiHardwareView.selectionModel()                        
+        self.selectionModel.selectionChanged.connect(self.setCurrentSelection)              
 
         self.mapper = qtw.QDataWidgetMapper()
         self.mapper.setModel(self.archive)
 
-        self.mapper.addMapping(self.uiCurrentNumberID, 0)                                       # adds all the mappings of the widget
+        self.mapper.addMapping(self.uiCurrentNumberID, 0)                               
         self.mapper.addMapping(self.uiCurrentName, 2)
         self.mapper.addMapping(self.uiCurrentDescription, 3)
         self.mapper.addMapping(self.uiCurrentType, 4)
@@ -72,8 +72,8 @@ class HardwareEditor(qtw.QWidget):
         is recalculated and updated. The values are reset.
         """
 
-        if self.uiMEHCheck.isChecked():                                                         # check for which radio button the function has been called
-            self.prefix = 'MEH'                                                                 # and updates the prefic parameter is updated
+        if self.uiMEHCheck.isChecked():                                                       
+            self.prefix = 'MEH'                                                        
         elif self.uiMMHCheck.isChecked():
             self.prefix = 'MMH'
         elif self.uiELHCheck.isChecked():
@@ -83,18 +83,18 @@ class HardwareEditor(qtw.QWidget):
         else:
             self.prefix = 'EMH'
 
-        number = '#' + self.prefix + '-000'                                                     # compose the new number
+        number = '#' + self.prefix + '-000'                                         
 
         self.uiNewNumberID.setText(self.archive.calculateNumber(number))
 
         self.initFields()
-        self.changeFilter()                                                                     # changes the filter
+        self.changeFilter()                                                         
 
     def addHardwareToArchive(self):
         """Adds a new hardware item to the archive and resets the values for a new item."""
 
         data = {
-            'number': self.uiNewNumberID.text(),                                                # gathers the data to emit
+            'number': self.uiNewNumberID.text(),                                   
             'title': self.uiNewName.text(), 
             'description': self.uiNewDescription.toPlainText(),
             'type': self.uiNewType.text(),
@@ -109,19 +109,19 @@ class HardwareEditor(qtw.QWidget):
             'link': self.uiNewLink.toPlainText()
         }
 
-        self.archive.insertRows(data)                                                           # then the data is inserted in to the archive model
+        self.archive.insertRows(data)                                                
 
         self.updateNumber()
     
     def setCurrentSelection(self):
         """Updates the archive selection and enables the remove button."""
 
-        self.currentSelection = self.selectionModel.selectedIndexes()                           # the class parameter is updated with the current selected indexes
+        self.currentSelection = self.selectionModel.selectedIndexes()                      
         self.current = self.proxyModel.mapToSource(self.selectionModel.currentIndex())
-        self.uiRemoveButton.setDisabled(False)                                                  # and the button is enabled
+        self.uiRemoveButton.setDisabled(False)                                          
         self.uiCurrentComponentEditor.setDisabled(False)
-        parent = self.current.parent()                                                          # extract the parent index
-        self.mapper.setRootIndex(parent)                                                        # and sets the mapper indexes
+        parent = self.current.parent()                                                   
+        self.mapper.setRootIndex(parent)                                             
         self.mapper.setCurrentModelIndex(self.current)
 
         self.changeManufacture(self.uiCurrentNumberID.text(), self.uiCurrentManufacture)
@@ -129,16 +129,16 @@ class HardwareEditor(qtw.QWidget):
     def removeHardware(self):
         """Removes the selected item from the archive model."""
         
-        mapped = []                                                                             # an empty list is created for the indexes
+        mapped = []                                                                      
         if not self.currentSelection: return
         
-        for index in self.currentSelection:                                                     # for every index selected
-            mapped.append(self.proxyModel.mapToSource(index))                                   # the index is mapped to the source model and added to the list
+        for index in self.currentSelection:                                       
+            mapped.append(self.proxyModel.mapToSource(index))                               
 
-        self.archive.removeRows(mapped)                                                         # then the indexes are removed from the archive
+        self.archive.removeRows(mapped)                                                    
 
         self.currentSelection = None
-        self.updateNumber()                                                                     # and the current number is updated
+        self.updateNumber()                                                          
         self.uiRemoveButton.setDisabled(True)
 
     def refreshView(self):
@@ -152,11 +152,11 @@ class HardwareEditor(qtw.QWidget):
     def changeFilter(self):
         """When called, scans the buttons and filters the selected cathegory of items in the view."""
         
-        text = self.uiSearchEntry.text()                                                        # extracts the entry text
-        textString = '.*(' + text.replace(' ', ').*(') + ')'                                    # creates two empty strings
+        text = self.uiSearchEntry.text()                                                  
+        textString = '.*(' + text.replace(' ', ').*(') + ')'                             
 
-        if self.uiMEHCheck.isChecked():                                                         # then scans the buttons
-            filterString = '#MEH-[0-9A-Z]{3}' + textString                                      # and creates the filter string
+        if self.uiMEHCheck.isChecked():                                                 
+            filterString = '#MEH-[0-9A-Z]{3}' + textString                        
         elif self.uiMMHCheck.isChecked():
             filterString = '#MMH-[0-9A-Z]{3}' + textString
         elif self.uiELHCheck.isChecked():
@@ -166,13 +166,13 @@ class HardwareEditor(qtw.QWidget):
         else:
             filterString = '#EMH-[0-9A-Z]{3}' + textString
 
-        self.proxyModel.setFilterRegExp(filterString)                                           # updates the filter expression
+        self.proxyModel.setFilterRegExp(filterString)                                      
         self.refreshView()
 
     def initFields(self):
         """Resets all the editor values to a default value."""
         
-        self.uiNewName.setText('-')                                                             # sets some fields to default values
+        self.uiNewName.setText('-')                                                        
         self.uiNewDescription.setPlainText('-')
         self.uiNewComment.setPlainText('-')
         self.uiNewSeller.setText('-')

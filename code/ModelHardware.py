@@ -17,11 +17,11 @@ class ModelHardware(qtc.QAbstractItemModel):
     def __init__(self):
         """Reads the archive file.""" 
 
-        super(ModelHardware, self).__init__()                                                   # superclass constructor
+        super(ModelHardware, self).__init__()                                         
 
-        self.hardwareList = []                                                                  # model data structure
-        self.filename = 'D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/HardwareArchive.csv'        # this is the file location
-        self.readArchive()                                                                      # reads the archive file
+        self.hardwareList = []                                                             
+        self.filename = 'D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/HardwareArchive.csv' 
+        self.readArchive()                                                                   
 
 # MODEL FUNCTIONS
 
@@ -37,15 +37,15 @@ class ModelHardware(qtc.QAbstractItemModel):
             object
         """
 
-        if not index.isValid():                                                                 # if the index isn't valid
-            return None                                                                         # returns None
+        if not index.isValid():                                                            
+            return None                                                         
         
-        row = index.row()                                                                       # otherwise gets the index row
-        column = headers[index.column()]                                                        # converts the column to a keyword argument
+        row = index.row()                                                               
+        column = headers[index.column()]                                                 
 
-        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                               # and then if the role is display or edit
-            data = self.hardwareList[row][column]                                               # extract the corresponding data
-            return data                                                                         # and returns it
+        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                         
+            data = self.hardwareList[row][column]                                      
+            return data                                                              
 
     def setData(self, index, value, role = qtc.Qt.EditRole):
         """
@@ -64,17 +64,17 @@ class ModelHardware(qtc.QAbstractItemModel):
             bool
         """
 
-        if index.isValid():                                                                     # if the index isn't valid
-            if role == qtc.Qt.EditRole:                                                         # and role is Edit
-                row = index.row()                                                               # gets the index row
-                column = headers[index.column()]                                                # and converts the index column
+        if index.isValid():                                                            
+            if role == qtc.Qt.EditRole:                                      
+                row = index.row()                                                   
+                column = headers[index.column()]                                       
 
-                self.hardwareList[row][column] = value                                          # changes the data in the given location
+                self.hardwareList[row][column] = value                                   
 
-                self.dataChanged.emit(index, index)                                             # sends the signal that the data in the given location has changed
-                return True                                                                     # and returns True
+                self.dataChanged.emit(index, index)                                        
+                return True                                                         
 
-        return False                                                                            # otherwise returns False
+        return False                                                             
 
     def flags(self, index):
         """
@@ -91,12 +91,12 @@ class ModelHardware(qtc.QAbstractItemModel):
 
         condition = (index.column() in notEditableColumns) or (index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in notEditableTypes)
 
-        if not index.isValid():                                                                 # if the index isn't valid                                                       
-            return qtc.Qt.NoItemFlags                                                           # returns NoItemFlags
-        if condition:                                                                           # if the index column is either 0 or 1
-            return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable                               # the item is enabled and selectable
-        else:                                                                                   # otherwise
-            return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable       # the item is also editable
+        if not index.isValid():                                                                                                         
+            return qtc.Qt.NoItemFlags                                              
+        if condition:                                                                    
+            return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable                           
+        else:                                                                      
+            return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable      
 
     def headerData(self, section, orientation, role):
         """
@@ -113,9 +113,9 @@ class ModelHardware(qtc.QAbstractItemModel):
             object
         """
 
-        if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:                     # if the orientation is horizontal and role is display
-            return headers[section].title()                                                     # returns the corresponding header
-        return None                                                                             # otherwise returns None
+        if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:              
+            return headers[section].title()                                              
+        return None                                                                        
 
     def index(self, row, column, parent):
         """
@@ -132,15 +132,15 @@ class ModelHardware(qtc.QAbstractItemModel):
             QModelIndex
         """
 
-        if not self.hasIndex(row, column, parent):                                              # if the model doesn't have this index
-            return qtc.QModelIndex()                                                            # returns an invalid index
+        if not self.hasIndex(row, column, parent):                                       
+            return qtc.QModelIndex()                                             
 
-        item = self.hardwareList[row]                                                           # otherwise get the item in the structure at the selected row
+        item = self.hardwareList[row]                                                        
 
-        if item:                                                                                # if such item exist
-            return self.createIndex(row, column, item)                                          # returns it's index which is just generated
+        if item:                                                              
+            return self.createIndex(row, column, item)                               
 
-        return qtc.QModelIndex()                                                                # otherwise returns and invalid index
+        return qtc.QModelIndex()                                                         
 
     def parent(self, index):
         """
@@ -160,7 +160,7 @@ class ModelHardware(qtc.QAbstractItemModel):
             QModelIndex
         """
 
-        return qtc.QModelIndex()                                                                # returns an invalide index in any case
+        return qtc.QModelIndex()                                                           
 
     def rowCount(self, parent):
         """
@@ -174,7 +174,7 @@ class ModelHardware(qtc.QAbstractItemModel):
             int
         """
 
-        return len(self.hardwareList)                                                           # returns the length of the list
+        return len(self.hardwareList)                                                       
 
     def columnCount(self, parent):
         """
@@ -188,7 +188,7 @@ class ModelHardware(qtc.QAbstractItemModel):
             int
         """
 
-        return len(headers)                                                                     # returns the number of item in the first row
+        return len(headers)                                                    
 
     def insertRows(self, item, parent = qtc.QModelIndex()):
         """
@@ -202,17 +202,17 @@ class ModelHardware(qtc.QAbstractItemModel):
             bool
         """
 
-        position = len(self.hardwareList)                                                       # gets the position of where to insert the new data
+        position = len(self.hardwareList)                                                  
 
-        self.beginInsertRows(parent, position, position)                                        # signals that it's starting to insert data
+        self.beginInsertRows(parent, position, position)                                  
 
-        self.hardwareList.append(item)                                                          # adds the item to the data structure
+        self.hardwareList.append(item)                                                      
 
-        self.endInsertRows()                                                                    # signals that it has finished inserting data
+        self.endInsertRows()                                                                   
 
-        self.saveArchive()                                                                      # saves the data in the archive file
+        self.saveArchive()                                                     
 
-        return True                                                                             # returns True, the operation has been successful
+        return True                                                                  
 
     def removeRows(self, indexList, parent = qtc.QModelIndex()):
         """
@@ -226,22 +226,22 @@ class ModelHardware(qtc.QAbstractItemModel):
             bool
         """
 
-        rows = len(indexList)                                                                   # gets the number of items to remove
+        rows = len(indexList)                                                              
 
-        for item in range(rows):                                                                # for each item
+        for item in range(rows):                                                    
             if indexList[item].internalPointer() in self.hardwareList:
-                position = self.hardwareList.index(indexList[item].internalPointer())           # gets the position of the item
-                self.beginRemoveRows(parent, position, position)                                # signals that it's starting to remove data
+                position = self.hardwareList.index(indexList[item].internalPointer())        
+                self.beginRemoveRows(parent, position, position)                       
 
-                current = indexList[item]                                                       # the current item is extracted from the list
-                current = current.internalPointer()                                             # and from the index
-                self.hardwareList.remove(current)                                               # then the item is removed from the data structure
+                current = indexList[item]                                                       
+                current = current.internalPointer()                                       
+                self.hardwareList.remove(current)                                       
 
-                self.endRemoveRows()                                                            # signals that it has finished removing data
+                self.endRemoveRows()                                                   
             
-        self.saveArchive()                                                                      # saves the data in the archive file
+        self.saveArchive()                                                           
 
-        return True                                                                             # returns True, the operation has been successful
+        return True                                                    
 
 # CUSTOM FUNCTIONS
 
@@ -251,11 +251,11 @@ class ModelHardware(qtc.QAbstractItemModel):
         to manually change the filename.
         """
 
-        with open(self.filename, 'r') as archive:                                               # opens the file
-            csv_reader = csv.DictReader(archive)                                                # creates a csv reader
+        with open(self.filename, 'r') as archive:                              
+            csv_reader = csv.DictReader(archive)                                         
 
-            for line in csv_reader:                                                             # then for every line in the file
-                self.insertRows(line)                                                           # it inserts a row in the file with the data contained in that line
+            for line in csv_reader:                                                       
+                self.insertRows(line)                                                    
 
     def saveArchive(self):
         """
@@ -263,13 +263,13 @@ class ModelHardware(qtc.QAbstractItemModel):
         have to manually change the filename.
         """
 
-        with open(self.filename, 'w') as archive:                                               # opens the file
-            csv_writer = csv.DictWriter(archive, fieldnames = headers)                          # creates a csv writer with the previously stored headers
+        with open(self.filename, 'w') as archive:                                   
+            csv_writer = csv.DictWriter(archive, fieldnames = headers)                     
 
-            csv_writer.writeheader()                                                            # writes the headers at the top of the file
+            csv_writer.writeheader()                                                     
 
-            for line in self.hardwareList:                                                      # then for every item in the list
-                csv_writer.writerow(line)                                                       # it writes a row in the file
+            for line in self.hardwareList:                                                
+                csv_writer.writerow(line)                                        
 
     def calculateNumber(self, number):
         """
@@ -283,19 +283,19 @@ class ModelHardware(qtc.QAbstractItemModel):
             str: the calculated number
         """
 
-        ct = 1                                                                                  # initialize a counter to 0
-        hardwareList = self.hardwareList                                                        # gets the list where the data will be stored
-        hardwareNumbers = []                                                                    # and an empty list
+        ct = 1                                                                          
+        hardwareList = self.hardwareList                                                       
+        hardwareNumbers = []                                                     
 
-        for item in hardwareList:                                                               # for every item in the data list
-            hardwareNumbers.append(item['number'])                                              # adds it's number to the empty list
+        for item in hardwareList:                                                          
+            hardwareNumbers.append(item['number'])                                      
 
-        newNumber = increment_number(number, ct, 5)                                             # then generates the first number
-        while newNumber in hardwareNumbers:                                                     # and while the number is in the list
-            ct += 1                                                                             # increments the counter
-            newNumber = increment_number(number, ct, 5)                                         # and regenerates the number
+        newNumber = increment_number(number, ct, 5)                                     
+        while newNumber in hardwareNumbers:                                              
+            ct += 1                                                                     
+            newNumber = increment_number(number, ct, 5)                              
 
-        return newNumber                                                                        # when a non existing number is found it returns it
+        return newNumber                                                                     
 
     def changeFilename(self, filename):
         """
@@ -305,4 +305,4 @@ class ModelHardware(qtc.QAbstractItemModel):
             str - filename: the new filename of the model
         """
 
-        self.filename = filename                                                                # updates the filename parameter
+        self.filename = filename                                                        

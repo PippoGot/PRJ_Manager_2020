@@ -24,10 +24,10 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
             bool: whether to show or hide the column
         """
 
-        if source_column not in listaColonne.keys():           # if the column has to be hidden
-            return False                                            # returns False
-        else:                                                       # otherwise
-            return True                                             # returns True
+        if source_column not in listaColonne.keys():      
+            return False                                    
+        else:                                                 
+            return True                               
 
     def filterAcceptsRow(self, source_row, source_parent):
         """
@@ -42,13 +42,13 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
             bool: whether to show or hide the row
         """
 
-        regexp = re.compile(self.filterRegExp().pattern(), re.I)          # gets the regular expression for the filtering
-        rowString = self.stringAtRow(source_row)                    # and the string of the current row
+        regexp = re.compile(self.filterRegExp().pattern(), re.I)      
+        rowString = self.stringAtRow(source_row)               
 
-        if regexp.search(rowString):                                # if the current row matches the regular expression
-            return True                                             # returns True, so the row is shown
-        else:                                                       # otherwise
-            return False                                            # returns false
+        if regexp.search(rowString):                         
+            return True                                           
+        else:                                               
+            return False                                   
 
     def lessThan(self, source_left, source_right):
         """
@@ -64,21 +64,21 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
             bool
         """
 
-        if source_left.isValid() and source_left.column() == 0:     # if the left index is valid and the column is 0
-            left = source_left.internalPointer()                    # gets the left item
-            left = left['number']                                   # extracts it's number
-            left = left.replace('#', '')                            # removes the non-number characters
+        if source_left.isValid() and source_left.column() == 0:    
+            left = source_left.internalPointer()                
+            left = left['number']                                 
+            left = left.replace('#', '')                       
             left = left.replace('-', '')
-            left = _36ToBase10(left)                                # and converts the number to decimal
+            left = _36ToBase10(left)                           
 
-            right = source_right.internalPointer()                  # repeat for the right item
+            right = source_right.internalPointer()        
             right = right['number']
             right = right.replace('#', '')
             right = right.replace('-', '')
             right = _36ToBase10(right)
             
-            return left > right                                     # then return left > right
-        return False                                                # otherwise returns False
+            return left > right                                
+        return False                                         
 
     def stringAtRow(self, row):
         """
@@ -94,8 +94,8 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
 
         hList = self.sourceModel().hardwareList
 
-        output = ''                                                 # initialize an empty string
-        if row < len(hList) and len(hList) > 0:                     # if the row exists
-            for key in hList[row].keys():                           # for every field of the row
-                output += ' ' + hList[row][key]                     # the corresponding string is attached to the output string 
-        return output                                               # then the output string is returned
+        output = ''                                        
+        if row < len(hList) and len(hList) > 0:            
+            for key in hList[row].keys():                  
+                output += ' ' + hList[row][key]                  
+        return output                                          

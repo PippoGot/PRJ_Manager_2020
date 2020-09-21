@@ -29,10 +29,10 @@ class ModelTree(qtc.QAbstractItemModel):
 
         self.rootItem = ComponentTree('root')
 
-        if filename:                                                                        # creates the first item in one of two ways
-            self.first = self.readFile(filename)                                            # from a file
+        if filename:                                                                    
+            self.first = self.readFile(filename)                          
         else:
-            self.first = ComponentTree('#000-000', base)                                    # or by deafult
+            self.first = ComponentTree('#000-000', base)                             
             
         self.first.add_feature('level', 1)
         self.rootItem.add_child(self.first)
@@ -51,13 +51,13 @@ class ModelTree(qtc.QAbstractItemModel):
             object
         """
 
-        if not index.isValid():                                                             # if the index is not valid
-            return None                                                                     # returns None
+        if not index.isValid():                                                      
+            return None                                                         
 
         item = index.internalPointer()
 
-        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                           # then if the role is display or edit
-            return getattr(item, headers[index.column()], None)                             # returns the data stored under the given index
+        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                   
+            return getattr(item, headers[index.column()], None)                 
         elif role == qtc.Qt.BackgroundRole:
             tp = item.type
             if tp == 'Assembly':
@@ -103,12 +103,12 @@ class ModelTree(qtc.QAbstractItemModel):
 
         condition = (index.column() in notEditableColumns) or (index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in notEditableTypes)
 
-        if not index.isValid():                                                             # if the index is not valid                                                        
-            return qtc.Qt.NoItemFlags                                                       # returns NoItemFlags
-        if condition:                                                                       # if the index column is either 0 or 1
+        if not index.isValid():                                                                                                    
+            return qtc.Qt.NoItemFlags                                     
+        if condition:                                                                 
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable
-        else:                                                                               # otherwise
-            return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable   # the object is also editable
+        else:                                                                   
+            return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable  
 
     def headerData(self, section, orientation, role):
         """
@@ -125,9 +125,9 @@ class ModelTree(qtc.QAbstractItemModel):
             object
         """
 
-        if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:                 # if the orientation is horizontal and the role is display
-            return headers[section].title()                                                 # returns the root data under the given index
-        return None                                                                         # otherwise returns None
+        if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:             
+            return headers[section].title()                                            
+        return None                                                              
 
     def index(self, row, column, parent):
         """
@@ -144,19 +144,19 @@ class ModelTree(qtc.QAbstractItemModel):
             QModelIndex
         """
 
-        if not self.hasIndex(row, column, parent):                                          # if the given index doesn't exist
-            return qtc.QModelIndex()                                                        # returns an invalid index
-        elif not parent.isValid():                                                          # if the index is not valid
-            parentItem = self.rootItem                                                      # the parent item is set to the root item
-        else:                                                                               # otherwise
-            parentItem = parent.internalPointer()                                           # parent item is the object at the given index
+        if not self.hasIndex(row, column, parent):                             
+            return qtc.QModelIndex()                                                
+        elif not parent.isValid():                                              
+            parentItem = self.rootItem                                             
+        else:                                                               
+            parentItem = parent.internalPointer()                                    
 
-        childItem = parentItem.children[row]                                                # the child item is the child of the parent item at the given index row
+        childItem = parentItem.children[row]                                         
 
-        if childItem:                                                                       # if the child item exists
-            return self.createIndex(row, column, childItem)                                 # creates and returns it's index
+        if childItem:                                                           
+            return self.createIndex(row, column, childItem)                    
 
-        return qtc.QModelIndex()                                                            # otherwise returns an invalid index
+        return qtc.QModelIndex()                                                   
 
     def parent(self, index):
         """
@@ -176,18 +176,18 @@ class ModelTree(qtc.QAbstractItemModel):
             QModelIndex
         """
 
-        if not index.isValid():                                                             # if the index is not valid
-            return qtc.QModelIndex()                                                        # an invalid index is returned
+        if not index.isValid():                                                       
+            return qtc.QModelIndex()                                         
 
-        childItem = index.internalPointer()                                                 # otherwise the child item is the item of the given index
-        parentItem = childItem.up                                                           # and the parent item is the child item parent
+        childItem = index.internalPointer()                                             
+        parentItem = childItem.up                                                   
 
-        if parentItem == self.rootItem:                                                     # if the parent is the root item
-            return qtc.QModelIndex()                                                        # an invalid index is returned
+        if parentItem == self.rootItem:                                         
+            return qtc.QModelIndex()                                            
 
         row = parentItem.up.children.index(parentItem)
 
-        return self.createIndex(row, 0, parentItem)                                         # otherwise it creates and returns the parent item index 
+        return self.createIndex(row, 0, parentItem)                                    
 
     def rowCount(self, parent):
         """
@@ -201,15 +201,15 @@ class ModelTree(qtc.QAbstractItemModel):
             int
         """
 
-        if parent.column() > 0:                                                             # if the column is greater than 0
-            return 0                                                                        # returns 0
+        if parent.column() > 0:                                                      
+            return 0                                                           
 
-        if not parent.isValid():                                                            # if the index is not valid
-            parentItem = self.rootItem                                                      # the parent item is the root item
-        else:                                                                               # otherwise
-            parentItem = parent.internalPointer()                                           # the parent item is the item of the given index
+        if not parent.isValid():                                                    
+            parentItem = self.rootItem                                                    
+        else:                                                               
+            parentItem = parent.internalPointer()                                         
 
-        return len(parentItem.children)                                                     # then returns the number of children of parent item
+        return len(parentItem.children)                                                
 
     def columnCount(self, parent):
         """
