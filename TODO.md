@@ -5,7 +5,6 @@
 - implement special components filter
 - search bar in components page
 
-- automated pricing in the components page
-- don't display price, quantity unit, seller, kit for the level < 5 components in the component editor
+- style the arrows of comboboxes and spinboxes
 
 DONE:

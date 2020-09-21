@@ -81,6 +81,9 @@ class ComponentEditor(qtw.QWidget):
         
         self.changeManufactureWidget(self.uiType.text(), self.uiManufacture, self.uiNumberID)
 
+        if self.uiType.text() in ['Project', 'Assembly']:
+            self.uiQnPContainer.setDisabled(True)
+
     def changeManufactureWidget(self, nodeType, widgetPtr, numberPtr):
         layout = widgetPtr.parentWidget().layout()
 

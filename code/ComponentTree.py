@@ -282,3 +282,15 @@ class ComponentTree(Tree):
             for item in billList:
                 csv_writer.writerow(item)
 
+    def calc_node_price(self):
+        price = 0
+
+        if len(self.children) == 0:
+            return self.price
+
+        for child in self.children:
+            child.calc_node_price()
+            price += int(child.price) * int(child.quantity)
+
+        self.price = price
+        return self.price

@@ -56,8 +56,11 @@ class ModelTree(qtc.QAbstractItemModel):
 
         item = index.internalPointer()
 
-        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                   
-            return getattr(item, headers[index.column()], None)                 
+        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole: 
+            column = headers[index.column()]
+            if column == 'price':
+                return item.calc_node_price()
+            return getattr(item, column, None)                 
         elif role == qtc.Qt.BackgroundRole:
             tp = item.type
             if tp == 'Assembly':
