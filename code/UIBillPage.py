@@ -13,7 +13,7 @@ class BillPage(qtw.QWidget):
 
         super(BillPage, self).__init__()                                       
 
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_bill_page.ui', self)   
+        uic.loadUi('code/resources/UIs/ui_bill_page.ui', self)   
 
         self.setModel(model)
 

@@ -22,7 +22,7 @@ class ComponentEditor(qtw.QWidget):
         """
         super(ComponentEditor, self).__init__()                                   
 
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_component_editor.ui', self)
+        uic.loadUi('code/resources/UIs/ui_component_editor.ui', self)
 
         self.mapper = qtw.QDataWidgetMapper()                                    
         self.manufactures = manufacture_model

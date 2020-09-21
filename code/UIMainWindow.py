@@ -28,14 +28,14 @@ class MainWindow(qtw.QMainWindow):
 
         super(MainWindow, self).__init__()
         
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_main_window.ui', self)
+        uic.loadUi('code/resources/UIs/ui_main_window.ui', self)
 
         self.filename = None     
         self.archive = ModelHardware()
         self.model = None 
         self.copied = None
-        self.statuses = ModelCombobox('D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/statuses.csv')
-        self.manufactures = ModelCombobox('D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/manufactures.csv')
+        self.statuses = ModelCombobox('code/resources/archive/statuses.csv')
+        self.manufactures = ModelCombobox('code/resources/archive/manufactures.csv')
 
 
         self.treeEditor = ComponentsPage(self.manufactures) 

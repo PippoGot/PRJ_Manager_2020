@@ -20,10 +20,12 @@ class HardwareEditor(qtw.QWidget):
         
         super(HardwareEditor, self).__init__()                                          
 
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_hardware_editor_page.ui', self)  
+        uic.loadUi('code/resources/UIs/ui_hardware_editor_page.ui', self)  
 
         self.uiSubmitButton.clicked.connect(self.addHardwareToArchive)                    
         self.uiRemoveButton.clicked.connect(self.removeHardware)
+
+        self.uiSearchEntry.addAction(qtg.QIcon('code/resources/icons/search.png'), qtw.QLineEdit.LeadingPosition)
 
         self.uiMEHCheck.clicked.connect(self.updateNumber)
         self.uiMMHCheck.clicked.connect(self.updateNumber)

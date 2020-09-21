@@ -24,10 +24,12 @@ class HardwareSelector(qtw.QWidget):
 
         super(HardwareSelector, self).__init__()                            
         
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_hardware_selector.ui', self) 
+        uic.loadUi('code/resources/UIs/ui_hardware_selector.ui', self) 
 
         self.uiCancelButton.clicked.connect(self.close)              
         self.uiOkButton.clicked.connect(self.onSubmit)
+
+        self.uiSearchEntry.addAction(qtg.QIcon('code/resources/icons/search.png'), qtw.QLineEdit.LeadingPosition)
 
         self.uiMechanicalButton.clicked.connect(self.changeFilter)
         self.uiMeasuredButton.clicked.connect(self.changeFilter)

@@ -16,7 +16,7 @@ class ComponentsPage(qtw.QWidget):
 
         super(ComponentsPage, self).__init__()                                    
 
-        uic.loadUi('D:/Data/_PROGETTI/Apps/PRJ_Manager/UIs/ui_components_page.ui', self)   
+        uic.loadUi('code/resources/UIs/ui_components_page.ui', self)   
 
         self.mapper = qtw.QDataWidgetMapper()
         self.current = None

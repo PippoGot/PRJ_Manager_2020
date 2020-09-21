@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>733</height>
+    <width>960</width>
+    <height>723</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -144,7 +144,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>960</width>
      <height>21</height>
     </rect>
    </property>
@@ -237,7 +237,7 @@
   <action name="uiActionNew">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/new.png</normaloff>../resources/icons/small_flat/new.png</iconset>
+     <normaloff>../icons/new.png</normaloff>../icons/new.png</iconset>
    </property>
    <property name="text">
     <string>New</string>
@@ -249,8 +249,8 @@
   <action name="uiActionOpen">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/open.png</normaloff>
-     <normalon>:/icons/open.png</normalon>../resources/icons/small_flat/open.png</iconset>
+     <normaloff>../icons/open.png</normaloff>
+     <normalon>:/icons/open.png</normalon>../icons/open.png</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -262,7 +262,7 @@
   <action name="uiActionSave">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/save.png</normaloff>../resources/icons/small_flat/save.png</iconset>
+     <normaloff>../icons/save.png</normaloff>../icons/save.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -274,7 +274,7 @@
   <action name="uiActionSaveAs">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/saveas.png</normaloff>../resources/icons/small_flat/saveas.png</iconset>
+     <normaloff>../icons/saveas.png</normaloff>../icons/saveas.png</iconset>
    </property>
    <property name="text">
     <string>Save as...</string>
@@ -286,7 +286,7 @@
   <action name="uiActionUndo">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/undo.png</normaloff>../resources/icons/small_flat/undo.png</iconset>
+     <normaloff>../icons/undo.png</normaloff>../icons/undo.png</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -298,7 +298,7 @@
   <action name="uiActionRedo">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/redo.png</normaloff>../resources/icons/small_flat/redo.png</iconset>
+     <normaloff>../icons/redo.png</normaloff>../icons/redo.png</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
@@ -310,7 +310,7 @@
   <action name="uiActionAddComponent">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/part.png</normaloff>../resources/icons/small_flat/part.png</iconset>
+     <normaloff>../icons/part.png</normaloff>../icons/part.png</iconset>
    </property>
    <property name="text">
     <string>Add Component</string>
@@ -322,7 +322,7 @@
   <action name="uiActionRemoveComponent">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/remove.png</normaloff>../resources/icons/small_flat/remove.png</iconset>
+     <normaloff>../icons/remove.png</normaloff>../icons/remove.png</iconset>
    </property>
    <property name="text">
     <string>Remove Component</string>
@@ -334,7 +334,7 @@
   <action name="uiActionExportBOM">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/bill.png</normaloff>../resources/icons/small_flat/bill.png</iconset>
+     <normaloff>../icons/bill.png</normaloff>../icons/bill.png</iconset>
    </property>
    <property name="text">
     <string>Export Bill of Materials</string>
@@ -343,7 +343,7 @@
   <action name="uiActionMorphSpecialComponent">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/morph.png</normaloff>../resources/icons/small_flat/morph.png</iconset>
+     <normaloff>../icons/morph.png</normaloff>../icons/morph.png</iconset>
    </property>
    <property name="text">
     <string>Morph Special Component</string>
@@ -361,7 +361,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/deprecated.png</normaloff>../resources/icons/small_flat/deprecated.png</iconset>
+     <normaloff>../icons/deprecated.png</normaloff>../icons/deprecated.png</iconset>
    </property>
    <property name="text">
     <string>Hide Deprecated</string>
@@ -373,7 +373,7 @@
   <action name="uiActionClear">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/clear.png</normaloff>../resources/icons/small_flat/clear.png</iconset>
+     <normaloff>../icons/clear.png</normaloff>../icons/clear.png</iconset>
    </property>
    <property name="text">
     <string>Clear</string>
@@ -385,7 +385,7 @@
   <action name="uiActionUpdateSpecialComponents">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/update.png</normaloff>../resources/icons/small_flat/update.png</iconset>
+     <normaloff>../icons/update.png</normaloff>../icons/update.png</iconset>
    </property>
    <property name="text">
     <string>Update Special Components</string>
@@ -397,7 +397,7 @@
   <action name="uiActionAddLeafComponent">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/leaf.png</normaloff>../resources/icons/small_flat/leaf.png</iconset>
+     <normaloff>../icons/leaf.png</normaloff>../icons/leaf.png</iconset>
    </property>
    <property name="text">
     <string>Add Leaf Component</string>
@@ -406,7 +406,7 @@
   <action name="uiActionAddJig">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/jig.png</normaloff>../resources/icons/small_flat/jig.png</iconset>
+     <normaloff>../icons/jig.png</normaloff>../icons/jig.png</iconset>
    </property>
    <property name="text">
     <string>Add Jig</string>
@@ -415,7 +415,7 @@
   <action name="uiActionExpandAll">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/expand.png</normaloff>../resources/icons/small_flat/expand.png</iconset>
+     <normaloff>../icons/expand.png</normaloff>../icons/expand.png</iconset>
    </property>
    <property name="text">
     <string>Expand All</string>
@@ -424,7 +424,7 @@
   <action name="uiActionCollapseAll">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/collapse.png</normaloff>../resources/icons/small_flat/collapse.png</iconset>
+     <normaloff>../icons/collapse.png</normaloff>../icons/collapse.png</iconset>
    </property>
    <property name="text">
     <string>Collapse All</string>
@@ -433,7 +433,7 @@
   <action name="uiActionAddSpecialComponent">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/hardware.png</normaloff>../resources/icons/small_flat/hardware.png</iconset>
+     <normaloff>../icons/hardware.png</normaloff>../icons/hardware.png</iconset>
    </property>
    <property name="text">
     <string>Add Special Component</string>
@@ -442,7 +442,7 @@
   <action name="uiActionCut">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/cut.png</normaloff>../resources/icons/small_flat/cut.png</iconset>
+     <normaloff>../icons/cut.png</normaloff>../icons/cut.png</iconset>
    </property>
    <property name="text">
     <string>Cut</string>
@@ -454,7 +454,7 @@
   <action name="uiActionCopy">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/copy.png</normaloff>../resources/icons/small_flat/copy.png</iconset>
+     <normaloff>../icons/copy.png</normaloff>../icons/copy.png</iconset>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -466,7 +466,7 @@
   <action name="uiActionPaste">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/paste.png</normaloff>../resources/icons/small_flat/paste.png</iconset>
+     <normaloff>../icons/paste.png</normaloff>../icons/paste.png</iconset>
    </property>
    <property name="text">
     <string>Paste</string>
@@ -478,7 +478,7 @@
   <action name="uiActionAddPlaceholder">
    <property name="icon">
     <iconset>
-     <normaloff>../resources/icons/small_flat/placeholder.png</normaloff>../resources/icons/small_flat/placeholder.png</iconset>
+     <normaloff>../icons/placeholder.png</normaloff>../icons/placeholder.png</iconset>
    </property>
    <property name="text">
     <string>Add Placeholder</string>

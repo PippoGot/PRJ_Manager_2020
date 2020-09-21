@@ -20,7 +20,7 @@ class ModelHardware(qtc.QAbstractItemModel):
         super(ModelHardware, self).__init__()                                         
 
         self.hardwareList = []                                                             
-        self.filename = 'D:/Data/_PROGETTI/APPS/PRJ_Manager/archive/HardwareArchive.csv' 
+        self.filename = 'code/resources/archive/HardwareArchive.csv' 
         self.readArchive()                                                                   
 
 # MODEL FUNCTIONS
