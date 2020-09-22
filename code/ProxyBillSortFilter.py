@@ -1,7 +1,8 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from constants import COLUMN_LIST_BILL as listaColonne
+
+from constants import COLUMN_LIST_BILL
 
 class ProxyBillSortFilter(qtc.QSortFilterProxyModel):
     """Class for the filtering of unwanted columns for the bill page."""
@@ -22,7 +23,7 @@ class ProxyBillSortFilter(qtc.QSortFilterProxyModel):
             bool: whether to show or hide the column
         """
 
-        if source_column not in listaColonne.keys():                    
+        if source_column not in COLUMN_LIST_BILL.keys():                    
             return False                                                 
         else:                                                           
             return True                                                  

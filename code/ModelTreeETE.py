@@ -1,12 +1,14 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+
 from ComponentTree import ComponentTree
+
 from util import increment_number
-from constants import HEADERS as headers
-from constants import NOT_EDITABLE_TYPES as notEditableTypes
-from constants import NOT_EDITABLE_COLUMNS as notEditableColumns
-from constants import DEFAULT_FIRST_NODE as base
+from constants import HEADERS
+from constants import NOT_EDITABLE_TYPES
+from constants import NOT_EDITABLE_COLUMNS
+from constants import DEFAULT_FIRST_NODE
 from constants import TYPE_COLORS
 
 class ModelTree(qtc.QAbstractItemModel):
@@ -32,7 +34,7 @@ class ModelTree(qtc.QAbstractItemModel):
         if filename:                                                                    
             self.first = self.readFile(filename)                          
         else:
-            self.first = ComponentTree('#000-000', base)                             
+            self.first = ComponentTree('#000-000', DEFAULT_FIRST_NODE)                             
             
         self.first.add_feature('level', 1)
         self.rootItem.add_child(self.first)
@@ -57,7 +59,7 @@ class ModelTree(qtc.QAbstractItemModel):
         item = index.internalPointer()
 
         if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole: 
-            column = headers[index.column()]
+            column = HEADERS[index.column()]
             if column == 'price':
                 return item.calc_node_price()
             return getattr(item, column, None)                 
@@ -86,7 +88,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
         if index.isValid() and role == qtc.Qt.EditRole:
             item = index.internalPointer()
-            item.add_feature(headers[index.column()], value)
+            item.add_feature(HEADERS[index.column()], value)
             self.dataChanged.emit(index, index)
             return True
         return 
@@ -104,7 +106,7 @@ class ModelTree(qtc.QAbstractItemModel):
             ItemFlags
         """
 
-        condition = (index.column() in notEditableColumns) or (index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in notEditableTypes)
+        condition = (index.column() in NOT_EDITABLE_COLUMNS) or (index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in NOT_EDITABLE_TYPES)
 
         if not index.isValid():                                                                                                    
             return qtc.Qt.NoItemFlags                                     
@@ -129,7 +131,7 @@ class ModelTree(qtc.QAbstractItemModel):
         """
 
         if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:             
-            return headers[section].title()                                            
+            return HEADERS[section].title()                                            
         return None                                                              
 
     def index(self, row, column, parent):
@@ -226,7 +228,7 @@ class ModelTree(qtc.QAbstractItemModel):
             int
         """
 
-        return len(headers)
+        return len(HEADERS)
 
     def insertRows(self, position, item, parent = qtc.QModelIndex()):
         """

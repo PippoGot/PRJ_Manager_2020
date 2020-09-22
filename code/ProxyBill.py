@@ -1,7 +1,8 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from constants import HEADERS as headers
+from constants import HEADERS
+from constants import TYPE_COLORS
 
 class ProxyBill(qtc.QIdentityProxyModel):
     """
@@ -11,42 +12,6 @@ class ProxyBill(qtc.QIdentityProxyModel):
 
     def __init__(self):
         super().__init__()
-
-    def mapFromSource(self, sourceIndex):
-        """
-        Maps a source index to a proxy index.
-
-        INPUT:
-            QModelIndex - sourceIndex: the source index to map
-        """
-
-        if not sourceIndex.isValid(): return qtc.QModelIndex()
-
-        element = sourceIndex.internalPointer()
-        leafList = self.sourceModel().rootItem.get_unique_leaves_list()
-
-        if element not in leafList: return qtc.QModelIndex()
-
-        row = leafList.index(element)
-        return self.createIndex(row, sourceIndex.column(), element)
-
-    def mapToSource(self, proxyIndex):
-        """
-        Maps a proxy index to a source index.
-
-        INPUT:
-            QModelIndex - proxyIndex: the proxy index to map
-        """
-
-        if not proxyIndex.isValid(): return qtc.QModelIndex()
-        
-        element = proxyIndex.internalPointer()
-
-        if not element or not element.up: return qtc.QModelIndex()
-
-        row = element.up.children.index(element)
-        
-        return self.createIndex(row, proxyIndex.column(), element)
 
     def rowCount(self, parent):
         """
@@ -59,27 +24,21 @@ class ProxyBill(qtc.QIdentityProxyModel):
         RETURN TYPE:
             int
         """
+        
+        return len(self.sourceModel().rootItem.search_nodes(level = 5))
 
-        if not parent.isValid():
-            sourceModel = self.sourceModel()
-            if sourceModel:
-                leafList = sourceModel.rootItem.get_unique_leaves_list()
-                return len(leafList)
-        return 0
+    # def columnCount(self, parent):
+    #     """
+    #     Returns the number of columns for the children of the given parent .
+    #     In most subclasses, the number of columns is independent of the parent .
 
-    def columnCount(self, parent):
-        """
-        Returns the number of columns for the children of the given parent .
-        In most subclasses, the number of columns is independent of the parent .
+    #     PARAMETERS:
+    #         parent – QModelIndex
 
-        PARAMETERS:
-            parent – QModelIndex
-
-        RETURN TYPE:
-            int
-        """
-
-        return len(headers)
+    #     RETURN TYPE:
+    #         int
+    #     """
+    #     pass
 
     def index(self, row, column, parent):
         """
@@ -96,40 +55,33 @@ class ProxyBill(qtc.QIdentityProxyModel):
             QModelIndex
         """
 
-        if not self.hasIndex(row, column, parent):                                 
-            return qtc.QModelIndex()                                              
-        else:                                                                     
-            parentItem = self.sourceModel().rootItem                                 
+        if not self.hasIndex(row, column, parent):                             
+            return qtc.QModelIndex()                                  
 
-        leafList = parentItem.get_unique_leaves_list()
-        if row >= len(leafList) or row < 0: return qtc.QModelIndex()
+        childItem = self.sourceModel().rootItem.search_nodes(level = 5)[row]                                         
 
-        childItem = leafList[row]                                                   
+        if childItem:                                                           
+            return self.createIndex(row, column, childItem)                    
 
-        if childItem:                                                               
-            return self.createIndex(row, column, childItem)                          
+        return qtc.QModelIndex() 
 
-        return qtc.QModelIndex()
-
-    def parent(self, index):
-        """
-        Returns the parent of the model item with the given index . If the item has no parent, an invalid 
-        QModelIndex is returned.
-        A common convention used in models that expose tree data structures is that only items in the first
-        column have children. For that case, when reimplementing this function in a subclass the column of 
-        the returned QModelIndex would be 0.
-        When reimplementing this function in a subclass, be careful to avoid calling QModelIndex member 
-        functions, such as parent(), since indexes belonging to your model will simply call your implementation,
-        leading to infinite recursion
+    # def parent(self, index):
+    #     """
+    #     Returns the parent of the model item with the given index . If the item has no parent, an invalid 
+    #     QModelIndex is returned.
+    #     A common convention used in models that expose tree data structures is that only items in the first
+    #     column have children. For that case, when reimplementing this function in a subclass the column of 
+    #     the returned QModelIndex would be 0.
+    #     When reimplementing this function in a subclass, be careful to avoid calling QModelIndex member 
+    #     functions, such as parent(), since indexes belonging to your model will simply call your implementation,
+    #     leading to infinite recursion
         
-        PARAMETERS:
-            index – QModelIndex
+    #     PARAMETERS:
+    #         index – QModelIndex
 
-        RETURN TYPE:
-            QModelIndex
-        """
-
-        return qtc.QModelIndex()                                               
+    #     RETURN TYPE:
+    #         QModelIndex
+    #     """
 
     def data(self, index, role):        
         """
@@ -143,38 +95,38 @@ class ProxyBill(qtc.QIdentityProxyModel):
             object
         """
 
-        if not index.isValid():                                                   
-            return None                                                 
+        
+        if not index.isValid():                                                      
+            return None                                                         
 
-        element = index.internalPointer()
-        if element.level == 5:
-            quantity = self.sourceModel().rootItem.calc_quantity(element)
-        else:
-            quantity = element.quantity
+        item = index.internalPointer()
 
-        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                      
-            if index.column() == 9:
-                return quantity
-            return getattr(element, headers[index.column()], None)                    
+        if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole: 
+            column = HEADERS[index.column()]
+            if column == 'quantity':
+                return self.sourceModel().rootItem.calc_quantity(item)
+            return getattr(item, column, None)                 
+        elif role == qtc.Qt.BackgroundRole:
+            tp = item.type
+            if tp == 'Assembly':
+                tp += str(item.level - 1)
+            return TYPE_COLORS[tp]
 
-    def headerData(self, section, orientation, role):
-        """
-        Turns the data for the given role and section in the header with the specified orientation .
-        For horizontal headers, the section number corresponds to the column number. Similarly, for 
-        vertical headers, the section number corresponds to the row number.
+    # def headerData(self, section, orientation, role):
+    #     """
+    #     Turns the data for the given role and section in the header with the specified orientation .
+    #     For horizontal headers, the section number corresponds to the column number. Similarly, for 
+    #     vertical headers, the section number corresponds to the row number.
 
-        PARAMETERS:
-            section – int
-            orientation – Orientation
-            role – int
+    #     PARAMETERS:
+    #         section – int
+    #         orientation – Orientation
+    #         role – int
 
-        RETURN TYPE:
-            object
-        """
-
-        if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:         
-            return headers[section].title()                                         
-        return None  
+    #     RETURN TYPE:
+    #         object
+    #     """
+    #     pass
 
     def flags(self, index):
         """
@@ -189,7 +141,4 @@ class ProxyBill(qtc.QIdentityProxyModel):
             ItemFlags
         """
 
-        if not index.isValid():                                                                                                       
-            return qtc.Qt.NoItemFlags                                    
-        else:
-            return qtc.Qt.ItemIsEnabled
+        return qtc.Qt.ItemIsEnabled

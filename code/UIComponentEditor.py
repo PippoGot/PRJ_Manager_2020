@@ -2,8 +2,10 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+
 from ComponentTree import ComponentTree
-from constants import TYPES_FROM_EDITOR as types
+
+from constants import TYPES_FROM_EDITOR
 
 class ComponentEditor(qtw.QWidget):
     """
@@ -14,7 +16,8 @@ class ComponentEditor(qtw.QWidget):
     submit = qtc.pyqtSignal(ComponentTree)                                            
     
     def __init__(self, parent, manufacture_model, level = None):
-        """Loads the .ui file, and connects the buttons to their respective functions.
+        """
+        Loads the .ui file, and connects the buttons to their respective functions.
 
         INPUT:
             ComponentTree - parent: item to calculate the number from
@@ -57,7 +60,8 @@ class ComponentEditor(qtw.QWidget):
         self.close()                                                                 
 
     def initFields(self, parent, level):
-        """Initializes the fields when a new popup is opened.
+        """
+        Initializes the fields when a new popup is opened.
 
         INPUT:
             ComponentTree - parent: item to calculate the number from
@@ -73,7 +77,7 @@ class ComponentEditor(qtw.QWidget):
         level = parent.level + 1
         
 
-        self.uiType.setText(types[level])
+        self.uiType.setText(TYPES_FROM_EDITOR[level])
         self.uiComment.setPlainText('-')
         self.uiPriceUnit.setText('0')
         self.uiSeller.setText('-')
@@ -85,6 +89,15 @@ class ComponentEditor(qtw.QWidget):
             self.uiQnPContainer.setDisabled(True)
 
     def changeManufactureWidget(self, nodeType, widgetPtr, numberPtr):
+        """
+        Changes dinamically the manufacture widget and initializes it's text in every context.
+
+        INPUT:
+            str - nodeType: the type of the current component
+            QWidget - widgetPtr: the widget to modify
+            QWidget - numberPtr: the widget holding the number
+        """
+
         layout = widgetPtr.parentWidget().layout()
 
         def changeWidget(widget, widgetPointer, text = None):
@@ -118,6 +131,13 @@ class ComponentEditor(qtw.QWidget):
             changeWidget('ComboBox', widgetPtr)
 
     def calc_manufacture(self, nodeType):
+        """
+        Calculates the corresponding value for the manufacture field.
+
+        INPUT:
+            str - nodeType: the value of the type of the node
+        """
+
         if nodeType == 'Project' or nodeType == 'Assembly':
             return 'Assembled'
         elif nodeType == 'Placeholder':

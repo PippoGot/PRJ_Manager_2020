@@ -2,8 +2,9 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from ProxyBill import ProxyBill as Bill
-from ProxyBillSortFilter import ProxyBillSortFilter as ProxyBill
+
+from ProxyBill import ProxyBill
+from ProxyBillSortFilter import ProxyBillSortFilter
 
 class BillPage(qtw.QWidget):
     """Class for the bill page."""
@@ -26,10 +27,7 @@ class BillPage(qtw.QWidget):
         
         self.sourceModel = model
 
-        self.model = Bill()
+        self.model = ProxyBill()
         self.model.setSourceModel(self.sourceModel)
-        
-        self.proxyModel = ProxyBill()
-        self.proxyModel.setSourceModel(self.model)
 
-        self.uiBillView.setModel(self.proxyModel)
+        self.uiBillView.setModel(self.model)

@@ -7,4 +7,10 @@
 
 - style the arrows of comboboxes and spinboxes
 
+- right click on a component to display add menu
+
+- better output file for export bill of material (excel ?)
+
+- ui component editor/page, change the widget changing function
+
 DONE:

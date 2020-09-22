@@ -1,10 +1,10 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from util import _36ToBase10
-from constants import HEADERS as headers
-from constants import COLUMN_LIST_HARDWARE as listaColonne
 import re
+
+from util import _36ToBase10
+from constants import COLUMN_LIST_HARDWARE
 
 class HardwareProxyModel(qtc.QSortFilterProxyModel):
     """This class filters out the unwanted items to display and also performs sorting."""
@@ -24,7 +24,7 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
             bool: whether to show or hide the column
         """
 
-        if source_column not in listaColonne.keys():      
+        if source_column not in COLUMN_LIST_HARDWARE.keys():      
             return False                                    
         else:                                                 
             return True                               

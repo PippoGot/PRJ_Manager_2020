@@ -1,4 +1,4 @@
-from constants import VALUES_36_10 as values
+from constants import VALUES_36_10
 import random
 
 # NUMBER INCREMENT FUNCTIONS
@@ -17,7 +17,7 @@ def _10ToBase36(number):
     
     while number > 0:                                                     
         number, result = divmod(number, 36)                             
-        output.append(values[result])                                     
+        output.append(VALUES_36_10[result])                                     
     
     output.reverse()                                                       
     output = ''.join(output)                                                   
@@ -39,7 +39,7 @@ def _36ToBase10(number):
     x = 0
 
     for char in number:                                                     
-        output += values.index(char) * (36 ** x)                            
+        output += VALUES_36_10.index(char) * (36 ** x)                            
         x += 1
 
     return output                                                           
@@ -140,7 +140,7 @@ def is_valid(number):
     number = number.replace('-', '')
         
     for x in number:                                                       
-        if x not in values: return False                      
+        if x not in VALUES_36_10: return False                      
 
     return True                                                  
 

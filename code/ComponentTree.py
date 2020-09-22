@@ -2,11 +2,13 @@ from ete3 import Tree
 import csv
 import math
 from util import increment_number, calc_hash
-from constants import HEADERS as headers
+from constants import HEADERS
 from constants import BILL_HEADERS
 
 class ComponentTree(Tree):
     """Adds some specific functions for the managing of the components tree."""
+
+# INIT FUNCTIONS
 
     def __init__(self, name, attrs = {}):
         """
@@ -21,6 +23,54 @@ class ComponentTree(Tree):
 
         if attrs:
             self.init_node_attrs(attrs)
+
+    def init_node_attrs(self, attrs_dict):
+        """
+        Initializes all the given attributes to the node.
+        
+        INPUT:
+            dict - attrs_dict: dictionary with the attributes names and values
+        """
+
+        for key in attrs_dict.keys():
+            self.add_feature(key, attrs_dict[key])
+
+    def addInto(self, parent, childDict):
+        """
+        Adds a tree item to the given parent and then adds the given parameters to 
+        the new tree item.
+
+        INPUT:
+            ComponentTree - parent: the parent of the item to add
+            dict - childDict: dictionary with the new item parameters
+        """
+
+        childItem = ComponentTree(childDict['number'], childDict)
+        childItem.add_feature('level', parent.level + 1)
+        parent.add_child(childItem)
+
+# CALC FUNCTIONS
+
+    def update_hash(self, root):
+        """
+        Updates the hash numbers of this component and of all of his children recursively.
+        
+        INPUT:
+            ComponentTree - root: the root node to use for the updating
+        """
+
+        self.add_feature('parent', self.up.hashn)
+
+        hashn = calc_hash(self.up.hashn, self.number)
+        ex_hash = root.search_nodes(hashn = hashn)
+        while len(ex_hash) > 0:
+            hashn = calc_hash(self.up.hashn, self.number)
+            ex_hash = root.search_nodes(hashn = hashn)
+            
+        self.add_feature('hashn', calc_hash(self.up.hashn, self.number))
+
+        for child in self.children:
+            child.update_hash(root)
 
     def calc_number(self, parent, level = None):
         """
@@ -50,119 +100,6 @@ class ComponentTree(Tree):
             number = increment_number(parentNumber, ct, level)
         
         return number
-
-    def save_file(self, filename):
-        """
-        Saves a tree in a .csv file.
-
-        INPUT:
-            str - filename: the name of the file that will be saved
-        """
-
-        with open(filename, 'w') as file:
-            fieldnames = headers
-            csv_writer = csv.DictWriter(file, fieldnames = fieldnames)
-
-            csv_writer.writeheader()
-
-            for item in self.iter_descendants():
-                line = {}
-                for key in fieldnames:
-                    line[key] = getattr(item, key, None)
-                csv_writer.writerow(line)
-
-    def read_file(self, filename):
-        """
-        Reads a .csv file and converts it in a tree data structure.
-
-        INPUT:
-            str - filename: the name of the file to read 
-        """
-
-        missingList = []                                                       
-
-        with open(filename, 'r') as file:                                          
-            csv_reader = csv.DictReader(file)                                    
-
-            firstItem = next(csv_reader)
-            first = ComponentTree(firstItem['number'], firstItem)
-            first.add_feature('level', 1)
-
-            for item in csv_reader:
-                parentList = first.search_nodes(hashn = item['parent'])
-                if len(parentList) > 0:
-                    self.addInto(parentList[0], item)
-                else:
-                    missingList.append(item)
-
-            while len(missingList) > 0:
-                for item in missingList:
-                    parentList = first.search_nodes(hashn = item['parent'])
-                    if len(parentList) > 0:
-                        self.addInto(parentList[0], item)
-                        missingList.remove(item)
-
-        return first
-
-    def addInto(self, parent, childDict):
-        """
-        Adds a tree item to the given parent and then adds the given parameters to 
-        the new tree item.
-
-        INPUT:
-            ComponentTree - parent: the parent of the item to add
-            dict - childDict: dictionary with the new item parameters
-        """
-
-        childItem = ComponentTree(childDict['number'], childDict)
-        childItem.add_feature('level', parent.level + 1)
-        parent.add_child(childItem)
-
-    def init_node_attrs(self, attrs_dict):
-        """
-        Initializes all the given attributes to the node.
-        
-        INPUT:
-            dict - attrs_dict: dictionary with the attributes names and values
-        """
-
-        for key in attrs_dict.keys():
-            self.add_feature(key, attrs_dict[key])
-
-    def update_hash(self, root):
-        """Updates the hash numbers of this component and of all of his children recursively."""
-
-        self.add_feature('parent', self.up.hashn)
-
-        hashn = calc_hash(self.up.hashn, self.number)
-        ex_hash = root.search_nodes(hashn = hashn)
-        while len(ex_hash) > 0:
-            hashn = calc_hash(self.up.hashn, self.number)
-            ex_hash = root.search_nodes(hashn = hashn)
-            
-        self.add_feature('hashn', calc_hash(self.up.hashn, self.number))
-
-        for child in self.children:
-            child.update_hash(root)
-
-    def copy(self):
-        """
-        Returns a copy of this component. Copies all of his features and childrens.
-
-        RETURN TYPE:
-            ComponentTree: copy of the component
-        """
-
-        newNode = ComponentTree(self.number)
-
-        for feature in self.features:
-            newNode.add_feature(feature, getattr(self, feature, None))
-
-        for child in self.children:
-            newChild = child.copy()
-            newNode.add_child(newChild)
-
-        return newNode
 
     def calc_quantity(self, node):
         """
@@ -206,6 +143,50 @@ class ComponentTree(Tree):
         totalPrice = math.ceil(quantity / singleQuantity) * singlePrice
 
         return totalPrice
+
+    def calc_node_price(self):
+        """
+        Calculates the price of the current node, based on the price of the children of this node.
+        Before the current price, the price of the children is calculated recursively.
+
+        RETURN TYPE:
+            float: the calculated price
+        """
+
+        price = 0
+
+        if len(self.children) == 0:
+            return self.price
+
+        for child in self.children:
+            child.calc_node_price()
+            price += int(child.price) * int(child.quantity)
+
+        self.price = price
+        return self.price
+
+# MISC FUNCTIONS
+
+    def copy(self):
+        """
+        Returns a copy of this component. Copies all of his features and childrens.
+
+        RETURN TYPE:
+            ComponentTree: copy of the component
+        """
+
+        newNode = ComponentTree(self.number)
+
+        for feature in self.features:
+            newNode.add_feature(feature, getattr(self, feature, None))
+
+        for child in self.children:
+            newChild = child.copy()
+            newNode.add_child(newChild)
+
+        return newNode
+
+# GETTER FUNCTIONS
 
     def get_valid_leaves_list(self, **kwargs):
         """
@@ -252,6 +233,8 @@ class ComponentTree(Tree):
 
         return uniqueLeaves
 
+# FILE MANAGEMENT FUNCTIONS
+
     def export_bill(self, filename):
         """
         Saves a .csv file with the classic bill of material data inside.
@@ -282,15 +265,55 @@ class ComponentTree(Tree):
             for item in billList:
                 csv_writer.writerow(item)
 
-    def calc_node_price(self):
-        price = 0
+    def save_file(self, filename):
+        """
+        Saves a tree in a .csv file.
 
-        if len(self.children) == 0:
-            return self.price
+        INPUT:
+            str - filename: the name of the file that will be saved
+        """
 
-        for child in self.children:
-            child.calc_node_price()
-            price += int(child.price) * int(child.quantity)
+        with open(filename, 'w') as file:
+            fieldnames = HEADERS
+            csv_writer = csv.DictWriter(file, fieldnames = fieldnames)
 
-        self.price = price
-        return self.price
+            csv_writer.writeheader()
+
+            for item in self.iter_descendants():
+                line = {}
+                for key in fieldnames:
+                    line[key] = getattr(item, key, None)
+                csv_writer.writerow(line)
+
+    def read_file(self, filename):
+        """
+        Reads a .csv file and converts it in a tree data structure.
+
+        INPUT:
+            str - filename: the name of the file to read 
+        """
+
+        missingList = []                                                       
+
+        with open(filename, 'r') as file:                                          
+            csv_reader = csv.DictReader(file)                                    
+
+            firstItem = next(csv_reader)
+            first = ComponentTree(firstItem['number'], firstItem)
+            first.add_feature('level', 1)
+
+            for item in csv_reader:
+                parentList = first.search_nodes(hashn = item['parent'])
+                if len(parentList) > 0:
+                    self.addInto(parentList[0], item)
+                else:
+                    missingList.append(item)
+
+            while len(missingList) > 0:
+                for item in missingList:
+                    parentList = first.search_nodes(hashn = item['parent'])
+                    if len(parentList) > 0:
+                        self.addInto(parentList[0], item)
+                        missingList.remove(item)
+
+        return first

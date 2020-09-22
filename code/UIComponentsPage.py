@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from ProxyTree import ProxyTree
-from constants import COMPONENTS_PAGE_SIZES as sizes
+from constants import COMPONENTS_PAGE_SIZES
 
 class ComponentsPage(qtw.QWidget):
     """
@@ -88,6 +88,15 @@ class ComponentsPage(qtw.QWidget):
         self.changeManufactureWidget(self.uiType.text(), self.uiManufacture, self.uiNumberID)
 
     def changeManufactureWidget(self, nodeType, widgetPtr, numberPtr):
+        """
+        Changes dinamically the manufacture widget and initializes it's text in every context.
+
+        INPUT:
+            str - nodeType: the type of the current component
+            QWidget - widgetPtr: the widget to modify
+            QWidget - numberPtr: the widget holding the number
+        """
+        
         layout = widgetPtr.parentWidget().layout()
 
         def changeWidget(widget, widgetPointer, text = None):
@@ -124,6 +133,6 @@ class ComponentsPage(qtw.QWidget):
 
         self.uiComponentsView.expandAll()                                                 
         for column in range(self.treeProxyModel.columnCount(qtc.QModelIndex())):    
-            self.uiComponentsView.setColumnWidth(column, sizes[column])
+            self.uiComponentsView.setColumnWidth(column, COMPONENTS_PAGE_SIZES[column])
         
         self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)                            

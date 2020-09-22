@@ -189,6 +189,14 @@ class HardwareEditor(qtw.QWidget):
         self.changeManufacture(self.uiNewNumberID.text(), self.uiNewManufacture)
 
     def changeManufacture(self, number, widgetPtr):
+        """
+        Changes the manufacture field based on the number of the component.
+
+        INPUT:
+            str - number: the number of the component
+            QWidget - widgetPtr: the widget to change the value of
+        """
+        
         if number[1:4] == 'MMH':
             widgetPtr.setText('Cut to length')
         else:

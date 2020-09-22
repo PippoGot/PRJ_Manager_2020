@@ -4,9 +4,9 @@ from PyQt5 import QtCore as qtc
 import csv
 from util import increment_number
 from ComponentTree import ComponentTree
-from constants import HEADERS as headers
-from constants import NOT_EDITABLE_TYPES as notEditableTypes
-from constants import NOT_EDITABLE_COLUMNS as notEditableColumns
+from constants import HEADERS
+from constants import NOT_EDITABLE_TYPES
+from constants import NOT_EDITABLE_COLUMNS
 
 class ModelHardware(qtc.QAbstractItemModel):
     """
@@ -41,7 +41,7 @@ class ModelHardware(qtc.QAbstractItemModel):
             return None                                                         
         
         row = index.row()                                                               
-        column = headers[index.column()]                                                 
+        column = HEADERS[index.column()]                                                 
 
         if role == qtc.Qt.DisplayRole or role == qtc.Qt.EditRole:                         
             data = self.hardwareList[row][column]                                      
@@ -67,7 +67,7 @@ class ModelHardware(qtc.QAbstractItemModel):
         if index.isValid():                                                            
             if role == qtc.Qt.EditRole:                                      
                 row = index.row()                                                   
-                column = headers[index.column()]                                       
+                column = HEADERS[index.column()]                                       
 
                 self.hardwareList[row][column] = value                                   
 
@@ -89,7 +89,7 @@ class ModelHardware(qtc.QAbstractItemModel):
             ItemFlags
         """
 
-        condition = (index.column() in notEditableColumns) or (index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in notEditableTypes)
+        condition = (index.column() in NOT_EDITABLE_COLUMNS) or (index.column() == 5 and self.data(index.siblingAtColumn(4), qtc.Qt.DisplayRole) in NOT_EDITABLE_TYPES)
 
         if not index.isValid():                                                                                                         
             return qtc.Qt.NoItemFlags                                              
@@ -114,7 +114,7 @@ class ModelHardware(qtc.QAbstractItemModel):
         """
 
         if orientation == qtc.Qt.Horizontal and role == qtc.Qt.DisplayRole:              
-            return headers[section].title()                                              
+            return HEADERS[section].title()                                              
         return None                                                                        
 
     def index(self, row, column, parent):
@@ -188,7 +188,7 @@ class ModelHardware(qtc.QAbstractItemModel):
             int
         """
 
-        return len(headers)                                                    
+        return len(HEADERS)                                                    
 
     def insertRows(self, item, parent = qtc.QModelIndex()):
         """
@@ -264,7 +264,7 @@ class ModelHardware(qtc.QAbstractItemModel):
         """
 
         with open(self.filename, 'w') as archive:                                   
-            csv_writer = csv.DictWriter(archive, fieldnames = headers)                     
+            csv_writer = csv.DictWriter(archive, fieldnames = HEADERS)                     
 
             csv_writer.writeheader()                                                     
 

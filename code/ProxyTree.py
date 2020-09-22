@@ -1,8 +1,9 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+
 from util import _36ToBase10
-from constants import COLUMN_LIST_TREE as listaColonne
+from constants import COLUMN_LIST_TREE
 
 class ProxyTree(qtc.QSortFilterProxyModel):
     """
@@ -27,7 +28,7 @@ class ProxyTree(qtc.QSortFilterProxyModel):
             bool: whether to show or hide the column
         """
 
-        if source_column not in listaColonne.keys():                       # if the column has to be hidden
+        if source_column not in COLUMN_LIST_TREE.keys():                       # if the column has to be hidden
             return False                                                        # returns False
         else:                                                                   # otherwise
             return True                                                         # returns True
