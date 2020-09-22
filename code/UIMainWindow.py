@@ -14,7 +14,6 @@ from ModelTreeETE import ModelTree
 from ModelCombobox import ModelCombobox
 
 from ComponentTree import ComponentTree
-
 from constants import SECTIONS_TO_UPDATE
 from constants import COLUMNS_TO_UPDATE
 
@@ -35,16 +34,17 @@ class MainWindow(qtw.QMainWindow):
         uic.loadUi('code/resources/UIs/ui_main_window.ui', self)
 
         self.filename = None     
-        self.archive = ModelHardware()
         self.model = None 
         self.copied = None
+        self.archive = ModelHardware()
         self.statuses = ModelCombobox('code/resources/archive/statuses.csv')
         self.manufactures = ModelCombobox('code/resources/archive/manufactures.csv')
-
 
         self.treeEditor = ComponentsPage(self.manufactures) 
         self.uiTreePage.layout().addWidget(self.treeEditor)
         self.treeEditor.uiStatus.setModel(self.statuses)
+        self.treeEditor.uiComponentsView.setContextMenuPolicy(qtc.Qt.CustomContextMenu)
+        self.treeEditor.uiComponentsView.customContextMenuRequested.connect(self.rightClickMenu)
 
         self.hardwareEditor = HardwareEditor(self.archive)
         self.hardwareEditor.uiCurrentStatus.setModel(self.statuses)
@@ -87,7 +87,7 @@ class MainWindow(qtw.QMainWindow):
         self.showMaximized()
 
 # ACTION FUNCTIONS
-# file menu
+# FILE MENU
 
     def newFile(self):
         """Creates a new model, for a new file."""
@@ -195,7 +195,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.setModel()
 
-# edit menu
+# EDIT MENU
 
     def addComponent(self):
         """Adds a custom component to the model."""
@@ -451,7 +451,7 @@ class MainWindow(qtw.QMainWindow):
         else: 
             self.okDialog('Warning!', 'No item currently selected.')
 
-# view menu
+# VIEW MENU
 
     def hideDeprecated(self):
         """Choose whether to see or not deprecated items."""
@@ -584,3 +584,33 @@ class MainWindow(qtw.QMainWindow):
         )
 
         return self.msgBox
+
+    def rightClickMenu(self, position):
+        """
+        Creates the context menu in the components view when the right click is pressed.
+
+        INPUT:
+            position
+        """
+
+        index = self.treeEditor.current
+
+        if index:
+            node = index.internalPointer()
+            level = node.level
+
+            menu = qtw.QMenu()
+
+            if level < 5:
+                menu.addAction(self.uiActionAddComponent)
+                menu.addAction(self.uiActionAddSpecialComponent)
+                menu.addAction(self.uiActionAddLeafComponent)
+                menu.addAction(self.uiActionAddJig)
+                menu.addAction(self.uiActionAddPlaceholder)
+
+            if node.type == 'Hardware':
+                menu.addAction(self.uiActionMorphSpecialComponent)
+
+            menu.addAction(self.uiActionRemoveComponent)
+
+            menu.exec_(self.treeEditor.uiComponentsView.viewport().mapToGlobal(position))
