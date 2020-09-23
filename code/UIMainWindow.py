@@ -51,8 +51,8 @@ class MainWindow(qtw.QMainWindow):
         self.hardwareEditor.uiNewStatus.setModel(self.statuses)
         self.uiHardwarePage.layout().addWidget(self.hardwareEditor)
 
-        self.billPage = BillPage(self.model)
-        self.uiBillPage.layout().addWidget(self.billPage)
+        # self.billPage = BillPage(self.model)
+        # self.uiBillPage.layout().addWidget(self.billPage)
 
         # FILE MENU ACTIONS
         self.uiActionNew.triggered.connect(self.newFile)
@@ -501,7 +501,7 @@ class MainWindow(qtw.QMainWindow):
         self.filename = filename
         self.treeEditor.setModel(self.model)
         self.treeEditor.current = None
-        self.billPage.setModel(self.model)
+        # self.billPage.setModel(self.model)
 
     def insertWrapper(self, node, level, currentSelection, position):
         """
@@ -595,6 +595,9 @@ class MainWindow(qtw.QMainWindow):
 
         index = self.treeEditor.current
 
+        separator = qtw.QAction()
+        separator.setSeparator(True)
+
         if index:
             node = index.internalPointer()
             level = node.level
@@ -607,9 +610,11 @@ class MainWindow(qtw.QMainWindow):
                 menu.addAction(self.uiActionAddLeafComponent)
                 menu.addAction(self.uiActionAddJig)
                 menu.addAction(self.uiActionAddPlaceholder)
+                menu.addAction(separator)
 
             if node.type == 'Hardware':
                 menu.addAction(self.uiActionMorphSpecialComponent)
+                menu.addAction(separator)
 
             menu.addAction(self.uiActionRemoveComponent)
 
