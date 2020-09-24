@@ -58,11 +58,21 @@ stylesheet = """
         border: transparent;
     }
 
-    QHeaderView::section {
+    QHeaderView::section:horizontal {
         background: #6cc9ff;
         border: 1px solid #20adff;
         color: #1a1a1a;
         padding-left: 3px;
+    }
+
+    QHeaderView::section:vertical, QTableCornerButton::section {
+        background: transparent;
+        border: transparent;
+        border-right: 1px solid #333333;
+    }
+
+    QTableCornerButton::section {
+        border-right: 1px solid #20adff;
     }
 
     QMenuBar::item:selected {
@@ -87,11 +97,6 @@ stylesheet = """
     QToolButton:pressed, QToolButton:checked, QToolButton:hover {
         background: #808080;
         border: 3px solid #808080;
-    }
-
-    QPushButton:disabled, QToolButton:disabled {
-        background: #ff7946;
-        color: #1a1a1a;
     }
 
     QPushButton:hover, QPushButton:pressed, QPushButton:checked{
@@ -153,5 +158,9 @@ stylesheet = """
         background: #808080;
         color: #808080;
         border: transparent;
+    }
+
+    QTableView::item:alternate {
+        background-color: #666666;
     }
 """
