@@ -36,11 +36,11 @@ def _36ToBase10(number):
     """
     
     output = 0                                                            
-    x = 0
+    x = len(number)
 
     for char in number:                                                     
         output += VALUES_36_10.index(char) * (36 ** x)                            
-        x += 1
+        x -= 1
 
     return output                                                           
 

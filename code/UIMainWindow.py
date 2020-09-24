@@ -51,8 +51,9 @@ class MainWindow(qtw.QMainWindow):
         self.hardwareEditor.uiNewStatus.setModel(self.statuses)
         self.uiHardwarePage.layout().addWidget(self.hardwareEditor)
 
-        # self.billPage = BillPage(self.model)
-        # self.uiBillPage.layout().addWidget(self.billPage)
+        self.billPage = BillPage(self.model)
+        self.uiBillPage.layout().addWidget(self.billPage)
+        self.uiTabWidget.currentChanged.connect(self.refreshBillModel)
 
         # FILE MENU ACTIONS
         self.uiActionNew.triggered.connect(self.newFile)
@@ -501,7 +502,7 @@ class MainWindow(qtw.QMainWindow):
         self.filename = filename
         self.treeEditor.setModel(self.model)
         self.treeEditor.current = None
-        # self.billPage.setModel(self.model)
+        self.billPage.setModel(self.model)
 
     def insertWrapper(self, node, level, currentSelection, position):
         """
@@ -516,7 +517,7 @@ class MainWindow(qtw.QMainWindow):
 
         node.add_feature('level', level)
         self.model.insertRows(position, node, currentSelection)
-        node.update_hash(self.model.rootItem)
+        # node.update_hash(self.model.rootItem)
         self.treeEditor.refreshView()
 
     def okDialog(self, title, message):
@@ -619,3 +620,14 @@ class MainWindow(qtw.QMainWindow):
             menu.addAction(self.uiActionRemoveComponent)
 
             menu.exec_(self.treeEditor.uiComponentsView.viewport().mapToGlobal(position))
+
+    def refreshBillModel(self, index):
+        """
+        Refreshes the bill model to update it.
+
+        INPUT:
+            int - index: the index of the tab widget
+        """
+        
+        if index == 1:
+            self.billPage.setModel(self.model)

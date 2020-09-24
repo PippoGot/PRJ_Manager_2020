@@ -62,10 +62,11 @@ class ModelTree(qtc.QAbstractItemModel):
             column = HEADERS[index.column()]
             if column == 'price':
                 return item.calc_node_price()
-            return getattr(item, column, None)                 
+            return getattr(item, column, None)   
+
         elif role == qtc.Qt.BackgroundRole:
             tp = item.type
-            if tp == 'Assembly':
+            if tp == 'Assembly' and item.level < 5:
                 tp += str(item.level - 1)
             return TYPE_COLORS[tp]
 

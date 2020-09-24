@@ -68,18 +68,18 @@ class ProxyTree(qtc.QSortFilterProxyModel):
         """
 
         if source_left.column() == 0 and source_right.column() == 0:
-            if source_left.isValid() and source_right.isValid():                # if the left index is valid and the column is 0
-                left = source_left.internalPointer()                            # gets the left item
-                left = left.number                                              # extracts it's number
-                left = left.replace('#', '')                                    # removes the non-number characters
+            if source_left.isValid() and source_right.isValid():
+                left = source_left.internalPointer() 
+                left = left.number      
+                left = left.replace('#', '')                         
                 left = left.replace('-', '')
-                left = _36ToBase10(left)                                        # and converts the number to decimal
+                left = _36ToBase10(left)                         
 
-                right = source_right.internalPointer()                          # repeat for the right item
+                right = source_right.internalPointer()
                 right = right.number
                 right = right.replace('#', '')
                 right = right.replace('-', '')
                 right = _36ToBase10(right)
                 
-                return left < right                                             # then return left < right
-        return False                                                            # otherwise returns False
+                return left < right             
+        return False                                    

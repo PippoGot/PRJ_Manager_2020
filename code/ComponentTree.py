@@ -47,7 +47,12 @@ class ComponentTree(Tree):
         """
 
         childItem = ComponentTree(childDict['number'], childDict)
-        childItem.add_feature('level', parent.level + 1)
+
+        if childItem.number[5:] != '000':
+            childItem.add_feature('level', 5)
+        else:
+            childItem.add_feature('level', parent.level + 1)
+
         parent.add_child(childItem)
 
 # CALC FUNCTIONS

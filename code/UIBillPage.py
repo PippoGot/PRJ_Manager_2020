@@ -30,4 +30,19 @@ class BillPage(qtw.QWidget):
         self.model = ProxyBill()
         self.model.setSourceModel(self.sourceModel)
 
-        self.uiBillView.setModel(self.model)
+        self.proxyModel = ProxyBillSortFilter()
+        self.proxyModel.setSourceModel(self.model)
+
+        self.uiBillView.setModel(self.proxyModel)
+
+        self.refreshView()
+
+    def refreshView(self):
+        """Refreshes the bill view."""
+
+        for column in range(self.proxyModel.columnCount(qtc.QModelIndex())):    
+            if column != self.proxyModel.columnCount(qtc.QModelIndex()):
+                self.uiBillView.resizeColumnToContents(column)
+        
+        self.uiBillView.horizontalHeader().setStretchLastSection(True)
+        self.proxyModel.sort(0, qtc.Qt.AscendingOrder)    

@@ -82,7 +82,7 @@ class ComponentsPage(qtw.QWidget):
         self.mapper.setRootIndex(parent)                                        
         self.mapper.setCurrentModelIndex(index)
 
-        self.current = index                                                           
+        self.current = index  
         self.uiComponentsEditor.setDisabled(False)
 
         self.changeManufactureWidget(self.uiType.text(), self.uiManufacture, self.uiNumberID)
