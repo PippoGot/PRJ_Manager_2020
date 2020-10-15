@@ -9,4 +9,7 @@
 - debug menu
 - show level and hashn of the components, refresh the bill view
 
+- analytics page/status bar
+- percentages
+
 DONE:
