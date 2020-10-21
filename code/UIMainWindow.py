@@ -89,7 +89,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.showMaximized()
 
-# ACTION FUNCTIONS
+# --- ACTION FUNCTIONS ---
 # FILE MENU
 
     def newFile(self):
@@ -216,6 +216,7 @@ class MainWindow(qtw.QMainWindow):
             def wrapper(nodeDict):
                 new.addFeatures(**nodeDict)
                 self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
+                new.updateHashes(self.model.rootItem)
                 self.treeEditor.refreshView()
 
             if level < 5:
@@ -242,6 +243,7 @@ class MainWindow(qtw.QMainWindow):
 
         def wrapper(node):
             self.model.insertRows(len(parentItem.getChildren()), node, currentSelection)
+            node.updateHashes(self.model.rootItem)
             self.treeEditor.refreshView()
 
         if currentSelection:
@@ -275,6 +277,7 @@ class MainWindow(qtw.QMainWindow):
             def wrapper(nodeDict):
                 new.addFeatures(**nodeDict)
                 self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
+                new.updateHashes(self.model.rootItem)
                 self.treeEditor.refreshView()
 
             if level < 5:
@@ -307,6 +310,7 @@ class MainWindow(qtw.QMainWindow):
             def wrapper(nodeDict):
                 new.addFeatures(**nodeDict)
                 self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
+                new.updateHashes(self.model.rootItem)
                 self.treeEditor.refreshView()
 
             if level < 5:
@@ -339,6 +343,7 @@ class MainWindow(qtw.QMainWindow):
             def wrapper(nodeDict):
                 new.addFeatures(**nodeDict)
                 self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
+                new.updateHashes(self.model.rootItem)
                 self.treeEditor.refreshView()
 
             if level < 5:
@@ -365,8 +370,6 @@ class MainWindow(qtw.QMainWindow):
 
         def morphWrapper(node):
             self.model.swapComponent(currentSelection.row(), node, currentSelection.parent())
-            node.add_feature('level', 5)
-            node.update_hash(self.model.rootItem)
             self.treeEditor.refreshView()
 
         if currentSelection:
@@ -393,14 +396,23 @@ class MainWindow(qtw.QMainWindow):
         if self.checkPage(0):
             return
 
+        archiveRoot = self.archive.rootItem
+        modelRoot = self.model.rootItem
+
         if self.model:
-            for item in self.model.rootItem.iter_leaves():
-                for hardware in self.archive.hardwareList:
-                    if item.number == hardware['number']:
-                        row = item.up.children.index(item)
-                        for x in range(len(COLUMNS_TO_UPDATE)):
-                            index = self.model.createIndex(row, SECTIONS_TO_UPDATE[x], item)
-                            self.model.setData(index, hardware[COLUMNS_TO_UPDATE[x]])
+            for node in modelRoot.getNodesList(type = 'Hardware'):
+                for hardwareNode in archiveRoot.getNodesList(type = 'Hardware'):
+                    if node == hardwareNode:
+                        features = hardwareNode.getNodeDictionary(*COLUMNS_TO_UPDATE)
+                        for key, value in features.items():
+                            node.updateFeature(key, value)
+
+            for node in modelRoot.getNodesList(type = 'Consumable'):
+                for hardwareNode in archiveRoot.getNodesList(type = 'Consumable'):
+                    if node == hardwareNode:
+                        features = hardwareNode.getNodeDictionary(*COLUMNS_TO_UPDATE)
+                        for key, value in features.items():
+                            node.updateFeature(key, value)
 
     def removeComponent(self):
         """Removes a component from the model."""
@@ -412,7 +424,7 @@ class MainWindow(qtw.QMainWindow):
 
         if currentSelection:
             item = currentSelection.internalPointer()
-            row = item.up.children.index(item)
+            row = item.getIndex()
             parent = currentSelection.parent()
 
             if item.level != 1:
@@ -433,7 +445,7 @@ class MainWindow(qtw.QMainWindow):
 
         if currentSelection:
             item = currentSelection.internalPointer()
-            row = item.up.children.index(item)
+            row = item.getIndex()
             parent = currentSelection.parent()
 
             if item.level != 1:
@@ -456,7 +468,7 @@ class MainWindow(qtw.QMainWindow):
             item = currentSelection.internalPointer()
 
             if item.level != 1:
-                self.copied = item.copy()
+                self.copied = item.deepCopy()
             else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
@@ -475,9 +487,8 @@ class MainWindow(qtw.QMainWindow):
             parentItem = currentSelection.internalPointer()
 
             if parentItem.level < 5:
-                self.model.insertRows(len(parentItem.children), self.copied, currentSelection)
-                self.copied.update_hash(self.model.rootItem)
-                self.copied = self.copied.copy()
+                self.model.insertRows(len(parentItem.getChildren()), self.copied, currentSelection)
+                self.copied = self.copied.deepCopy()
                 self.treeEditor.refreshView()
 
             else:
@@ -498,7 +509,7 @@ class MainWindow(qtw.QMainWindow):
                 self.treeEditor.treeProxyModel.setFilterRegExp(None)
             self.treeEditor.refreshView()
 
-# OTHER FUNCTIONS
+# --- OTHER FUNCTIONS ---
 
     def checkPage(self, page):
         """
@@ -516,6 +527,8 @@ class MainWindow(qtw.QMainWindow):
             return True
         return False
 
+# MODEL FUNCTIONS
+
     def setModel(self, model=None, filename=None):
         """
         Sets the window model for all the different pages. Also if the model is from an external file
@@ -531,6 +544,20 @@ class MainWindow(qtw.QMainWindow):
         self.treeEditor.setModel(self.model)
         self.treeEditor.current = None
         # self.billPage.setModel(self.model)
+
+    def refreshBillModel(self, index):
+        """
+        Refreshes the bill model to update it.
+
+        INPUT:
+            int - index: the index of the tab widget
+        """
+
+        if index == 1:
+            # self.billPage.setModel(self.model)
+            pass
+
+# DIALOGS and MENUS
 
     def okDialog(self, title, message):
         """
@@ -632,15 +659,3 @@ class MainWindow(qtw.QMainWindow):
             menu.addAction(self.uiActionRemoveComponent)
 
             menu.exec_(self.treeEditor.uiComponentsView.viewport().mapToGlobal(position))
-
-    def refreshBillModel(self, index):
-        """
-        Refreshes the bill model to update it.
-
-        INPUT:
-            int - index: the index of the tab widget
-        """
-
-        if index == 1:
-            # self.billPage.setModel(self.model)
-            pass

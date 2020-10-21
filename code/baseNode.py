@@ -92,7 +92,6 @@ class BaseNode():
             self.children.insert(position, node)
             setattr(node, 'up', self)
             node.addFeatures(parentHash=self.selfHash)
-            node.updateHashes()
             return True
         return False
 
@@ -191,6 +190,21 @@ class BaseNode():
         for key in self.features:
             value = getattr(self, key, None)
             setattr(newNode, key, value)
+
+        return newNode
+
+    def deepCopy(self):
+        """
+        Copies and returns this node with parent and children.
+
+        RETURN TYPE:
+            BaseNode: the copied node
+        """
+
+        newNode = self.copy()
+
+        for child in self.children:
+            newNode.addChild(child.deepCopy())
 
         return newNode
 
@@ -403,6 +417,20 @@ class BaseNode():
 
         return string
 
+# DUNDER METHODS
+
+    def __eq__(self, other):
+        """
+        Enables the == operator
+
+        INPUT:
+            object - other: the item to compare this item with
+        """
+
+        if isinstance(other, BaseNode):
+            return other.getSize() == self.getSize()
+        return False
+
     def __repr__(self):
         """
         Enables the print() function. See toString() for more details.
@@ -475,7 +503,7 @@ class BaseNode():
 
         for child in self.children:
             child.addFeatures(parentHash=self.selfHash)
-            child.updateHashes()
+            child.updateHashes(root)
 
 # --- MODEL UTILITY FUNCTIONS ---
 
@@ -889,7 +917,9 @@ if __name__ == '__main__':
     child1.addChild(child3)
     child1.insertChild(child2, 1)
 
-    print(root)
-    print(child1.detach())
-    print(root)
-    print(root.getNodeString())
+    # print(root)
+    # print(child1.detach())
+    # print(root)
+    # print(root.getNodeString())
+    # print(isinstance(root, BaseNode))
+    print(root.deepCopy())

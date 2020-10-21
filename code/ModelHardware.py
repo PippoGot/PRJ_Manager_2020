@@ -15,12 +15,15 @@ class ModelHardware(ModelTree):
     data inside the model and let the user edit the archive file from the hardware editor.
     """
 
-    def __init__(self):
+    def __init__(self, filename = None):
         """Reads the archive file."""
 
         super().__init__()
 
-        self.rootItem = self.readFile('code/resources/archive/HardwareArchive.csv')
+        if filename:
+            self.rootItem = self.readFile(filename)
+        else:
+            self.rootItem = self.readFile('code/resources/archive/HardwareArchive.csv')
 
     def data(self, index, role):
         """
@@ -120,7 +123,27 @@ class ModelHardware(ModelTree):
 
             return first
 
+    def saveFile(self, filename):
+        """
+        Saves the tree structure in a .csv file, given a proper filename.
+
+        INPUT:
+            str - filename: name of the file to read
+        """
+
+        with open(filename, 'w') as file:
+            csv_writer = csv.DictWriter(file, fieldnames=self.fieldnames)
+
+            csv_writer.writeheader()
+
+            for node in self.rootItem.iterDescendants():
+                nodeDict = node.getNodeDictionary(*self.fieldnames)
+                csv_writer.writerow(nodeDict)
+
 
 if __name__ == '__main__':
     archive = ModelHardware()
     print(archive)
+    archive.saveFile('archive.csv')
+    newArchive = ModelHardware('archive.csv')
+    print(newArchive)

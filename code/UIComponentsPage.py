@@ -17,6 +17,8 @@ class ComponentsPage(qtw.QWidget):
 
         super(ComponentsPage, self).__init__()
 
+        self.uiManufacture = None
+
         uic.loadUi('code/resources/UIs/ui_components_page.ui', self)
 
         self.mapper = qtw.QDataWidgetMapper()
@@ -42,18 +44,18 @@ class ComponentsPage(qtw.QWidget):
 
             self.mapper.setModel(self.model)
             self.mapper.addMapping(self.uiNumberID, 0)
-            self.mapper.addMapping(self.uiName, 2)
-            self.mapper.addMapping(self.uiDescription, 3)
-            self.mapper.addMapping(self.uiType, 4)
-            self.mapper.addMapping(self.uiManufacture, 5)
-            self.mapper.addMapping(self.uiStatus, 6)
-            self.mapper.addMapping(self.uiComment, 7)
-            self.mapper.addMapping(self.uiPriceUnit, 8)
-            self.mapper.addMapping(self.uiQuantityNeeded, 9)
-            self.mapper.addMapping(self.uiQuantityUnit, 10)
-            self.mapper.addMapping(self.uiSeller, 11)
-            self.mapper.addMapping(self.uiKit, 12)
-            self.mapper.addMapping(self.uiLink, 13)
+            self.mapper.addMapping(self.uiName, 1)
+            self.mapper.addMapping(self.uiDescription, 2)
+            self.mapper.addMapping(self.uiType, 3)
+            self.mapper.addMapping(self.uiManufacture, 4)
+            self.mapper.addMapping(self.uiStatus, 5)
+            self.mapper.addMapping(self.uiComment, 6)
+            self.mapper.addMapping(self.uiPriceUnit, 7)
+            self.mapper.addMapping(self.uiQuantityNeeded, 8)
+            self.mapper.addMapping(self.uiQuantityUnit, 9)
+            self.mapper.addMapping(self.uiSeller, 10)
+            self.mapper.addMapping(self.uiKit, 11)
+            self.mapper.addMapping(self.uiLink, 12)
 
             self.treeSelection = self.uiComponentsView.selectionModel()
             self.treeSelection.currentChanged.connect(self.mapTreeIndex)
@@ -86,9 +88,9 @@ class ComponentsPage(qtw.QWidget):
         self.current = index
         self.uiComponentsEditor.setDisabled(False)
 
-        self.changeManufactureWidget(self.uiType.text(), self.uiManufacture, self.uiNumberID)
+        self.changeManufacture()
 
-    def changeManufactureWidget(self, nodeType, widgetPtr, numberPtr):
+    def changeManufacture(self):
         """
         Changes dinamically the manufacture widget and initializes it's text in every context.
 
@@ -98,36 +100,25 @@ class ComponentsPage(qtw.QWidget):
             QWidget - numberPtr: the widget holding the number
         """
 
-        layout = widgetPtr.parentWidget().layout()
+        layout = self.uiManufacture.parentWidget().layout()
+        currentNode = self.current.internalPointer()
+        text = currentNode.getFeature('manufacture')
 
-        def changeWidget(widget, widgetPointer, text = None):
-            layout.removeWidget(widgetPointer)
-            widgetPointer.close()
-            layout.removeRow(2)
+        layout.removeWidget(self.uiManufacture)
+        self.uiManufacture.close()
+        layout.removeRow(2)
 
-            if widget == 'LineEdit':
-                widgetPointer = qtw.QLineEdit()
-                widgetPointer.setReadOnly(True)
-                widgetPointer.setText(text)
-            elif widget == 'ComboBox':
-                widgetPointer = qtw.QComboBox()
-                widgetPointer.setCurrentIndex(0)
-                widgetPointer.setModel(self.manufactures)
-
-            layout.insertRow(2, 'Manufacture', widgetPointer)
-            layout.update()
-
-        if nodeType == 'Project' or nodeType == 'Assembly':
-            changeWidget('LineEdit', widgetPtr, 'Assembled')
-        elif nodeType == 'Hardware' or nodeType == 'Consumables':
-            if numberPtr.text()[1:4] == 'MMH':
-                changeWidget('LineEdit', widgetPtr, 'Cut to Length')
-            else:
-                changeWidget('LineEdit', widgetPtr, 'Off the Shelf')
-        elif nodeType == 'Placeholder':
-            changeWidget('LineEdit', widgetPtr, 'None')
+        if not currentNode.getFeature('manufactureEditable'):
+            self.uiManufacture = qtw.QLineEdit()
+            self.uiManufacture.setReadOnly(True)
+            self.uiManufacture.setText(text)
         else:
-            changeWidget('ComboBox', widgetPtr)
+            self.uiManufacture = qtw.QComboBox()
+            self.uiManufacture.setCurrentIndex(0)
+            self.uiManufacture.setModel(self.manufactures)
+
+        layout.insertRow(2, 'Manufacture', self.uiManufacture)
+        layout.update()
 
     def refreshView(self):
         """Updates the view."""
@@ -135,5 +126,4 @@ class ComponentsPage(qtw.QWidget):
         self.uiComponentsView.expandAll()
         for column in range(self.treeProxyModel.columnCount(qtc.QModelIndex())):
             self.uiComponentsView.setColumnWidth(column, COMPONENTS_PAGE_SIZES[column])
-
         self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)

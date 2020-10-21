@@ -316,7 +316,7 @@ class ModelTree(qtc.QAbstractItemModel):
 
             csv_writer.writeheader()
 
-            for node in self.first:
+            for node in self.first.iterDescendants():
                 nodeDict = node.getNodeDictionary(*self.fieldnames)
                 csv_writer.writerow(nodeDict)
 
@@ -352,9 +352,11 @@ class ModelTree(qtc.QAbstractItemModel):
                 features = line.copy()
                 del features['number']
                 del features['level']
+
                 new = self.fillNode(line['number'], line['level'], **features)
                 new.addFeatures(**line)
                 parent = first.searchNode(selfHash=line['parentHash'])
+
                 if parent:
                     parent.addChild(new)
 
@@ -424,3 +426,7 @@ class ModelTree(qtc.QAbstractItemModel):
 if __name__ == '__main__':
     archive = ModelTree('code/resources/archive/HardwareArchive.csv')
     print(archive)
+
+    archive.saveFile('archive.csv')
+    newArchive = ModelTree('archive.csv')
+    print(newArchive)

@@ -46,7 +46,7 @@ class ProxyTree(qtc.QSortFilterProxyModel):
         """
 
         if source_parent.isValid() and self.filterRegExp().pattern() == 'Deprecated':
-            status = source_parent.internalPointer().children[source_row].status
+            status = source_parent.internalPointer().getFeature('status')
             if status == 'Deprecated':
                 return False
 
