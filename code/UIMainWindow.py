@@ -10,16 +10,18 @@ from UIComponentEditor import ComponentEditor
 from UIHardwareSelector import HardwareSelector
 
 from ModelHardware import ModelHardware
-from ModelTreeETE import ModelTree
+from ModelTree import ModelTree
 from ModelCombobox import ModelCombobox
 
-from ComponentTree import ComponentTree
+from CompositeNodes import ProjectNode, AssemblyNode, LeafNode, HardwareNode, MeasuredNode, JigNode, PlaceholderNode, ConsumableNode
+
 from constants import SECTIONS_TO_UPDATE
 from constants import COLUMNS_TO_UPDATE
 
+
 class MainWindow(qtw.QMainWindow):
     """
-    Class for the main UI and the actions functions. This class manage every action that can 
+    Class for the main UI and the actions functions. This class manage every action that can
     be performed in the application.
     """
 
@@ -30,17 +32,17 @@ class MainWindow(qtw.QMainWindow):
         """
 
         super(MainWindow, self).__init__()
-        
+
         uic.loadUi('code/resources/UIs/ui_main_window.ui', self)
 
-        self.filename = None     
-        self.model = None 
+        self.filename = None
+        self.model = None
         self.copied = None
         self.archive = ModelHardware()
         self.statuses = ModelCombobox('code/resources/archive/statuses.csv')
         self.manufactures = ModelCombobox('code/resources/archive/manufactures.csv')
 
-        self.treeEditor = ComponentsPage(self.manufactures) 
+        self.treeEditor = ComponentsPage(self.manufactures)
         self.uiTreePage.layout().addWidget(self.treeEditor)
         self.treeEditor.uiStatus.setModel(self.statuses)
         self.treeEditor.uiComponentsView.setContextMenuPolicy(qtc.Qt.CustomContextMenu)
@@ -51,9 +53,9 @@ class MainWindow(qtw.QMainWindow):
         self.hardwareEditor.uiNewStatus.setModel(self.statuses)
         self.uiHardwarePage.layout().addWidget(self.hardwareEditor)
 
-        self.billPage = BillPage(self.model)
-        self.uiBillPage.layout().addWidget(self.billPage)
-        self.uiTabWidget.currentChanged.connect(self.refreshBillModel)
+        # self.billPage = BillPage(self.model)
+        # self.uiBillPage.layout().addWidget(self.billPage)
+        # self.uiTabWidget.currentChanged.connect(self.refreshBillModel)
 
         # FILE MENU ACTIONS
         self.uiActionNew.triggered.connect(self.newFile)
@@ -97,7 +99,7 @@ class MainWindow(qtw.QMainWindow):
             dialog = self.cancelDialog('File not saved...', 'Save changes to current file?')
 
             if dialog == qtw.QMessageBox.Yes:
-                self.saveFile()                    
+                self.saveFile()
             elif dialog == qtw.QMessageBox.Cancel:
                 return
 
@@ -109,19 +111,19 @@ class MainWindow(qtw.QMainWindow):
         if not self.filename and self.model:
             dialog = self.choiceDialog('File not saved...', 'Save changes to current file?')
 
-            if dialog == qtw.QMessageBox.Yes:                         
-                self.saveFile()                                               
+            if dialog == qtw.QMessageBox.Yes:
+                self.saveFile()
 
-        filename, _ = qtw.QFileDialog.getOpenFileName(                        
-            self, 
-            "Select a file to open...", 
-            qtc.QDir.homePath(), 
-            'CSV Documents (*.csv) ;; All Files (*)', 
+        filename, _ = qtw.QFileDialog.getOpenFileName(
+            self,
+            "Select a file to open...",
+            qtc.QDir.homePath(),
+            'CSV Documents (*.csv) ;; All Files (*)',
             'CSV Documents (*.csv)'
         )
 
-        if filename:                                                                 
-            try:           
+        if filename:
+            try:
                 self.setModel(ModelTree(filename), filename)
 
             except Exception as e:
@@ -130,11 +132,11 @@ class MainWindow(qtw.QMainWindow):
     def saveFile(self):
         """Saves the current file."""
 
-        if self.model:                                                            
-            if self.filename:                                                   
-                self.model.saveFile(self.filename)                                    
-            else:                                                         
-                self.saveAsFile()                                                    
+        if self.model:
+            if self.filename:
+                self.model.saveFile(self.filename)
+            else:
+                self.saveAsFile()
 
         else:
             self.okDialog('Warning!', 'No file currently open.')
@@ -142,55 +144,55 @@ class MainWindow(qtw.QMainWindow):
     def saveAsFile(self):
         """Saves the file with a different filename from the original, or a new file."""
 
-        if self.model:                                                
-            filename, _ = qtw.QFileDialog.getSaveFileName(                  
-                self, 
-                "Select the file to save to...", 
+        if self.model:
+            filename, _ = qtw.QFileDialog.getSaveFileName(
+                self,
+                "Select the file to save to...",
                 qtc.QDir.homePath(),
                 'CSV Documents (*.csv)'
             )
 
-            if filename:                                                        
+            if filename:
                 try:
-                    self.model.saveFile(filename)                      
+                    self.model.saveFile(filename)
 
-                except Exception as e:   
-                    self.okDialog('Critical Error!', f'Could not save the file at {filename}\nbecause " {e} " exception occurred!')     
+                except Exception as e:
+                    self.okDialog('Critical Error!', f'Could not save the file at {filename}\nbecause " {e} " exception occurred!')
 
-                self.filename = filename                                         
+                self.filename = filename
 
-        else:     
+        else:
             self.okDialog('Warning!', 'No file currently open.')
 
     def exportBOM(self):
         """Exports the bill of material of the current project"""
-        
+
         if self.model:
-            filename, _ = qtw.QFileDialog.getSaveFileName(              
-                self, 
-                "Select the file to save to...", 
+            filename, _ = qtw.QFileDialog.getSaveFileName(
+                self,
+                "Select the file to save to...",
                 qtc.QDir.homePath(),
                 'CSV Documents (*.csv)'
             )
 
-            if filename:                                                    
+            if filename:
                 try:
                     self.model.exportBOM(filename)
 
-                except Exception as e:    
-                    self.okDialog('Critical Error!', f'Could not save the file at {filename}\nbecause " {e} " exception occurred!')        
+                except Exception as e:
+                    self.okDialog('Critical Error!', f'Could not save the file at {filename}\nbecause " {e} " exception occurred!')
 
-        else:    
+        else:
             self.okDialog('Warning!', 'No file currently open.')
 
     def clearFile(self):
         """Resets the current open file, as well as the components view."""
 
-        if self.model:    
+        if self.model:
             dialog = self.cancelDialog('File not saved...', 'Save changes to current file?')
 
-            if dialog == qtw.QMessageBox.Yes:                                 
-                self.saveFile() 
+            if dialog == qtw.QMessageBox.Yes:
+                self.saveFile()
             elif dialog == qtw.QMessageBox.Cancel:
                 return
 
@@ -201,158 +203,185 @@ class MainWindow(qtw.QMainWindow):
     def addComponent(self):
         """Adds a custom component to the model."""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
-        currentSelection = self.treeEditor.current                          
+        currentSelection = self.treeEditor.current
 
-        if currentSelection:                                               
-            parentItem = currentSelection.internalPointer()    
-            
-            def wrapper(node):
-                self.insertWrapper(node, parentItem.level + 1, currentSelection, len(parentItem.children))
+        if currentSelection:
+            parentItem = currentSelection.internalPointer()
+            level = parentItem.getFeature('level')
+            newNumber = parentItem.getNewNumber(parentItem.getPrefix(), level + 1)
 
-            if parentItem.level < 5:                                         
-                self.newComponentEditor = ComponentEditor(parentItem, self.manufactures)        
+            def wrapper(nodeDict):
+                new.addFeatures(**nodeDict)
+                self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
+                self.treeEditor.refreshView()
+
+            if level < 5:
+                new = AssemblyNode(number=newNumber, level=level + 1)
+
+                self.newComponentEditor = ComponentEditor(self.manufactures, new)
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(wrapper)               
-                self.newComponentEditor.show()                               
+                self.newComponentEditor.submit.connect(wrapper)
+                self.newComponentEditor.show()
 
-            else:    
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
     def addSpecialComponent(self):
         """Adds a hardware component from the hardware archive."""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
-        currentSelection = self.treeEditor.current                 
-        
+        currentSelection = self.treeEditor.current
+
         def wrapper(node):
-            self.insertWrapper(node, 5, currentSelection, currentSelection.row())
+            self.model.insertRows(len(parentItem.getChildren()), node, currentSelection)
+            self.treeEditor.refreshView()
 
-        if currentSelection:                                  
-            item = currentSelection.internalPointer()                 
-            level = item.level                                                      
+        if currentSelection:
+            parentItem = currentSelection.internalPointer()
+            level = parentItem.getFeature('level')
 
-            if level < 5:                                                          
-                self.hardwareSelector = HardwareSelector(self.archive)           
-                self.hardwareSelector.submit.connect(wrapper)                 
-                self.hardwareSelector.show()                         
+            if level < 5:
+                self.hardwareSelector = HardwareSelector(self.archive)
+                self.hardwareSelector.submit.connect(wrapper)
+                self.hardwareSelector.show()
 
-            else:    
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
     def addLeafComponent(self):
         """Adds a level 5 component to the tree:"""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
-        currentSelection = self.treeEditor.current                             
+        currentSelection = self.treeEditor.current
 
-        if currentSelection:                                             
-            parentItem = currentSelection.internalPointer()                       
-            def wrapper(node):
-                self.insertWrapper(node, 5, currentSelection, len(parentItem.children))
+        if currentSelection:
+            parentItem = currentSelection.internalPointer()
+            level = parentItem.getFeature('level')
+            newNumber = parentItem.getNewNumber(parentItem.getPrefix(), 5)
 
-            if parentItem.level < 5:                                              
-                parentItem = parentItem.copy()
-                parentItem.level = 4
-                self.newComponentEditor = ComponentEditor(parentItem, self.manufactures, 5)  
+            def wrapper(nodeDict):
+                new.addFeatures(**nodeDict)
+                self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
+                self.treeEditor.refreshView()
+
+            if level < 5:
+                new = LeafNode(number=newNumber)
+
+                self.newComponentEditor = ComponentEditor(self.manufactures, new)
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(wrapper)             
-                self.newComponentEditor.show()                                
+                self.newComponentEditor.submit.connect(wrapper)
+                self.newComponentEditor.show()
 
-            else:    
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
     def addJig(self):
         """Adds a jig component to the tree."""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
-        currentSelection = self.treeEditor.current                        
+        currentSelection = self.treeEditor.current
 
-        if currentSelection:                                        
-            parentItem = currentSelection.internalPointer()                          
-            def wrapper(node):
-                self.insertWrapper(node, 4, currentSelection, len(parentItem.children))
+        if currentSelection:
+            parentItem = currentSelection.internalPointer()
+            level = parentItem.getFeature('level')
+            newNumber = parentItem.getNewNumber('JIG', 5)
 
-            if parentItem.level < 5:                                     
-                jigsList = self.model.rootItem.search_nodes(type = 'Jig')
-                dummyParent = ComponentTree('', {'number': '#JIG-000', 'level': -1, 'children': jigsList})
+            def wrapper(nodeDict):
+                new.addFeatures(**nodeDict)
+                self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
+                self.treeEditor.refreshView()
 
-                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures, 5)           
+            if level < 5:
+                new = JigNode(number=newNumber, level=level + 1)
+
+                self.newComponentEditor = ComponentEditor(self.manufactures, new)
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(wrapper)         
-                self.newComponentEditor.show()                                
+                self.newComponentEditor.submit.connect(wrapper)
+                self.newComponentEditor.show()
 
-            else:    
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
     def addPlaceholder(self):
         """Adds a placeholder component to the tree."""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
-        currentSelection = self.treeEditor.current                            
+        currentSelection = self.treeEditor.current
 
-        if currentSelection:                                     
-            parentItem = currentSelection.internalPointer()  
-            def wrapper(node):
-                self.insertWrapper(node, 4, currentSelection, len(parentItem.children))
+        if currentSelection:
+            parentItem = currentSelection.internalPointer()
+            level = parentItem.getFeature('level')
+            newNumber = parentItem.getNewNumber('PLC', 5)
 
-            if parentItem.level < 5:                                          
-                placeholderList = self.model.rootItem.search_nodes(type = 'Placeholder')
-                dummyParent = ComponentTree('', {'number': '#PLC-000', 'level': 5, 'children': placeholderList})
+            def wrapper(nodeDict):
+                new.addFeatures(**nodeDict)
+                self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
+                self.treeEditor.refreshView()
 
-                self.newComponentEditor = ComponentEditor(dummyParent, self.manufactures, 5)          
+            if level < 5:
+                new = PlaceholderNode(number=newNumber, level=level + 1)
+
+                self.newComponentEditor = ComponentEditor(self.manufactures, new)
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(wrapper)               
-                self.newComponentEditor.show()                                  
+                self.newComponentEditor.submit.connect(wrapper)
+                self.newComponentEditor.show()
 
-            else:    
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
     def morphSpecialComponent(self):
         """Changes a selected hardware component with another hardware component of choice."""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
-        currentSelection = self.treeEditor.current                          
+        currentSelection = self.treeEditor.current
+
         def morphWrapper(node):
             self.model.swapComponent(currentSelection.row(), node, currentSelection.parent())
             node.add_feature('level', 5)
             node.update_hash(self.model.rootItem)
             self.treeEditor.refreshView()
 
-        if currentSelection:                                                    
-            item = currentSelection.internalPointer()                          
-            level = item.level                                    
+        if currentSelection:
+            item = currentSelection.internalPointer()
+            level = item.level
 
-            if level == 5:                                              
-                self.hardwareSelector = HardwareSelector(self.archive)           
-                self.hardwareSelector.submit.connect(morphWrapper)                  
-                self.hardwareSelector.show()                               
-            
-            else:    
+            if level == 5:
+                self.hardwareSelector = HardwareSelector(self.archive)
+                self.hardwareSelector.submit.connect(morphWrapper)
+                self.hardwareSelector.show()
+
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
     def updateSpecialComponents(self):
@@ -361,95 +390,100 @@ class MainWindow(qtw.QMainWindow):
         Then updates every present item in the list with the data in the archive.
         """
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
         if self.model:
-            for item in self.model.rootItem.iter_leaves():                         
+            for item in self.model.rootItem.iter_leaves():
                 for hardware in self.archive.hardwareList:
-                    if item.number == hardware['number']:                       
+                    if item.number == hardware['number']:
                         row = item.up.children.index(item)
-                        for x in range(len(COLUMNS_TO_UPDATE)):                                 
+                        for x in range(len(COLUMNS_TO_UPDATE)):
                             index = self.model.createIndex(row, SECTIONS_TO_UPDATE[x], item)
-                            self.model.setData(index, hardware[COLUMNS_TO_UPDATE[x]])        
+                            self.model.setData(index, hardware[COLUMNS_TO_UPDATE[x]])
 
     def removeComponent(self):
         """Removes a component from the model."""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
-        currentSelection = self.treeEditor.current                              
+        currentSelection = self.treeEditor.current
 
-        if currentSelection:                                               
-            item = currentSelection.internalPointer()                                  
-            row = item.up.children.index(item)                         
-            parent = currentSelection.parent()                               
+        if currentSelection:
+            item = currentSelection.internalPointer()
+            row = item.up.children.index(item)
+            parent = currentSelection.parent()
 
-            if item.level != 1:                         
-                self.model.removeRows(row, parent)                             
-            else:    
+            if item.level != 1:
+                self.model.removeRows(row, parent)
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
     def cut(self):
         """Removes and stores a component for later pasting."""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
         currentSelection = self.treeEditor.current
 
-        if currentSelection:                                                    
-            item = currentSelection.internalPointer()                               
-            row = item.up.children.index(item)                            
-            parent = currentSelection.parent()                              
+        if currentSelection:
+            item = currentSelection.internalPointer()
+            row = item.up.children.index(item)
+            parent = currentSelection.parent()
 
-            if item.level != 1:                                                      
+            if item.level != 1:
                 self.copied = self.model.removeRows(row, parent)
-            else:    
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
     def copy(self):
         """Creates and stores a copy of a component to paste it in another component."""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
         currentSelection = self.treeEditor.current
 
-        if currentSelection:                                                   
-            item = currentSelection.internalPointer()       
+        if currentSelection:
+            item = currentSelection.internalPointer()
 
-            if item.level != 1:                                                                                         
+            if item.level != 1:
                 self.copied = item.copy()
-            else:    
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
     def paste(self):
         """Adds the cut or copied component to this components' children."""
 
-        if self.checkPage(0): return
+        if self.checkPage(0):
+            return
 
-        currentSelection = self.treeEditor.current                           
+        currentSelection = self.treeEditor.current
 
-        if currentSelection:                                              
-            parentItem = currentSelection.internalPointer()                           
+        if currentSelection:
+            parentItem = currentSelection.internalPointer()
 
-            if parentItem.level < 5:                                              
+            if parentItem.level < 5:
                 self.model.insertRows(len(parentItem.children), self.copied, currentSelection)
                 self.copied.update_hash(self.model.rootItem)
                 self.copied = self.copied.copy()
                 self.treeEditor.refreshView()
-                
-            else:    
+
+            else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
-        else: 
+        else:
             self.okDialog('Warning!', 'No item currently selected.')
 
 # VIEW MENU
@@ -478,21 +512,15 @@ class MainWindow(qtw.QMainWindow):
         """
 
         if self.uiTabWidget.currentIndex() != page:
-            self.msgBox = qtw.QMessageBox.warning(                    
-                self, 
-                'Warning!', 
-                'You are not in the proper page!', 
-                qtw.QMessageBox.Ok, 
-                qtw.QMessageBox.Ok            
-            )
+            self.okDialog('Warning!', 'You are not in the proper page!')
             return True
         return False
 
-    def setModel(self, model = None, filename = None):
+    def setModel(self, model=None, filename=None):
         """
         Sets the window model for all the different pages. Also if the model is from an external file
         the filename is updated.
-        
+
         INPUT:
             QAbstractItemModel - model: the model to set
             str - filename: the filename of the file
@@ -502,23 +530,7 @@ class MainWindow(qtw.QMainWindow):
         self.filename = filename
         self.treeEditor.setModel(self.model)
         self.treeEditor.current = None
-        self.billPage.setModel(self.model)
-
-    def insertWrapper(self, node, level, currentSelection, position):
-        """
-        Template for the insertion function in the model.
-
-        INPUT:
-            ComponentTree - node: the item to add to the tree
-            int - level: the level of the new component
-            QModelIndex - currentSelection: the index where to add the node
-            int - position: the position where to add the node
-        """
-
-        node.add_feature('level', level)
-        self.model.insertRows(position, node, currentSelection)
-        # node.update_hash(self.model.rootItem)
-        self.treeEditor.refreshView()
+        # self.billPage.setModel(self.model)
 
     def okDialog(self, title, message):
         """
@@ -532,17 +544,17 @@ class MainWindow(qtw.QMainWindow):
             enum: the button pressed by the user
         """
 
-        self.msgBox = qtw.QMessageBox.warning(      
-            self, 
-            title, 
-            message, 
+        self.msgBox = qtw.QMessageBox.warning(
+            self,
+            title,
+            message,
             qtw.QMessageBox.Ok,
             qtw.QMessageBox.Ok
         )
 
         return self.msgBox
 
-    def choiceDialog(self, title, message):        
+    def choiceDialog(self, title, message):
         """
         Creates a dialog window with a YES/NO choice.
 
@@ -554,10 +566,10 @@ class MainWindow(qtw.QMainWindow):
             enum: the button pressed by the user
         """
 
-        self.msgBox = qtw.QMessageBox.warning(      
-            self, 
-            title, 
-            message, 
+        self.msgBox = qtw.QMessageBox.warning(
+            self,
+            title,
+            message,
             qtw.QMessageBox.Yes | qtw.QMessageBox.No,
             qtw.QMessageBox.Yes
         )
@@ -576,11 +588,11 @@ class MainWindow(qtw.QMainWindow):
             enum: the button pressed by the user
         """
 
-        self.msgBox = qtw.QMessageBox.warning(      
-            self, 
-            title, 
-            message, 
-            qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel, 
+        self.msgBox = qtw.QMessageBox.warning(
+            self,
+            title,
+            message,
+            qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel,
             qtw.QMessageBox.Yes
         )
 
@@ -628,6 +640,7 @@ class MainWindow(qtw.QMainWindow):
         INPUT:
             int - index: the index of the tab widget
         """
-        
+
         if index == 1:
-            self.billPage.setModel(self.model)
+            # self.billPage.setModel(self.model)
+            pass

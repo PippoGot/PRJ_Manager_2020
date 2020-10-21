@@ -2,7 +2,6 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
-from util import _36ToBase10
 from constants import COLUMN_LIST_TREE
 
 class ProxyTree(qtc.QSortFilterProxyModel):
@@ -32,7 +31,7 @@ class ProxyTree(qtc.QSortFilterProxyModel):
             return False                                                        # returns False
         else:                                                                   # otherwise
             return True                                                         # returns True
-    
+
     def filterAcceptsRow(self, source_row, source_parent):
         """
         Selects the rows to show from the original model.
@@ -50,10 +49,10 @@ class ProxyTree(qtc.QSortFilterProxyModel):
             status = source_parent.internalPointer().children[source_row].status
             if status == 'Deprecated':
                 return False
-            
+
         return True
 
-    def lessThan(self, source_left, source_right):        
+    def lessThan(self, source_left, source_right):
         """
         Returns true if the value of the item referred to by the given index source_left
         is less than the value of the item referred to by the given index source_right,
@@ -69,17 +68,8 @@ class ProxyTree(qtc.QSortFilterProxyModel):
 
         if source_left.column() == 0 and source_right.column() == 0:
             if source_left.isValid() and source_right.isValid():
-                left = source_left.internalPointer() 
-                left = left.number      
-                left = left.replace('#', '')                         
-                left = left.replace('-', '')
-                left = _36ToBase10(left)                         
+                left = source_left.internalPointer().getSize()
+                right = source_right.internalPointer().getSize()
 
-                right = source_right.internalPointer()
-                right = right.number
-                right = right.replace('#', '')
-                right = right.replace('-', '')
-                right = _36ToBase10(right)
-                
-                return left < right             
-        return False                                    
+                return left < right
+        return False

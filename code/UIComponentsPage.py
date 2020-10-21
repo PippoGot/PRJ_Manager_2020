@@ -2,6 +2,7 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+
 from ProxyTree import ProxyTree
 from constants import COMPONENTS_PAGE_SIZES
 
@@ -14,9 +15,9 @@ class ComponentsPage(qtw.QWidget):
     def __init__(self, manufacture_model):
         """Loads the .ui file."""
 
-        super(ComponentsPage, self).__init__()                                    
+        super(ComponentsPage, self).__init__()
 
-        uic.loadUi('code/resources/UIs/ui_components_page.ui', self)   
+        uic.loadUi('code/resources/UIs/ui_components_page.ui', self)
 
         self.mapper = qtw.QDataWidgetMapper()
         self.current = None
@@ -31,16 +32,16 @@ class ComponentsPage(qtw.QWidget):
             ModelTree - model: the model that the widgets are set to
         """
 
-        self.model = model                                                           
+        self.model = model
 
         if self.model:
-            self.treeProxyModel = ProxyTree()                                           
-            self.treeProxyModel.setSourceModel(self.model)                              
-            self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)                         
-            self.uiComponentsView.setModel(self.treeProxyModel)                         
-            
-            self.mapper.setModel(self.model)                                        
-            self.mapper.addMapping(self.uiNumberID, 0)                        
+            self.treeProxyModel = ProxyTree()
+            self.treeProxyModel.setSourceModel(self.model)
+            self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)
+            self.uiComponentsView.setModel(self.treeProxyModel)
+
+            self.mapper.setModel(self.model)
+            self.mapper.addMapping(self.uiNumberID, 0)
             self.mapper.addMapping(self.uiName, 2)
             self.mapper.addMapping(self.uiDescription, 3)
             self.mapper.addMapping(self.uiType, 4)
@@ -53,15 +54,15 @@ class ComponentsPage(qtw.QWidget):
             self.mapper.addMapping(self.uiSeller, 11)
             self.mapper.addMapping(self.uiKit, 12)
             self.mapper.addMapping(self.uiLink, 13)
-            
-            self.treeSelection = self.uiComponentsView.selectionModel()               
-            self.treeSelection.currentChanged.connect(self.mapTreeIndex)             
-            
-            self.model.dataChanged.connect(self.mapper.revert)                       
+
+            self.treeSelection = self.uiComponentsView.selectionModel()
+            self.treeSelection.currentChanged.connect(self.mapTreeIndex)
+
+            self.model.dataChanged.connect(self.mapper.revert)
 
             self.treeProxyModel.setFilterRegExp('Deprecated')
 
-            self.refreshView()                                                    
+            self.refreshView()
         else:
             self.uiComponentsView.setModel(None)
             self.mapper.setModel((None))
@@ -71,18 +72,18 @@ class ComponentsPage(qtw.QWidget):
         """
         Convert the given index from a proxy model index to an original model index.
         Then the index is set as the current index of the editor.
-        
+
         INPUT:
             QModelIndex - index: the index to convert
         """
 
-        index = self.treeProxyModel.mapToSource(index)                                    
+        index = self.treeProxyModel.mapToSource(index)
 
-        parent = index.parent()                                                         
-        self.mapper.setRootIndex(parent)                                        
+        parent = index.parent()
+        self.mapper.setRootIndex(parent)
         self.mapper.setCurrentModelIndex(index)
 
-        self.current = index  
+        self.current = index
         self.uiComponentsEditor.setDisabled(False)
 
         self.changeManufactureWidget(self.uiType.text(), self.uiManufacture, self.uiNumberID)
@@ -96,7 +97,7 @@ class ComponentsPage(qtw.QWidget):
             QWidget - widgetPtr: the widget to modify
             QWidget - numberPtr: the widget holding the number
         """
-        
+
         layout = widgetPtr.parentWidget().layout()
 
         def changeWidget(widget, widgetPointer, text = None):
@@ -131,8 +132,8 @@ class ComponentsPage(qtw.QWidget):
     def refreshView(self):
         """Updates the view."""
 
-        self.uiComponentsView.expandAll()                                                 
-        for column in range(self.treeProxyModel.columnCount(qtc.QModelIndex())):    
+        self.uiComponentsView.expandAll()
+        for column in range(self.treeProxyModel.columnCount(qtc.QModelIndex())):
             self.uiComponentsView.setColumnWidth(column, COMPONENTS_PAGE_SIZES[column])
-        
-        self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)                            
+
+        self.treeProxyModel.sort(0, qtc.Qt.AscendingOrder)

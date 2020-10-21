@@ -1,32 +1,8 @@
-import random
-from PyQt5 import QtGui as qtg
-
-# default values of the first node of any project tree
-
-DEFAULT_FIRST_NODE = {
-    'number': '#000-000', 
-    'parent': None,
-    'title': '-', 
-    'description': '-',
-    'type': 'Project',
-    'manufacture': 'Assembled',
-    'status': '-',
-    'comment':'-',
-    'price': 0,
-    'quantity': 1,
-    'quantityPackage': 1,
-    'seller': '-',
-    'kit': '-',
-    'link': '-',
-    'hashn': random.randint(0, 99999999)
-}
-
 # default headers value
 
 HEADERS = [
-    'number', 
-    'parent',
-    'title', 
+    'number',
+    'title',
     'description',
     'type',
     'manufacture',
@@ -34,80 +10,78 @@ HEADERS = [
     'comment',
     'price',
     'quantity',
-    'quantityPackage',
+    'package',
     'seller',
     'kit',
     'link',
-    'hashn'
 ]
 
 # values for the bill of material csv file
 
 BILL_HEADERS = [
     'number',
-    'title', 
-    'description', 
+    'title',
+    'description',
     'price',
     'quantity',
-    'quantityPackage',
+    'package',
     'seller',
     'kit',
     'link'
 ]
 
-# components types that cant have their manufacture edited
-
-NOT_EDITABLE_TYPES = [
-    'Project',
-    'Assembly',
-    'Hardware',
-    'Placeholder',
-    'Consumables'
-]
-
-# not editable columns of the model
-
-NOT_EDITABLE_COLUMNS = [0, 1, 4]
-
 # columns to show in the hardware list view
 
 COLUMN_LIST_HARDWARE = {
-    0: 'number', 
-    2: 'name',
-    3: 'description',
-    4: 'type',
-    5: 'manufacture',
-    8: 'price',
-    10: 'quantityPackage',
-    11: 'seller',
-    13: 'link'
+    0: 'number',
+    1: 'title',
+    2: 'description',
+    3: 'type',
+    # 'status',
+    # 'comment',
+    6: 'manufacture',
+    7: 'price',
+    # 'quantity',
+    9: 'package',
+    10: 'seller',
+    # 'kit',
+    12: 'link'
 }
 
 # columns to show in the component tree view
 
 COLUMN_LIST_TREE = {
-    0: 'number', 
-    2: 'title', 
-    3: 'description',
-    4: 'type',
-    5: 'manufacture',
-    6: 'status',
-    7: 'comment',
-    9: 'quantity',
-    11: 'seller'
+    0: 'number',
+    1: 'title',
+    2: 'description',
+    3: 'type',
+    4: 'manufacture',
+    5: 'status',
+    6: 'comment',
+    # 'price',
+    8: 'quantity',
+    # 'package',
+    10: 'seller'
+    # 'kit',
+    # 'link',
 }
 
 # columns to show in the bill page
 
 COLUMN_LIST_BILL = {
-    0: 'number', 
-    2: 'title', 
-    3: 'description',
-    8: 'price',
-    9: 'quantity',
-    10: 'quantityPackage',
-    11: 'seller',
-    13: 'link'
+    0: 'number',
+    1: 'title',
+    2: 'description',
+    # 'type',
+    # 'manufacture',
+    # 'status',
+    # 'comment',
+    7: 'price',
+    8: 'quantity',
+    9: 'package',
+    10: 'seller',
+    # 'kit',
+    12: 'link'
 }
 
 # types to assign in the initialization of a popoup editor
@@ -122,20 +96,16 @@ COMPONENTS_PAGE_SIZES = [150, 200, 340, 130, 130, 130, 340, 60, 60]
 
 SPECIAL_PREFIXES = ['MEH', 'MMH', 'ELH', 'EMH', 'CON']
 
-# string list of values for number conversion
-
-VALUES_36_10 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
 # columns to update when calling update special components
 
 COLUMNS_TO_UPDATE = [
-    'title', 
+    'title',
     'description',
     'type',
     'manufacture',
     'status',
     'price',
-    'quantityPackage',
+    'package',
     'seller',
     'link'
 ]
@@ -143,16 +113,3 @@ COLUMNS_TO_UPDATE = [
 # sections to update when calling update special components
 
 SECTIONS_TO_UPDATE = [2, 3, 4, 5, 6, 8, 10, 11, 13]
-
-# colors based on the node type
-
-TYPE_COLORS = {
-    'Project': qtg.QColor(255, 126, 77),
-    'Assembly1': qtg.QColor(255, 164, 89),
-    'Assembly2': qtg.QColor(255, 197, 76),
-    'Assembly3': qtg.QColor(255, 230, 121),
-    'Part': qtg.QColor(120, 120, 120),
-    'Hardware': qtg.QColor(204, 205, 204),
-    'Jig': qtg.QColor(74, 189, 255),
-    'Placeholder': qtg.QColor(146, 222, 255)
-}

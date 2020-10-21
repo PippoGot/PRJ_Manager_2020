@@ -1,29 +1,60 @@
 from math import ceil
-from re import sub
-from random import randint
+import re
+import random
 
-class baseNode():
 
-    def __init__(self, number, **features):
+class BaseNode():
+
+    def __init__(self, **features):
         self.up = None
 
+        self.selfHash = 0
+        self.number = ''
+        self.level = 0
+        self.package = 0
+        self.price = 0
+        self.quantity = 1
+        self.title = 'Name'
+        self.description = 'Description'
+        self.status = 'Not Designed'
+        self.commet = '-'
+
         self.children = []
-        self.number = number
         self.features = [
-            'parentHash',
-            'selfHash',
-            'level',
-            'number',
-            'title',
-            'description'
+            'parentHash',   # identity hash of the parent
+            'selfHash',     # identity hash of this node
+            'level',        # level of the node in the tree
+            'number',       # number of the node
+            'title',        # name of the node
+            'description',  # description of the node
+            # 'type',         # type of the node
+            # 'manufacture',  # fabrication specifications
+            'status',       # advancement of the node
+            'comment',      # optional comment
+            # 'price',        # the price of this node
+            'quantity',     # the quantity of this node
+            # 'package',      # the quantity per package of this node
+            # 'seller',       # the seller of this component node
+            # 'kit',          # group of component sold together
+            # 'link'          # the link to the shopping website
         ]
 
         self.updateHashes()
-        self.addFeatures(**features)
+        self.initValues(**features)
 
 # --- TREE FUNCTIONS ---
 
 # DATA
+
+    def initValues(self, **features):
+        """
+        Initializes the node to a default value.
+
+        CUSTOM FUNCTIONS USED:
+            addFeature()
+        """
+
+        self.addFeatures(**features)
 
     def addChild(self, node):
         """
@@ -33,9 +64,9 @@ class baseNode():
             insertChild()
 
         INPUT:
-            baseNode - node: the node to be added
+            BaseNode - node: the node to be added
 
-        RETURN TYPE: 
+        RETURN TYPE:
             bool: the success of the operation
         """
 
@@ -51,16 +82,16 @@ class baseNode():
             updateHashes()
 
         INPUT:
-            baseNode - node: the node to be added
+            BaseNode - node: the node to be added
 
-        RETURN TYPE: 
+        RETURN TYPE:
             bool: the success of the operation
         """
 
         if 0 <= position <= len(self.children):
             self.children.insert(position, node)
             setattr(node, 'up', self)
-            node.addFeatures(parentHash = self.selfHash)
+            node.addFeatures(parentHash=self.selfHash)
             node.updateHashes()
             return True
         return False
@@ -84,8 +115,8 @@ class baseNode():
         Locate and removes a node from self.children if present.
 
         INPUT:
-            baseNode - node: the node to remove
-            
+            BaseNode - node: the node to remove
+
         RETURN TYPE:
             bool: the success of the operation
         """
@@ -101,7 +132,7 @@ class baseNode():
 
         INPUT:
             int - position: the position of the item to remove
-            
+
         RETURN TYPE:
             bool: the success of the operation
         """
@@ -125,17 +156,39 @@ class baseNode():
         for node in nodesList:
             self.removeChild(node)
 
+    def detach(self):
+        """
+        Detaches itself from the parent. Functions like a popChild() but on itself.
+
+        CUSTOM FUNCTIONS USED:
+            popChild()
+            getIndex()
+
+        RETURN TYPE:
+            BaseNode: the detached node
+        """
+
+        if not self.up:
+            return self
+
+        parent = self.up
+        index = self.getIndex()
+
+        self.up = None
+
+        return parent.popChild(index)
+
     def copy(self):
         """
         Copies and returns this node with only it's features. The parent and children are not copied.
 
         RETURN TYPE:
-            baseNode: the copied node
+            BaseNode: the copied node
         """
 
-        newNode = baseNode()
+        newNode = BaseNode()
 
-        for key in features:
+        for key in self.features:
             value = getattr(self, key, None)
             setattr(newNode, key, value)
 
@@ -183,7 +236,7 @@ class baseNode():
         Returns this node's parent.
 
         RETURN TYPE:
-            baseNode/None: the self.up reference
+            BaseNode/None: the self.up reference
         """
 
         return self.up
@@ -205,7 +258,7 @@ class baseNode():
         root = the node that has no parent (None)
 
         RETURN TYPE:
-            baseNode: the root of this tree
+            BaseNode: the root of this tree
         """
 
         p = self.up
@@ -226,7 +279,8 @@ class baseNode():
             int:the heigth ot this node
         """
 
-        if len(self.children) == 0: return 0
+        if len(self.children) == 0:
+            return 0
 
         heigths = []
         for child in self.children:
@@ -265,9 +319,15 @@ class baseNode():
             return self.up.children.index(self)
         return 0
 
-    def getNodeDictionary(self):
+    def getNodeDictionary(self, *features):
         """
         Returns a dictionary with every feature as key and it's value.
+
+        CUSTOM FUNCTIONS USED:
+            getAttribute()
+
+        INPUT:
+            args - *features: the feature to include in the dictionary
 
         RETURN TYPE:
             dict: the dictionary {features: values}
@@ -275,8 +335,8 @@ class baseNode():
 
         nodeDict = {}
 
-        for feature in self.features:
-            nodeDict[feature] = getattr(self, feature, None)
+        for feature in features:
+            nodeDict[feature] = self.getFeature(feature)
 
         return nodeDict
 
@@ -299,9 +359,22 @@ class baseNode():
 
         return treeList
 
+    def getDescendants(self):
+        """
+        Returns a list of the descendants nodes of this node.
+
+        CUSTOM FUNCTIONS USED:
+            getNodesList()
+
+        RETURN TYPE:
+            list: the list of descendants nodes
+        """
+
+        return self.getNodesList()
+
 # REPRESENTATION
 
-    def toString(self, tab = 0, *features):
+    def toString(self, tab=0, *features):
         """
         Returns a string version of the tree with optional features.
 
@@ -356,8 +429,11 @@ class baseNode():
         """
 
         for key, value in features.items():
-            self.features.append(key)
-            setattr(self, key, value)
+            if key not in self.features and value:
+                self.features.append(key)
+
+            if value:
+                setattr(self, key, value)
 
     def delFeatures(self, *features):
         """
@@ -367,12 +443,12 @@ class baseNode():
             args - *features: an arbitrary number of feature names to remove from the instance
         """
 
-        for key in features.items():
+        for key in features:
             if key in self.features:
                 self.features.remove(key)
                 delattr(self, key)
 
-    def updateHashes(self, root = None):
+    def updateHashes(self, root=None):
         """
         Updates the hashes numbers of the descendants of this node checking that the number doesn't repeat.
         Also updates the children self.parentHashes.
@@ -384,7 +460,7 @@ class baseNode():
             updateHashes()
 
         INPUT:
-            baseNode/None - root: the root of the tree where the operation should be started. Default is None
+            BaseNode/None - root: the root of the tree where the operation should be started. Default is None
         """
 
         if not root:
@@ -392,16 +468,54 @@ class baseNode():
 
         newHash = random.randint(0, 99999999)
 
-        while root.searchNode(selfHash = newHash):
+        while root.searchNode(selfHash=newHash):
             newHash = random.randint(0, 99999999)
 
-        self.addFeatures(selfHash = newHash)
+        self.addFeatures(selfHash=newHash)
 
         for child in self.children:
-            child.addFeatures(parentHash = self.selfHash)
+            child.addFeatures(parentHash=self.selfHash)
             child.updateHashes()
 
+# --- MODEL UTILITY FUNCTIONS ---
+
+# DATA
+
+    def updateFeature(self, key, value):
+        """
+        Updates the value of a feature of this node.
+
+        INPUT:
+            str - key: the feature to update
+            object - value: the new value to substitue
+        """
+
+        setattr(self, key, value)
+
 # GETTERS
+
+    def getFeature(self, feature):
+        """
+        Returns the value of the passed key.
+
+        INPUT:
+            str - feature: the feature to return the value of
+
+        RETURN TYPE:
+            object/None: the value of the key
+        """
+
+        return getattr(self, feature, None)
+
+    def getPrefix(self):
+        """
+        Returns the first 3 digits of the number of this node.
+
+        RETURN TYPE:
+            str: the number in base 36
+        """
+
+        return self.number[1:4]
 
     def getSize(self):
         """
@@ -453,7 +567,7 @@ class baseNode():
 
         quantity = self.getTotalQuantity()
 
-        return ceil(quantity / self.package) * float(self.price) 
+        return ceil(quantity / self.package) * float(self.price)
 
     def getTotalQuantity(self):
         """
@@ -469,7 +583,7 @@ class baseNode():
         """
 
         root = self.getRoot()
-        componentsList = root.getNodesList(number = self.number)
+        componentsList = root.getNodesList(number=self.number)
         quantity = int(self.quantity)
 
         for node in componentsList:
@@ -503,7 +617,7 @@ class baseNode():
         ct = 1
         number = incNumber(prefix, suffix, level, ct)
 
-        while root.searchNode(number = number):
+        while root.searchNode(number=number):
             ct += 1
             number = incNumber(prefix, suffix, level, ct)
 
@@ -535,7 +649,8 @@ class baseNode():
                     check = False
                     break
 
-            if check: searchList.append(node)
+            if check:
+                searchList.append(node)
 
         return searchList
 
@@ -550,9 +665,26 @@ class baseNode():
             list: the list of leaf nodes
         """
 
-        leavesList = self.getNodesList(children = [])
+        leavesList = self.getNodesList(children=[])
 
         return leavesList
+
+    def getNodeString(self):
+        """
+        Returns a string of the current node features, except for the hashes and the level.
+        Used for model filtering.
+
+        Returns:
+            str: the node string
+        """
+
+        output = ''
+        for key in self.features:
+            value = self.getFeature(key)
+            if value and key not in ['selfHash', 'parentHash', 'level', 'color']:
+                output += f'{value} '
+
+        return output
 
     def searchNode(self, **features):
         """
@@ -560,13 +692,13 @@ class baseNode():
         If more than one is present in the tree, the first occurrence is returnded.
 
         CUSTOM FUNCTIONS USED:
-            getNodeList()
+            getNodesList()
 
         INPUT:
             kwargs - **features: an arbitrary number of features to use for the research of the node
 
         RETURN TYPE:
-            baseNode/None: the first occurrence of the node that respects the passed attributes
+            BaseNode/None: the first occurrence of the node that respects the passed attributes
         """
 
         searchList = self.getNodesList(**features)
@@ -577,7 +709,9 @@ class baseNode():
 
 # GLOBAL
 
+
 VALUES = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
 
 def toBase36(number):
     """
@@ -601,6 +735,7 @@ def toBase36(number):
 
     return outputCharacters
 
+
 def toBase10(string):
     """
     Converts a string to a number from base 36 to base 10.
@@ -620,6 +755,7 @@ def toBase10(string):
         x -= 1
 
     return output
+
 
 def incPrefix(prefix, level, qty):
     """
@@ -643,13 +779,18 @@ def incPrefix(prefix, level, qty):
         str: the incremented number converted to base 36
     """
 
-    if not 1 < level < 5: return prefix
+    if not 1 < level < 5:
+        return prefix
 
-    if level == 2: return toBase36(toBase10(prefix[0]) + qty) + prefix[1:]
+    if level == 2:
+        return toBase36(toBase10(prefix[0]) + qty) + prefix[1:]
 
-    if level == 3: return prefix[0] + toBase36(toBase10(prefix[1]) + qty) + prefix[2]
+    if level == 3:
+        return prefix[0] + toBase36(toBase10(prefix[1]) + qty) + prefix[2]
 
-    if level == 4: return prefix[:2] + toBase36(toBase10(prefix[2]) + qty)
+    if level == 4:
+        return prefix[:2] + toBase36(toBase10(prefix[2]) + qty)
+
 
 def incSuffix(suffix, level, qty):
     """
@@ -672,6 +813,7 @@ def incSuffix(suffix, level, qty):
         suffix = toBase36(toBase10(suffix) + qty)
 
     return suffix.zfill(3)
+
 
 def incNumber(prefix, suffix, level, quantity):
     """
@@ -699,6 +841,7 @@ def incNumber(prefix, suffix, level, quantity):
 
     return packNumber(prefix, suffix)
 
+
 def unpackNumber(stringNumber):
     """
     Removes the non alphanumerical characters from the string and returns the obtained string.
@@ -711,8 +854,9 @@ def unpackNumber(stringNumber):
     """
 
     stringNumber = stringNumber.upper()
-    stringNumber = re.sub('[\W_]+', '', stringNumber)
+    stringNumber = re.sub(r'[\W_]+', '', stringNumber)
     return stringNumber
+
 
 def packNumber(prefix, suffix):
     """
@@ -735,14 +879,17 @@ def packNumber(prefix, suffix):
 
 if __name__ == '__main__':
 
-    root = baseNode(number = '#000-000')
+    root = BaseNode(number='root')
 
-    child1 = baseNode(number = '#100-000', level = 0)
-    child2 = baseNode(number = '#110-000', level = 0)
-    child3 = baseNode(number = '#120-000')
+    child1 = BaseNode(number='1', level=0)
+    child2 = BaseNode(number='2', level=0)
+    child3 = BaseNode(number='3')
 
     root.addChild(child1)
     child1.addChild(child3)
     child1.insertChild(child2, 1)
 
-    print(root.toString(0, 'selfHash', 'parentHash'))
+    print(root)
+    print(child1.detach())
+    print(root)
+    print(root.getNodeString())

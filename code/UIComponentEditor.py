@@ -3,9 +3,8 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
-from ComponentTree import ComponentTree
-
 from constants import TYPES_FROM_EDITOR
+
 
 class ComponentEditor(qtw.QWidget):
     """
@@ -13,134 +12,100 @@ class ComponentEditor(qtw.QWidget):
     needs to be added.
     """
 
-    submit = qtc.pyqtSignal(ComponentTree)                                            
-    
-    def __init__(self, parent, manufacture_model, level = None):
-        """
-        Loads the .ui file, and connects the buttons to their respective functions.
+    submit = qtc.pyqtSignal(dict)
 
-        INPUT:
-            ComponentTree - parent: item to calculate the number from
-            optional int - level: value for level overwriting
-        """
-        super(ComponentEditor, self).__init__()                                   
+    def __init__(self, manufacture_model, node):
+        super(ComponentEditor, self).__init__()
+
+        self.uiManufacture = None
 
         uic.loadUi('code/resources/UIs/ui_component_editor.ui', self)
 
-        self.mapper = qtw.QDataWidgetMapper()                                    
         self.manufactures = manufacture_model
+        self.currentNode = node
 
-        self.uiCancelButton.clicked.connect(self.close)                                  
+        self.uiCancelButton.clicked.connect(self.close)
         self.uiSubmitButton.clicked.connect(self.onSubmit)
 
-        self.initFields(parent, level)
+        self.initFields()
+
+    def initFields(self):
+        """
+        Initializes the fields when a new popup is opened.
+        """
+
+        self.uiNumberID.setText(self.currentNode.getFeature('number'))
+        self.uiName.setText(self.currentNode.getFeature('title'))
+        self.uiDescription.setPlainText(self.currentNode.getFeature('description'))
+        self.uiType.setText(self.currentNode.getFeature('type'))
+        self.uiComment.setPlainText(self.currentNode.getFeature('comment'))
+        self.uiPriceUnit.setText(str(self.currentNode.getFeature('price')))
+        self.uiSeller.setText(self.currentNode.getFeature('seller'))
+        self.uiLink.setPlainText(self.currentNode.getFeature('link'))
+
+        self.changeManufacture()
+
+        if self.currentNode.getFeature('type') == 'Assembly':
+            self.uiQnPContainer.setDisabled(True)
+
+    def changeManufacture(self):
+        """
+        Changes dinamically the manufacture widget and initializes it's text in every context.
+        """
+
+        layout = self.uiManufacture.parentWidget().layout()
+
+        layout.removeWidget(self.uiManufacture)
+        self.uiManufacture.close()
+        layout.removeRow(2)
+
+        if not self.currentNode.getFeature('manufactureEditable'):
+            self.uiManufacture = qtw.QLineEdit()
+            self.uiManufacture.setReadOnly(True)
+            self.uiManufacture.setText(self.currentNode.getFeature('manufacture'))
+        else:
+            self.uiManufacture = qtw.QComboBox()
+            self.uiManufacture.setModel(self.manufactures)
+            self.uiManufacture.setCurrentIndex(0)
+
+        layout.insertRow(2, 'Manufacture', self.uiManufacture)
+        layout.update()
+
+    def calcManufacture(self):
+        """
+        Calculates the corresponding value for the manufacture field.
+        """
+
+        if self.currentNode.getFeature('type') == 'Assembly' or self.currentNode.getFeature('type') == 'Placeholder':
+            return None
+        else:
+            return self.uiManufacture.currentText()
 
     def onSubmit(self):
         """Emits the ComponentTree object with the current data."""
 
-        data = {                                                                           
-            'number': self.uiNumberID.text(),
-            'title': self.uiName.text(), 
+        data = {
+            'title': self.uiName.text(),
             'description': self.uiDescription.toPlainText(),
             'type': self.uiType.text(),
-            'manufacture': self.calc_manufacture(self.uiType.text()),
+            'manufacture': self.calcManufacture(),
             'status': self.uiStatus.currentText(),
             'comment': self.uiComment.toPlainText(),
             'price': self.uiPriceUnit.text(),
             'quantity': self.uiQuantityNeeded.text(),
-            'quantityPackage': self.uiQuantityUnit.text(),
+            'package': self.uiQuantityUnit.text(),
             'seller': self.uiSeller.text(),
             'kit': self.uiKit.currentText(),
             'link': self.uiLink.toPlainText()
         }
 
-        newComponent = ComponentTree(self.uiNumberID, data)
+        toRemove = []
+        for key, value in data.items():
+            if not value:
+                toRemove.append(key)
 
-        self.submit.emit(newComponent)                                                 
-        self.close()                                                                 
+        for key in toRemove:
+            del data[key]
 
-    def initFields(self, parent, level):
-        """
-        Initializes the fields when a new popup is opened.
-
-        INPUT:
-            ComponentTree - parent: item to calculate the number from
-            int - level: value for level overwriting
-        """
-        
-        number = parent.calc_number(parent, level)
-        self.uiNumberID.setText(number)
-
-        self.uiName.setText('-')
-        self.uiDescription.setPlainText('-')
-
-        level = parent.level + 1
-        
-
-        self.uiType.setText(TYPES_FROM_EDITOR[level])
-        self.uiComment.setPlainText('-')
-        self.uiPriceUnit.setText('0')
-        self.uiSeller.setText('-')
-        self.uiLink.setPlainText('-')
-        
-        self.changeManufactureWidget(self.uiType.text(), self.uiManufacture, self.uiNumberID)
-
-        if self.uiType.text() in ['Project', 'Assembly']:
-            self.uiQnPContainer.setDisabled(True)
-
-    def changeManufactureWidget(self, nodeType, widgetPtr, numberPtr):
-        """
-        Changes dinamically the manufacture widget and initializes it's text in every context.
-
-        INPUT:
-            str - nodeType: the type of the current component
-            QWidget - widgetPtr: the widget to modify
-            QWidget - numberPtr: the widget holding the number
-        """
-
-        layout = widgetPtr.parentWidget().layout()
-
-        def changeWidget(widget, widgetPointer, text = None):
-            layout.removeWidget(widgetPointer)
-            widgetPointer.close()
-            layout.removeRow(2)
-
-            if widget == 'LineEdit':
-                widgetPointer = qtw.QLineEdit()
-                widgetPointer.setReadOnly(True)
-                widgetPointer.setText(text)
-            elif widget == 'ComboBox':
-                widgetPointer = qtw.QComboBox()
-                widgetPointer.setModel(self.manufactures)
-                widgetPointer.setCurrentIndex(0)
-
-            layout.insertRow(2, 'Manufacture', widgetPointer)
-            layout.update()
-            self.uiManufacture = widgetPointer
-
-        if nodeType == 'Project' or nodeType == 'Assembly':
-            changeWidget('LineEdit', widgetPtr, 'Assembled')
-        elif nodeType == 'Hardware' or nodeType == 'Consumables':
-            if numberPtr.text()[1:4] == 'MMH':
-                changeWidget('LineEdit', widgetPtr, 'Cut to Length')
-            else:
-                changeWidget('LineEdit', widgetPtr, 'Off the Shelf')
-        elif nodeType == 'Placeholder':
-            changeWidget('LineEdit', widgetPtr, 'None')
-        else:
-            changeWidget('ComboBox', widgetPtr)
-
-    def calc_manufacture(self, nodeType):
-        """
-        Calculates the corresponding value for the manufacture field.
-
-        INPUT:
-            str - nodeType: the value of the type of the node
-        """
-
-        if nodeType == 'Project' or nodeType == 'Assembly':
-            return 'Assembled'
-        elif nodeType == 'Placeholder':
-            return None
-        else:
-            return self.uiManufacture.currentText()
+        self.submit.emit(data)
+        self.close()

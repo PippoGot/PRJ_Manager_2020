@@ -8,7 +8,7 @@ class ModelCombobox(qtc.QStringListModel):
     This class is a simple subclass of the combobox model, only write and read
     capabilities are added to save presets to a file.
     """
-    
+
     def __init__(self, filename):
         self.filename = filename
         data = self.readFile()
@@ -16,15 +16,15 @@ class ModelCombobox(qtc.QStringListModel):
 
     def saveModel(self):
         """Saves the items of this combobox in a .csv file."""
-        
+
         with open(self.filename, 'w') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(self.stringList())
-    
+
     def readFile(self):
         """
         Opens a .csv file with stored values.
-        
+
         RETURN TYPE:
             list: the list of items for the combobox
         """
