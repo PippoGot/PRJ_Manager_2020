@@ -10,6 +10,7 @@ class ProjectNode(BaseNode):
             type='Project',
             manufacture='Assembled',
             color=qtg.QColor(255, 126, 77),
+            icon=qtg.QIcon('code/resources/icons/project.png'),
             **features
         )
 
@@ -37,10 +38,12 @@ class AssemblyNode(BaseNode):
             tp = 'Part'
             manufacture = None
             manufactureEditable = True
+            icon = qtg.QIcon('code/resources/icons/part.png')
         else:
             tp = 'Assembly'
             manufacture = 'Assembled'
             manufactureEditable = False
+            icon = qtg.QIcon('code/resources/icons/assembly.png')
 
         colors = [
             qtg.QColor(255, 164, 89),
@@ -55,6 +58,7 @@ class AssemblyNode(BaseNode):
             type=tp,
             manufacture=manufacture,
             manufactureEditable=manufactureEditable,
+            icon=icon,
             color=colors[level - 2],
             **features
         )
@@ -84,6 +88,7 @@ class LeafNode(BaseNode):
             type='Part',
             manufactureEditable=True,
             color=qtg.QColor(120, 120, 120),
+            icon=qtg.QIcon('code/resources/icons/part.png'),
             **features
         )
 
@@ -106,6 +111,18 @@ class LeafNode(BaseNode):
 
 class HardwareNode(BaseNode):
     def __init__(self, number, **features):
+
+        prefix = number[1:4]
+        if prefix not in ['MEH', 'ELH', 'EMH']:
+            prefix = 'NOTIN'
+
+        icons = {
+            'MEH': qtg.QIcon('code/resources/icons/hardware.png'),
+            'ELH': qtg.QIcon('code/resources/icons/electronic.png'),
+            'EMH': qtg.QIcon('code/resources/icons/electromechanical.png'),
+            'NOTIN': None
+        }
+
         super().__init__(
             level=5,
             number=number,
@@ -113,6 +130,7 @@ class HardwareNode(BaseNode):
             manufacture='Off the Shelf',
             manufactureEditable=False,
             color=qtg.QColor(204, 205, 204),
+            icon=icons[prefix],
             **features
         )
 
@@ -142,6 +160,7 @@ class MeasuredNode(BaseNode):
             manufacture='Cut to Length',
             manufactureEditable=False,
             color=qtg.QColor(204, 205, 204),
+            icon=qtg.QIcon('code/resources/icons/measured.png'),
             **features
         )
 
@@ -170,6 +189,7 @@ class PlaceholderNode(BaseNode):
             type='Placeholder',
             status='Not Designed',
             color=qtg.QColor(146, 222, 255),
+            icon=qtg.QIcon('code/resources/icons/placeholder.png'),
             **features
         )
 
@@ -198,6 +218,7 @@ class JigNode(BaseNode):
             type='Jig',
             manufactureEditable=True,
             color=qtg.QColor(74, 189, 255),
+            icon=qtg.QIcon('code/resources/icons/jig.png'),
             **features
         )
 
@@ -227,6 +248,7 @@ class ConsumableNode(BaseNode):
             manufacture='Product',
             manufactureEditable=False,
             color=qtg.QColor(204, 205, 204),
+            icon=qtg.QIcon('code/resources/icons/consumable.png'),
             **features
         )
 

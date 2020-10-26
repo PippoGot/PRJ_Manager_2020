@@ -63,6 +63,9 @@ class ModelTree(qtc.QAbstractItemModel):
         elif role == qtc.Qt.BackgroundRole:
             return item.getFeature('color')
 
+        elif role == qtc.Qt.DecorationRole and index.column() == 0:
+            return item.getFeature('icon')
+
     def setData(self, index, value, role=qtc.Qt.EditRole):
         """
         Sets the role data for the item at index to value .
@@ -328,8 +331,26 @@ class ModelTree(qtc.QAbstractItemModel):
             str - filename: the name of the file to create
         """
 
-        # self.rootItem.export_bill(filename)
-        pass
+        fieldnames = [
+            'number',
+            'title',
+            'description',
+            'type',
+            'quantity',
+            'price',
+            'seller'
+        ]
+
+        with open(filename, 'w') as file:
+            csv_writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+            csv_writer.writeheader()
+
+            for node in self.rootItem.getNodesList(level = '5'):
+                line = node.getNodeDictionary(*fieldnames)
+                line['quantity'] = node.getTotalQuantity()
+                line['price'] = node.getTotalCost()
+                csv_writer.writerow(line)
 
     def readFile(self, filename):
         """
@@ -395,16 +416,17 @@ class ModelTree(qtc.QAbstractItemModel):
         else:
             level = 5
 
-        tp = features['type']
         if number[1:4] == 'MMH':
             tp = 'Measured'
+        else:
+            tp = features['type']
 
         typeDict = {
             'Project': ProjectNode(),
             'Assembly': AssemblyNode(number, level),
             'Part': LeafNode(number),
-            'Hardware': HardwareNode(number),
             'Measured': MeasuredNode(number),
+            'Hardware': HardwareNode(number),
             'Consumable': ConsumableNode(number),
             'Jig': JigNode(number, level),
             'Placeholder': PlaceholderNode(number, level)

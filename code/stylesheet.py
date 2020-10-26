@@ -41,9 +41,9 @@ stylesheet = """
         margin-top: 2px;
     }
 
-    QTreeView::item:selected:active, QTreeView::item:selected:!active {
+    QTreeView::item:selected {
         background: #ff58b2;
-        font: #1a1a1a;
+        color: #1a1a1a;
     }
 
     QTreeView::item:hover {
@@ -162,5 +162,9 @@ stylesheet = """
 
     QTableView::item:alternate {
         background-color: #666666;
+    }
+
+    QTableView::item:selected {
+        background-color: #6cc9ff;
     }
 """

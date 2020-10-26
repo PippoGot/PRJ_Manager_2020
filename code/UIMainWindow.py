@@ -210,7 +210,7 @@ class MainWindow(qtw.QMainWindow):
 
         if currentSelection:
             parentItem = currentSelection.internalPointer()
-            level = parentItem.getFeature('level')
+            level = parentItem.getLevel()
             newNumber = parentItem.getNewNumber(parentItem.getPrefix(), level + 1)
 
             def wrapper(nodeDict):
@@ -248,7 +248,7 @@ class MainWindow(qtw.QMainWindow):
 
         if currentSelection:
             parentItem = currentSelection.internalPointer()
-            level = parentItem.getFeature('level')
+            level = parentItem.getLevel()
 
             if level < 5:
                 self.hardwareSelector = HardwareSelector(self.archive)
@@ -271,7 +271,7 @@ class MainWindow(qtw.QMainWindow):
 
         if currentSelection:
             parentItem = currentSelection.internalPointer()
-            level = parentItem.getFeature('level')
+            level = parentItem.getLevel()
             newNumber = parentItem.getNewNumber(parentItem.getPrefix(), 5)
 
             def wrapper(nodeDict):
@@ -304,7 +304,7 @@ class MainWindow(qtw.QMainWindow):
 
         if currentSelection:
             parentItem = currentSelection.internalPointer()
-            level = parentItem.getFeature('level')
+            level = parentItem.getLevel()
             newNumber = parentItem.getNewNumber('JIG', 5)
 
             def wrapper(nodeDict):
@@ -337,7 +337,7 @@ class MainWindow(qtw.QMainWindow):
 
         if currentSelection:
             parentItem = currentSelection.internalPointer()
-            level = parentItem.getFeature('level')
+            level = parentItem.getLevel()
             newNumber = parentItem.getNewNumber('PLC', 5)
 
             def wrapper(nodeDict):
@@ -374,16 +374,18 @@ class MainWindow(qtw.QMainWindow):
 
         if currentSelection:
             item = currentSelection.internalPointer()
-            level = item.level
+            level = item.getLevel()
+            tp = item.getFeature('type')
 
             if level == 5:
-                self.hardwareSelector = HardwareSelector(self.archive)
-                self.hardwareSelector.submit.connect(morphWrapper)
-                self.hardwareSelector.show()
-
+                if tp in ['Hardware', 'Consumable']:
+                    self.hardwareSelector = HardwareSelector(self.archive)
+                    self.hardwareSelector.submit.connect(morphWrapper)
+                    self.hardwareSelector.show()
+                else:
+                    self.okDialog('Warning!', 'The item is not of an appropriate type!')
             else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
-
         else:
             self.okDialog('Warning!', 'No item currently selected.')
 
@@ -427,7 +429,7 @@ class MainWindow(qtw.QMainWindow):
             row = item.getIndex()
             parent = currentSelection.parent()
 
-            if item.level != 1:
+            if item.getLevel() != 1:
                 self.model.removeRows(row, parent)
             else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
@@ -448,7 +450,7 @@ class MainWindow(qtw.QMainWindow):
             row = item.getIndex()
             parent = currentSelection.parent()
 
-            if item.level != 1:
+            if item.getLevel() != 1:
                 self.copied = self.model.removeRows(row, parent)
             else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
@@ -467,7 +469,7 @@ class MainWindow(qtw.QMainWindow):
         if currentSelection:
             item = currentSelection.internalPointer()
 
-            if item.level != 1:
+            if item.getLevel() != 1:
                 self.copied = item.deepCopy()
             else:
                 self.okDialog('Warning!', 'The selected item is not of an appropriate level!')
@@ -640,7 +642,7 @@ class MainWindow(qtw.QMainWindow):
 
         if index:
             node = index.internalPointer()
-            level = node.level
+            level = node.getLevel()
 
             menu = qtw.QMenu()
 

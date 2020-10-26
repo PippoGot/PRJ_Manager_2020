@@ -2,8 +2,9 @@ from math import ceil
 import re
 import random
 
-
 class BaseNode():
+
+# INITIALISATION
 
     def __init__(self, **features):
         self.up = None
@@ -42,31 +43,29 @@ class BaseNode():
         self.updateHashes()
         self.initValues(**features)
 
-# --- TREE FUNCTIONS ---
-
-# DATA
-
     def initValues(self, **features):
         """
         Initializes the node to a default value.
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             addFeature()
         """
 
         self.addFeatures(**features)
 
+# INSERTION
+
     def addChild(self, node):
         """
         Adds a node to self.children of this node. See insertChild for more info.
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             insertChild()
 
-        INPUT:
-            BaseNode - node: the node to be added
+        Args:
+            node [BaseNode]: the node to be added
 
-        RETURN TYPE:
+        Returns:
             bool: the success of the operation
         """
 
@@ -77,14 +76,15 @@ class BaseNode():
         Insert a node to self.children of this node in a specified position.
         Then node.up, node.selfHash, node.parentHash are updated.
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             addFeatures()
             updateHashes()
 
-        INPUT:
-            BaseNode - node: the node to be added
+        Args:
+            node [BaseNode]: the node to be added
+            position [int]: the position where to insert the node
 
-        RETURN TYPE:
+        Returns:
             bool: the success of the operation
         """
 
@@ -99,24 +99,26 @@ class BaseNode():
         """
         Adds multiple nodes to self.children.
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             addChild()
 
-        INPUT:
-            list - nodesList: the list of nodes to add
+        Args:
+            nodesList [list[BaseNode]]: the list of nodes to add
         """
 
         for node in nodesList:
             self.addChild(node)
 
+# REMOVAl
+
     def removeChild(self, node):
         """
         Locate and removes a node from self.children if present.
 
-        INPUT:
-            BaseNode - node: the node to remove
+        Args:
+            node [BaseNode]: the node to remove
 
-        RETURN TYPE:
+        Returns:
             bool: the success of the operation
         """
 
@@ -129,10 +131,10 @@ class BaseNode():
         """
         Removes and returns the node at the specified position of self.children if present.
 
-        INPUT:
-            int - position: the position of the item to remove
+        Args:
+            position [int]: the position of the item to remove
 
-        RETURN TYPE:
+        Returns:
             bool: the success of the operation
         """
 
@@ -146,11 +148,11 @@ class BaseNode():
         """
         Removes multiple nodes from self.children if present.
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             removeChild()
 
-        INPUT:
-            list - nodesList: the nodes to remove"""
+        Args:
+            nodesList [list[BaseNode]]: the nodes to remove"""
 
         for node in nodesList:
             self.removeChild(node)
@@ -159,12 +161,12 @@ class BaseNode():
         """
         Detaches itself from the parent. Functions like a popChild() but on itself.
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             popChild()
             getIndex()
 
-        RETURN TYPE:
-            BaseNode: the detached node
+        Returns:
+            [BaseNode]: the detached node
         """
 
         if not self.up:
@@ -177,18 +179,20 @@ class BaseNode():
 
         return parent.popChild(index)
 
+# COPY
+
     def copy(self):
         """
         Copies and returns this node with only it's features. The parent and children are not copied.
 
-        RETURN TYPE:
-            BaseNode: the copied node
+        Returns:
+            [BaseNode]: the copied node
         """
 
         newNode = BaseNode()
 
         for key in self.features:
-            value = getattr(self, key, None)
+            value = convertToNumber(getattr(self, key, None))
             setattr(newNode, key, value)
 
         return newNode
@@ -197,8 +201,11 @@ class BaseNode():
         """
         Copies and returns this node with parent and children.
 
-        RETURN TYPE:
-            BaseNode: the copied node
+        CUSTOM FUNCTION USED:
+            addChild()
+
+        Returns:
+            [BaseNode]: the copied node
         """
 
         newNode = self.copy()
@@ -208,11 +215,13 @@ class BaseNode():
 
         return newNode
 
+# TRAVERSAL
+
     def iterDescendants(self):
         """
         Iters through the descendants of this node recursively from top to bottom level.
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             iterDescendants()
         """
 
@@ -232,38 +241,103 @@ class BaseNode():
             yield p
             p = p.up
 
-# GETTERS
+# FEATURES HANDLING
 
-    def getChildAt(self, position):
+    def addFeatures(self, **features):
         """
-        Returns the child at the specified position if valid.
+        Adds an arbitrary number of features to this instance or updates the ones already existing.
 
-        INPUT:
-            int - position: the position of the wanted children
-        """
-
-        if 0 <= position < len(self.children):
-            return self.children[position]
-
-    def getParent(self):
-        """
-        Returns this node's parent.
-
-        RETURN TYPE:
-            BaseNode/None: the self.up reference
+        Args:
+            **features [**kwargs]: an arbitrary number of keyword arguments to add as features
         """
 
-        return self.up
+        for key, value in features.items():
+            if key not in self.features and value:
+                self.features.append(key)
 
-    def getChildren(self):
+            if value:
+                setattr(self, key, value)
+
+    def updateFeature(self, key, value):
         """
-        Returns self.children list.
+        Updates the value of a feature of this node.
 
-        RETURN TYPE:
-            list: self.children
+        Args:
+            key [str]: the feature to update
+            value [PyObject]: the new value to substitue
         """
 
-        return self.children
+        value = convertToNumber(value)
+        setattr(self, key, value)
+
+    def delFeatures(self, *features):
+        """
+        Deletes an arbitrary number of features from this instance.
+
+        Args:
+            *features [*args]: an arbitrary number of feature names to remove from the instance
+        """
+
+        for key in features:
+            if key in self.features:
+                self.features.remove(key)
+                delattr(self, key)
+
+# HASHING
+
+    def updateHashes(self, root=None):
+        """
+        Updates the hashes numbers of the descendants of this node checking that the number doesn't repeat.
+        Also updates the children self.parentHashes.
+
+        Custom functions:
+            getRoot()
+            searchNode()
+            addFeatures()
+            updateHashes()
+
+        Args:
+            root [BaseNode]: the root of the tree where the operation should be started. Default is None
+        """
+
+        if not root:
+            root = self.getRoot()
+
+        newHash = random.randint(0, 99999999)
+
+        while root.searchNode(selfHash=newHash):
+            newHash = random.randint(0, 99999999)
+
+        self.addFeatures(selfHash=newHash)
+
+        for child in self.children:
+            child.addFeatures(parentHash=self.selfHash)
+            child.updateHashes(root)
+
+# SEARCHING
+
+    def searchNode(self, **features):
+        """
+        Search for nodes with the specified features.
+        If more than one is present in the tree, the first occurrence is returnded.
+
+        Custom functions:
+            getNodesList()
+
+        Args:
+            **features [**kwargs]: an arbitrary number of features to use for the research of the node
+
+        Returns:
+            [BaseNode]: the first occurrence of the node that respects the passed attributes
+        """
+
+        searchList = self.getNodesList(**features)
+
+        if searchList:
+            return searchList[0]
+        return None
+
+# DEFINITION GETTERS
 
     def getRoot(self):
         """
@@ -271,8 +345,8 @@ class BaseNode():
 
         root = the node that has no parent (None)
 
-        RETURN TYPE:
-            BaseNode: the root of this tree
+        Returns:
+            [BaseNode]: the root of this tree
         """
 
         p = self.up
@@ -282,6 +356,65 @@ class BaseNode():
             p = p.up
         return self
 
+    def getParent(self):
+        """
+        Returns this node's parent.
+
+        Returns:
+            [BaseNode]: the self.up reference
+        """
+
+        return self.up
+
+    def getChildAt(self, position):
+        """
+        Returns the child at the specified position if valid.
+
+        Args:
+            position [int]: the position of the wanted children
+        """
+
+        if 0 <= position < len(self.children):
+            return self.children[position]
+
+    def getChildren(self):
+        """
+        Returns self.children list.
+
+        Returns:
+            [list[BaseNode]]: self.children
+        """
+
+        return self.children
+
+    def getDescendants(self):
+        """
+        Returns a list of the descendants nodes of this node.
+
+        Custom functions:
+            getNodesList()
+
+        Returns:
+            [list[BaseNode]]: the list of descendants nodes
+        """
+
+        return self.getNodesList()
+
+    def getAncestors(self):
+        """
+        Returns a list of the ancestor nodes.
+
+        Returns:
+            [list[BaseNode]]: the list of ancestor nodes
+        """
+
+        ancestors = []
+
+        for ancestor in self.iterAncestor():
+            ancestors.append(ancestor)
+
+        return ancestors
+
     def getHeigth(self):
         """
         Returns this node's heigth based on the definition:
@@ -289,7 +422,7 @@ class BaseNode():
         - if the node is a leaf, heigth = 0;
         - else heigth = 1 + max(node's children heigths);
 
-        RETURN TYPE:
+        Returns:
             int:the heigth ot this node
         """
 
@@ -309,11 +442,11 @@ class BaseNode():
         - if the node is the root, depth = 0;
         - else depth = 1 + node's parent depth;
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             getDepth()
 
-        RETURN TYPE:
-            int: this node's depth
+        Returns:
+            [int]: this node's depth
         """
 
         if not self.up:
@@ -321,349 +454,48 @@ class BaseNode():
 
         return self.up.getDepth() + 1
 
+# TREE UTILITY GETTERS
+
     def getIndex(self):
         """
         Returns this node's index in it's parent list.
 
-        RETURN TYPE:
-            int: the index of this item in the self.up.children list
+        Returns:
+            [int]: the index of this item in the self.up.children list
         """
 
         if self.up:
             return self.up.children.index(self)
         return 0
 
-    def getNodeDictionary(self, *features):
-        """
-        Returns a dictionary with every feature as key and it's value.
-
-        CUSTOM FUNCTIONS USED:
-            getAttribute()
-
-        INPUT:
-            args - *features: the feature to include in the dictionary
-
-        RETURN TYPE:
-            dict: the dictionary {features: values}
-        """
-
-        nodeDict = {}
-
-        for feature in features:
-            nodeDict[feature] = self.getFeature(feature)
-
-        return nodeDict
-
-    def getTreeList(self):
-        """
-        Returns a list of nodes in dictionary format.
-
-        CUSTOM FUNCTIONS USED:
-            iterDescendants()
-            getNodeDictionary()
-
-        RETURN TYPE:
-            list: the list of all the nodes of the tree as dictionary
-        """
-
-        treeList = []
-
-        for node in self.iterDescendants():
-            treeList.append(node.getNodeDictionary())
-
-        return treeList
-
-    def getDescendants(self):
-        """
-        Returns a list of the descendants nodes of this node.
-
-        CUSTOM FUNCTIONS USED:
-            getNodesList()
-
-        RETURN TYPE:
-            list: the list of descendants nodes
-        """
-
-        return self.getNodesList()
-
-# REPRESENTATION
-
-    def toString(self, tab=0, *features):
-        """
-        Returns a string version of the tree with optional features.
-
-        CUSTOM FUNCTIONS USED:
-            getIndex()
-            toString()
-            getDepth()
-
-        INPUT:
-            int - tab: the number of spaces of indentation. Default as 0
-            args - *features: optional features to display
-
-        RETURN TYPE:
-            str: the tree structure in string format
-        """
-
-        string = ''
-        string += tab * '   ' + f'|-- {self.getIndex()}° - {self.number}'
-
-        for key in features:
-            value = getattr(self, key, None)
-            string += f' - {value}'
-
-        for child in self.children:
-            string += '\n' + child.toString(child.getDepth(), *features)
-
-        return string
-
-# DUNDER METHODS
-
-    def __eq__(self, other):
-        """
-        Enables the == operator
-
-        INPUT:
-            object - other: the item to compare this item with
-        """
-
-        if isinstance(other, BaseNode):
-            return other.getSize() == self.getSize()
-        return False
-
-    def __repr__(self):
-        """
-        Enables the print() function. See toString() for more details.
-
-        CUSTOM FUNCTIONS USED:
-            toString()
-
-        RETURN TYPE:
-            str: the tree in string format
-        """
-
-        return self.toString()
-
-# --- COMPONENT FUNCTIONS ---
-
-# DATA
-
-    def addFeatures(self, **features):
-        """
-        Adds an arbitrary number of features to this instance or updates the ones already existing.
-
-        INPUT:
-            kwargs - **features: an arbitrary number of keyword arguments to add as features
-        """
-
-        for key, value in features.items():
-            if key not in self.features and value:
-                self.features.append(key)
-
-            if value:
-                setattr(self, key, value)
-
-    def delFeatures(self, *features):
-        """
-        Deletes an arbitrary number of features from this instance.
-
-        INPUT:
-            args - *features: an arbitrary number of feature names to remove from the instance
-        """
-
-        for key in features:
-            if key in self.features:
-                self.features.remove(key)
-                delattr(self, key)
-
-    def updateHashes(self, root=None):
-        """
-        Updates the hashes numbers of the descendants of this node checking that the number doesn't repeat.
-        Also updates the children self.parentHashes.
-
-        CUSTOM FUNCTIONS USED:
-            getRoot()
-            searchNode()
-            addFeatures()
-            updateHashes()
-
-        INPUT:
-            BaseNode/None - root: the root of the tree where the operation should be started. Default is None
-        """
-
-        if not root:
-            root = self.getRoot()
-
-        newHash = random.randint(0, 99999999)
-
-        while root.searchNode(selfHash=newHash):
-            newHash = random.randint(0, 99999999)
-
-        self.addFeatures(selfHash=newHash)
-
-        for child in self.children:
-            child.addFeatures(parentHash=self.selfHash)
-            child.updateHashes(root)
-
-# --- MODEL UTILITY FUNCTIONS ---
-
-# DATA
-
-    def updateFeature(self, key, value):
-        """
-        Updates the value of a feature of this node.
-
-        INPUT:
-            str - key: the feature to update
-            object - value: the new value to substitue
-        """
-
-        setattr(self, key, value)
-
-# GETTERS
-
     def getFeature(self, feature):
         """
         Returns the value of the passed key.
 
-        INPUT:
-            str - feature: the feature to return the value of
+        Args:
+            feature [str]: the feature to return the value of
 
-        RETURN TYPE:
-            object/None: the value of the key
+        Returns:
+            [PyObject]: the value of the key
         """
 
-        return getattr(self, feature, None)
+        value = convertToNumber(getattr(self, feature, None))
 
-    def getPrefix(self):
-        """
-        Returns the first 3 digits of the number of this node.
-
-        RETURN TYPE:
-            str: the number in base 36
-        """
-
-        return self.number[1:4]
-
-    def getSize(self):
-        """
-        Returns this node's size. The size is defined by the item number. Each digit has the following weigth:
-
-        #      X      X      X      -      X      X      X
-            36^3 + 36^4 + 36^5      +   36^2 + 36^1 + 36^0
-
-        CUSTOM FUNCTIONS USED:
-            unpackNumber()
-            toBase10()
-
-        RETURN TYPE:
-            int: the size of the node
-        """
-
-        stringNumber = unpackNumber(self.number)
-
-        prefix = stringNumber[:4]
-        suffix = stringNumber[4:]
-
-        prefix = prefix[::-1]
-
-        stringNumber = prefix + suffix
-
-        return toBase10(stringNumber)
-
-    def getLevel(self):
-        """
-        Returns this node's level.
-
-        RETURN TYPE:
-            int: the level of this node
-        """
-
-        return self.level
-
-    def getTotalCost(self):
-        """
-        Calculates and returns the cost of this component based on the total quantity of this component
-        in the tree (assembly).
-
-        CUSTOM FUNCTIONS USED:
-            getTotalQuantity()
-
-        RETURN TYPE:
-            float: the total price of this item
-        """
-
-        quantity = self.getTotalQuantity()
-
-        return ceil(quantity / self.package) * float(self.price)
-
-    def getTotalQuantity(self):
-        """
-        Calculates and returns the quantity of this node inside the tree (root node).
-
-        CUSTOM FUNCTIONS USED:
-            getRoot()
-            getNodesList()
-            iterAncecstor()
-
-        RETURN TYPE:
-            int: the total quantity of this item inside the tree
-        """
-
-        root = self.getRoot()
-        componentsList = root.getNodesList(number=self.number)
-        quantity = int(self.quantity)
-
-        for node in componentsList:
-            for ancestor in node.iterAncestor():
-                quantity *= int(ancestor.quantity)
-
-        return quantity
-
-    def getNewNumber(self, prefix, level):
-        """
-        Calculates and returns the next available number for the specified prefix and level.
-        The parents prefix number is passed if the new node is not a special type ( so if the new
-        node is either a Project, Assembly or Part).
-
-        CUSTOM FUNCTIONS USED:
-            getRoot()
-            incNumber()
-            searchNode()
-
-        INPUT:
-            str - prefix: the prefix of the new item or of his parent
-            int - level: the level of the new item
-
-        RETURN TYPE:
-            str: the next available number
-        """
-
-        root = self.getRoot()
-
-        suffix = '000'
-        ct = 1
-        number = incNumber(prefix, suffix, level, ct)
-
-        while root.searchNode(number=number):
-            ct += 1
-            number = incNumber(prefix, suffix, level, ct)
-
-        return number
+        return value
 
     def getNodesList(self, **features):
         """
         Returns a list of nodes with the specified features value. If nothing is specified,
         all of the nodes in the subtree will be returned.
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             iterDescendants()
 
-        INPUT:
-            kwargs - **features: an arbitrary number of attributes to use for the research
+        Args:
+            **features [**kwargs]: an arbitrary number of attributes to use for the research
 
-        RETURN TYPE:
-            list/None: the list of the corresponding nodes found
+        Returns:
+            [list[BaseNode]]: the list of the corresponding nodes found
         """
 
         searchList = []
@@ -686,16 +518,142 @@ class BaseNode():
         """
         Returns a list of leaf nodes in this node. A leaf is a node with no children.
 
-        CUSTOM FUNCTIONS USED:
+        Custom functions:
             getNodesList()
 
-        RETURN TYPE:
-            list: the list of leaf nodes
+        Returns:
+            [list[BaseNode]]: the list of leaf nodes
         """
 
         leavesList = self.getNodesList(children=[])
 
         return leavesList
+
+# MODEL UTILITY GETTERS
+
+    def getPrefix(self):
+        """
+        Returns the first 3 digits of the number of this node.
+
+        Returns:
+            [str]: the number in base 36
+        """
+
+        return self.number[1:4]
+
+    def getSize(self):
+        """
+        Returns this node's size. The size is defined by the item number. Each digit has the following weigth:
+
+        #      X      X      X      -      X      X      X
+            36^3 + 36^4 + 36^5      +   36^2 + 36^1 + 36^0
+
+        Custom functions:
+            unpackNumber()
+            toBase10()
+
+        Returns:
+            [int]: the size of the node
+        """
+
+        stringNumber = unpackNumber(self.number)
+
+        prefix = stringNumber[:4]
+        suffix = stringNumber[4:]
+
+        prefix = prefix[::-1]
+
+        stringNumber = prefix + suffix
+
+        return toBase10(stringNumber)
+
+    def getLevel(self):
+        """
+        Returns this node's level.
+
+        Returns:
+            [int]: the level of this node
+        """
+
+        return self.getFeature('level')
+
+    def getTotalCost(self):
+        """
+        Calculates and returns the cost of this component based on the total quantity of this component
+        in the tree (assembly).
+
+        Custom functions:
+            getTotalQuantity()
+            getFeature()
+
+        Returns:
+            float: the total price of this item
+        """
+
+        quantity = self.getTotalQuantity()
+        package = self.getFeature('package')
+        if not package or package == 0: package = 1
+
+        return ceil(quantity / package) * self.getFeature('price')
+
+    def getTotalQuantity(self):
+        """
+        Calculates and returns the quantity of this node inside the tree (root node).
+
+        Custom functions:
+            getRoot()
+            getNodesList()
+            iterAncecstor()
+
+        Returns:
+            [int]: the total quantity of this item inside the tree
+        """
+
+        root = self.getRoot()
+        componentsList = root.getNodesList(number=self.getFeature('number'))
+        quantity = 0
+
+        for node in componentsList:
+            currentQuantity = node.getFeature('quantity')
+            for ancestor in node.iterAncestor():
+                currentQuantity *= ancestor.getFeature('quantity')
+
+            quantity += currentQuantity
+
+        return quantity
+
+    def getNewNumber(self, prefix, level):
+        """
+        Calculates and returns the next available number for the specified prefix and level.
+        The parents prefix number is passed if the new node is not a special type ( so if the new
+        node is either a Project, Assembly or Part).
+
+        Custom functions:
+            getRoot()
+            incNumber()
+            searchNode()
+
+        Args:
+            prefix [str]: the prefix of the new item or of his parent
+            level [int]: the level of the new item
+
+        Returns:
+            [str]: the next available number
+        """
+
+        root = self.getRoot()
+
+        suffix = '000'
+        ct = 1
+        number = incNumber(prefix, suffix, level, ct)
+
+        while root.searchNode(number=number):
+            ct += 1
+            number = incNumber(prefix, suffix, level, ct)
+
+        return number
+
+# REPRESENTATION GETTERS
 
     def getNodeString(self):
         """
@@ -703,53 +661,135 @@ class BaseNode():
         Used for model filtering.
 
         Returns:
-            str: the node string
+            [str]: the node string
         """
 
         output = ''
         for key in self.features:
             value = self.getFeature(key)
-            if value and key not in ['selfHash', 'parentHash', 'level', 'color']:
+            if value and key not in ['selfHash', 'parentHash', 'level', 'color', 'icon']:
                 output += f'{value} '
 
         return output
 
-    def searchNode(self, **features):
+    def getTreeList(self):
         """
-        Search for nodes with the specified features.
-        If more than one is present in the tree, the first occurrence is returnded.
+        Returns a list of nodes in dictionary format.
 
-        CUSTOM FUNCTIONS USED:
-            getNodesList()
+        Custom functions:
+            iterDescendants()
+            getNodeDictionary()
 
-        INPUT:
-            kwargs - **features: an arbitrary number of features to use for the research of the node
-
-        RETURN TYPE:
-            BaseNode/None: the first occurrence of the node that respects the passed attributes
+        Returns:
+            [list[BaseNode]]: the list of all the nodes of the tree as dictionary
         """
 
-        searchList = self.getNodesList(**features)
+        treeList = []
 
-        if searchList:
-            return searchList[0]
-        return None
+        for node in self.iterDescendants():
+            treeList.append(node.getNodeDictionary())
+
+        return treeList
+
+    def getNodeDictionary(self, *features):
+        """
+        Returns a dictionary with every feature as key and it's value.
+
+        Custom functions:
+            getAttribute()
+
+        Args:
+            *features [*args]: the feature to include in the dictionary
+
+        Returns:
+            [dict]: the dictionary {features: values}
+        """
+
+        nodeDict = {}
+
+        for feature in features:
+            nodeDict[feature] = self.getFeature(feature)
+
+        return nodeDict
+
+# STRING CONVERSION
+
+    def toString(self, tab=0, *features):
+        """
+        Returns a string version of the tree with optional features.
+
+        Custom functions:
+            getIndex()
+            toString()
+            getDepth()
+
+        Args:
+            tab [int]: the number of spaces of indentation. Default as 0
+            *features [*args]: optional features to display
+
+        Returns:
+            [str]: the tree structure in string format
+        """
+
+        string = ''
+        number = self.getFeature('number')
+        string += tab * '   ' + f'|-- {self.getIndex()}° - {number}'
+
+        for key in features:
+            value = getattr(self, key, None)
+            string += f' - {value}'
+
+        for child in self.children:
+            string += '\n' + child.toString(child.getDepth(), *features)
+
+        return string
+
+# DUNDER METHODS
+
+    def __eq__(self, other):
+        """
+        Enables the == operator
+
+        Custom functions:
+            getSize()
+
+        Args:
+            other [PyObject]: the item to compare this item with
+
+        Returns:
+            bool: the result of the comparison
+        """
+
+        if isinstance(other, BaseNode):
+            return other.getSize() == self.getSize()
+        return False
+
+    def __repr__(self):
+        """
+        Enables the print() function. See toString() for more details.
+
+        Custom functions:
+            toString()
+
+        Returns:
+            [str]: the tree in string format
+        """
+
+        return self.toString()
 
 # GLOBAL
 
-
 VALUES = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
 
 def toBase36(number):
     """
     Converts a number from base 10 to base 36.
 
-    INPUT:
-        int - number: the base 10 number to be converted to base 36
+    Args:
+        number [int]: the base 10 number to be converted to base 36
 
-    RETURN TYPE:
-        str: the converted number
+    Returns:
+        [str]: the converted number
     """
 
     outputCharacters = []
@@ -763,16 +803,15 @@ def toBase36(number):
 
     return outputCharacters
 
-
 def toBase10(string):
     """
     Converts a string to a number from base 36 to base 10.
 
-    INPUT:
-        str - string: the string to convert from base 36 to base 10
+    Args:
+        string [str]: the string to convert from base 36 to base 10
 
-    RETURN TYPE:
-        int: the converted number
+    Returns:
+        [int]: the converted number
     """
 
     output = 0
@@ -784,7 +823,6 @@ def toBase10(string):
 
     return output
 
-
 def incPrefix(prefix, level, qty):
     """
     Increments a string prefix of the specified amount in a certain way.
@@ -794,17 +832,17 @@ def incPrefix(prefix, level, qty):
     XXY if level = 4
     unchanged if level not in {2, 3, 4}
 
-    CUSTOM FUNCTIONS USED:
+    Custom functions:
         toBase36()
         toBase10()
 
-    INPUT:
-        str - prefix: the prefix of the number to increment
-        int - level: where the increment should be done
-        int - qty: the amount of increment
+    Args:
+        prefix [str]: the prefix of the number to increment
+        level [int]: where the increment should be done
+        qty [int]: the amount of increment
 
-    RETURN TYPE:
-        str: the incremented number converted to base 36
+    Returns:
+        [str]: the incremented number converted to base 36
     """
 
     if not 1 < level < 5:
@@ -819,22 +857,21 @@ def incPrefix(prefix, level, qty):
     if level == 4:
         return prefix[:2] + toBase36(toBase10(prefix[2]) + qty)
 
-
 def incSuffix(suffix, level, qty):
     """
     Increments a string suffix of the specified amount.
 
-    CUSTOM FUNCTIONS USED:
+    Custom functions:
         toBase36()
         toBase10()
 
-    INPUT:
-        str - suffix: the number to increment
-        int - level: where the increment should be done
-        int - qty: the amount to increment the number
+    Args:
+        suffix [str]: the number to increment
+        level [int]: where the increment should be done
+        qty [int]: the amount to increment the number
 
-    RETURN TYPE:
-        str: the incremented number converted to base 36
+    Returns:
+        [str]: the incremented number converted to base 36
     """
 
     if level > 4:
@@ -842,26 +879,25 @@ def incSuffix(suffix, level, qty):
 
     return suffix.zfill(3)
 
-
 def incNumber(prefix, suffix, level, quantity):
     """
     Increments a complete number and returns it already packed.
 
     "#XXX-XXX"
 
-    CUSTOM FUNCTIONS USED:
+    Custom functions:
         incPrefix()
         incSuffix()
         packNumber()
 
-    INPUT:
-        str - prefix: the prefix of the number to increment
-        str - suffix: the suffix of the number to increment
-        int - level: where the increment should be done
-        int - qty: the amount to increment the number
+    Args:
+        prefix [str]: the prefix of the number to increment
+        suffix [str]: the suffix of the number to increment
+        level [int]: where the increment should be done
+        qty [int]: the amount to increment the number
 
-    RETURN TYPE:
-        str: the incremented number
+    Returns:
+        [str]: the incremented number
     """
 
     prefix = incPrefix(prefix, level, quantity)
@@ -869,22 +905,20 @@ def incNumber(prefix, suffix, level, quantity):
 
     return packNumber(prefix, suffix)
 
-
 def unpackNumber(stringNumber):
     """
     Removes the non alphanumerical characters from the string and returns the obtained string.
 
-    INPUT:
-        str - stringNumber: the string to clean
+    Args:
+        stringNumber [str]: the string to clean
 
-    RETURN TYPE:
-        str: the cleaned string
+    Returns:
+        [str]: the cleaned string
     """
 
     stringNumber = stringNumber.upper()
     stringNumber = re.sub(r'[\W_]+', '', stringNumber)
     return stringNumber
-
 
 def packNumber(prefix, suffix):
     """
@@ -892,16 +926,37 @@ def packNumber(prefix, suffix):
 
     #{prefix}-{suffix}
 
-    INPUT:
-        str - prefix: the first half of the number
-        str - suffix: the second half of the number
+    Args:
+        prefix [str]: the first half of the number
+        suffix [str]: the second half of the number
 
-    RETURN TYPE:
-        str: the formatted number
+    Returns:
+        [str]: the formatted number
     """
 
     return f'#{prefix}-{suffix}'
 
+def convertToNumber(value):
+    """
+    Converts a string value to an int or a float if possible.
+
+    Args:
+        value (str): the value to convert
+
+    Returns:
+        object: the converted value if possible or the input if not possible
+    """
+
+    if type(value) not in [type(5), type('str'), type(14.5)]:
+        return value
+
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            return value
 
 # HELPER CODE
 
@@ -917,9 +972,4 @@ if __name__ == '__main__':
     child1.addChild(child3)
     child1.insertChild(child2, 1)
 
-    # print(root)
-    # print(child1.detach())
-    # print(root)
-    # print(root.getNodeString())
-    # print(isinstance(root, BaseNode))
-    print(root.deepCopy())
+    print(convertToNumber('5'), type(convertToNumber('5')))

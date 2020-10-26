@@ -45,11 +45,10 @@ class ProxyTree(qtc.QSortFilterProxyModel):
             bool: whether to show or hide the column
         """
 
-        if source_parent.isValid() and self.filterRegExp().pattern() == 'Deprecated':
-            status = source_parent.internalPointer().getFeature('status')
-            if status == 'Deprecated':
+        if source_parent.isValid():
+            status = source_parent.internalPointer().getChildAt(source_row).getFeature('status')
+            if status == self.filterRegExp().pattern():
                 return False
-
         return True
 
     def lessThan(self, source_left, source_right):
