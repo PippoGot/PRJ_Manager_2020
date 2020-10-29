@@ -437,6 +437,11 @@ class ModelTree(qtc.QAbstractItemModel):
 
         return node
 
+    def getBillNodes(self):
+        nodesList = self.rootItem.getNodesList(level = '5')
+
+        return nodesList
+
 # REPRESENTATION
 
     def __repr__(self):

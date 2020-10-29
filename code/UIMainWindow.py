@@ -4,8 +4,8 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
 from UIComponentsPage import ComponentsPage
-from UIHardwareEditor import HardwareEditor
 from UIBillPage import BillPage
+from UIHardwareEditor import HardwareEditor
 from UIComponentEditor import ComponentEditor
 from UIHardwareSelector import HardwareSelector
 
@@ -13,7 +13,7 @@ from ModelHardware import ModelHardware
 from ModelTree import ModelTree
 from ModelCombobox import ModelCombobox
 
-from CompositeNodes import ProjectNode, AssemblyNode, LeafNode, HardwareNode, MeasuredNode, JigNode, PlaceholderNode, ConsumableNode
+from CompositeNodes import AssemblyNode, LeafNode, JigNode, PlaceholderNode
 
 from constants import SECTIONS_TO_UPDATE
 from constants import COLUMNS_TO_UPDATE
@@ -53,9 +53,9 @@ class MainWindow(qtw.QMainWindow):
         self.hardwareEditor.uiNewStatus.setModel(self.statuses)
         self.uiHardwarePage.layout().addWidget(self.hardwareEditor)
 
-        # self.billPage = BillPage(self.model)
-        # self.uiBillPage.layout().addWidget(self.billPage)
-        # self.uiTabWidget.currentChanged.connect(self.refreshBillModel)
+        self.billPage = BillPage()
+        self.uiBillPage.layout().addWidget(self.billPage)
+        self.uiTabWidget.currentChanged.connect(self.refreshBillModel)
 
         # FILE MENU ACTIONS
         self.uiActionNew.triggered.connect(self.newFile)
@@ -545,7 +545,7 @@ class MainWindow(qtw.QMainWindow):
         self.filename = filename
         self.treeEditor.setModel(self.model)
         self.treeEditor.current = None
-        # self.billPage.setModel(self.model)
+        self.refreshBillModel(1)
 
     def refreshBillModel(self, index):
         """
@@ -556,8 +556,11 @@ class MainWindow(qtw.QMainWindow):
         """
 
         if index == 1:
-            # self.billPage.setModel(self.model)
-            pass
+            if self.model:
+                nodesList = self.model.getBillNodes()
+                self.billPage.refreshModel(nodesList)
+            else:
+                self.billPage.setModel(None)
 
 # DIALOGS and MENUS
 

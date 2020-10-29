@@ -529,6 +529,16 @@ class BaseNode():
 
         return leavesList
 
+    def getLength(self):
+        """
+        Returns the length of the children list.
+
+        Returns:
+            int: the length of self.children
+        """
+
+        return len(self.children)
+
 # MODEL UTILITY GETTERS
 
     def getPrefix(self):
@@ -546,7 +556,7 @@ class BaseNode():
         Returns this node's size. The size is defined by the item number. Each digit has the following weigth:
 
         #      X      X      X      -      X      X      X
-            36^3 + 36^4 + 36^5      +   36^2 + 36^1 + 36^0
+            36^5 + 36^4 + 36^3      +   36^2 + 36^1 + 36^0
 
         Custom functions:
             unpackNumber()
@@ -560,8 +570,6 @@ class BaseNode():
 
         prefix = stringNumber[:4]
         suffix = stringNumber[4:]
-
-        prefix = prefix[::-1]
 
         stringNumber = prefix + suffix
 
@@ -577,7 +585,7 @@ class BaseNode():
 
         return self.getFeature('level')
 
-    def getTotalCost(self):
+    def getTotalCost(self, root):
         """
         Calculates and returns the cost of this component based on the total quantity of this component
         in the tree (assembly).
@@ -590,13 +598,13 @@ class BaseNode():
             float: the total price of this item
         """
 
-        quantity = self.getTotalQuantity()
+        quantity = self.getTotalQuantity(root)
         package = self.getFeature('package')
         if not package or package == 0: package = 1
 
         return ceil(quantity / package) * self.getFeature('price')
 
-    def getTotalQuantity(self):
+    def getTotalQuantity(self, root):
         """
         Calculates and returns the quantity of this node inside the tree (root node).
 
@@ -609,7 +617,6 @@ class BaseNode():
             [int]: the total quantity of this item inside the tree
         """
 
-        root = self.getRoot()
         componentsList = root.getNodesList(number=self.getFeature('number'))
         quantity = 0
 
