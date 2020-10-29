@@ -157,6 +157,8 @@ class HardwareEditor(qtw.QWidget):
 
         self.archive.insertRows(row, new)
 
+        self.archive.saveFile(self.archive.getFilename())
+
         self.updateNumber()
 
     def setCurrentSelection(self):
@@ -193,6 +195,8 @@ class HardwareEditor(qtw.QWidget):
         self.currentSelection = None
         self.updateNumber()
         self.uiRemoveButton.setDisabled(True)
+
+        self.archive.saveFile(self.archive.getFilename())
 
     def refreshView(self):
         """Updates the view."""

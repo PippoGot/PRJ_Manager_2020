@@ -7,8 +7,6 @@ TO DO:
 
 - structure files and better docstrings
 
-- implement filesaving in the hardware editor
-
 - better export bill of material file (excel ?)
 
 - debug menu

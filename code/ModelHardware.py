@@ -21,9 +21,11 @@ class ModelHardware(ModelTree):
         super().__init__()
 
         if filename:
-            self.rootItem = self.readFile(filename)
+            self.filename = filename
         else:
-            self.rootItem = self.readFile('code/resources/archive/HardwareArchive.csv')
+            self.filename = 'code/resources/archive/HardwareArchive.csv'
+
+        self.rootItem = self.readFile(self.filename)
 
     def data(self, index, role):
         """
@@ -140,6 +142,8 @@ class ModelHardware(ModelTree):
                 nodeDict = node.getNodeDictionary(*self.fieldnames)
                 csv_writer.writerow(nodeDict)
 
+    def getFilename(self):
+        return self.filename
 
 if __name__ == '__main__':
     archive = ModelHardware()
