@@ -5,18 +5,55 @@ from PyQt5 import QtCore as qtc
 from ModelHardware import ModelHardware
 from BaseNode import BaseNode
 
-from constants import HEADERS
-
 
 class ModelBill(ModelHardware):
+    """
+    Subclass of ModelHardware.
+
+    This class reimplements insertRows() and flags() and adds removeRowsAtPosition().
+    Items in the Bill list are not editable through their view!
+
+    This is the model class for the list of the bill of material. Every item is taken only
+    once and stored in the BaseNode rootItem children.
+    """
 
     def __init__(self):
+        """
+        Calls the superclass constructor and resets the rootItem.
+        """
+
         super().__init__()
         self.rootItem = BaseNode()
 
 # --- MODEL BILL ---
 
     def insertRows(self, node):
+        """
+        Inserts a new component in the model or updates the existing one.
+        If the new component has a quantity value of 0 the node is removed.
+
+        Custom functions:
+            BaseNode.getRoot()
+            BaseNode.getFeature()
+            BaseNode.searchNode()
+            BaseNode.getTotalQuantity()
+            BaseNode.getTotalCost()
+            BaseNode.getIndex()
+            BaseNode.getLength()
+            BaseNode.copy()
+            BaseNode.addFeatures()
+            BaseNode.addChild()
+
+            self.removeAtPosition()
+            self.insertRows()
+
+        Args:
+            node (BaseNode): the node to add/update.
+
+        Returns:
+            bool: the success of the operation.
+        """
+
         parent = qtc.QModelIndex()
         parentItem = self.rootItem
 
@@ -50,6 +87,19 @@ class ModelBill(ModelHardware):
         return False
 
     def removeAtPosition(self, position):
+        """
+        Remove the node at the specified position.
+
+        Custom functions:
+            BaseNode.popChild()
+
+        Args:
+            position (int): the position of the node to remove.
+
+        Returns:
+            bool: the success of the removal.
+        """
+
         parent = qtc.QModelIndex()
 
         self.beginRemoveRows(parent.siblingAtColumn(0), position, position)
@@ -59,11 +109,28 @@ class ModelBill(ModelHardware):
         return success
 
     def flags(self, index):
+        """
+        Defines what can be done with the model's items. In this case they are enabled
+        and selectable.
+
+        Args:
+            index (QModelIndex): the index of the current.
+
+        Returns:
+            qtc.Flags: what can be done with the current item.
+        """
+
         return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable
 
 # REPRESENTATION
 
     def __repr__(self):
-        """Enables the user to represent the model with the print() function."""
+        """
+        Enables the user to represent the model with the print() function.
+        Prints the title and quantity value.
+
+        Custom functions:
+            BaseNode.toString()
+        """
 
         return self.rootItem.toString(0, 'title', 'quantity')

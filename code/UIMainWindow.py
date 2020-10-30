@@ -15,19 +15,18 @@ from ModelCombobox import ModelCombobox
 
 from CompositeNodes import AssemblyNode, LeafNode, JigNode, PlaceholderNode
 
-from constants import SECTIONS_TO_UPDATE
 from constants import COLUMNS_TO_UPDATE
 
 
 class MainWindow(qtw.QMainWindow):
     """
-    Class for the main UI and the actions functions. This class manage every action that can
+    Class for the main window UI and the actions functions. This class manage every action that can
     be performed in the application.
     """
 
     def __init__(self):
         """
-        Loads the .ui file, creates the models from the archive and the central widget,
+        Loads the UI window, creates the models for the archive and the comboboxes,
         then connects the menu actions to the respective functions.
         """
 
@@ -90,10 +89,11 @@ class MainWindow(qtw.QMainWindow):
         self.showMaximized()
 
 # --- ACTION FUNCTIONS ---
+
 # FILE MENU
 
     def newFile(self):
-        """Creates a new model, for a new file."""
+        """Creates a new model, for a new file. If a model is present asks to be save changes."""
 
         if not self.filename and self.model:
             dialog = self.cancelDialog('File not saved...', 'Save changes to current file?')
@@ -106,7 +106,10 @@ class MainWindow(qtw.QMainWindow):
         self.setModel(ModelTree())
 
     def openFile(self):
-        """Opens and read a .csv file, then creates the corresponding model."""
+        """
+        Opens and read a .csv file, then displays the corresponding model.
+        If a model is present asks to save changes.
+        """
 
         if not self.filename and self.model:
             dialog = self.choiceDialog('File not saved...', 'Save changes to current file?')
@@ -130,7 +133,7 @@ class MainWindow(qtw.QMainWindow):
                 self.okDialog('Critical Error!', f'Could not open the file at {filename}\nbecause " {e} " exception occurred!')
 
     def saveFile(self):
-        """Saves the current file."""
+        """Saves the current file with the current filename or calls Save as function."""
 
         if self.model:
             if self.filename:
@@ -165,7 +168,7 @@ class MainWindow(qtw.QMainWindow):
             self.okDialog('Warning!', 'No file currently open.')
 
     def exportBOM(self):
-        """Exports the bill of material of the current project"""
+        """Exports the bill of material of the current project."""
 
         if self.model:
             filename, _ = qtw.QFileDialog.getSaveFileName(
@@ -201,7 +204,7 @@ class MainWindow(qtw.QMainWindow):
 # EDIT MENU
 
     def addComponent(self):
-        """Adds a custom component to the model."""
+        """Adds a custom assembly/part component to the model."""
 
         if self.checkPage(0):
             return
@@ -234,7 +237,7 @@ class MainWindow(qtw.QMainWindow):
             self.okDialog('Warning!', 'No item currently selected.')
 
     def addSpecialComponent(self):
-        """Adds a hardware component from the hardware archive."""
+        """Adds a hardware/consumable component from the hardware archive."""
 
         if self.checkPage(0):
             return
@@ -262,7 +265,7 @@ class MainWindow(qtw.QMainWindow):
             self.okDialog('Warning!', 'No item currently selected.')
 
     def addLeafComponent(self):
-        """Adds a level 5 component to the tree:"""
+        """Adds a level 5 part to the tree."""
 
         if self.checkPage(0):
             return
@@ -459,7 +462,7 @@ class MainWindow(qtw.QMainWindow):
             self.okDialog('Warning!', 'No item currently selected.')
 
     def copy(self):
-        """Creates and stores a copy of a component to paste it in another component."""
+        """Creates and stores a deep copy of a component to paste it in another component."""
 
         if self.checkPage(0):
             return
@@ -502,7 +505,7 @@ class MainWindow(qtw.QMainWindow):
 # VIEW MENU
 
     def hideDeprecated(self):
-        """Choose whether to see or not deprecated items."""
+        """Choose whether to see or not deprecated components."""
 
         if self.model:
             if self.uiActionHideDeprecated.isChecked():
@@ -517,11 +520,11 @@ class MainWindow(qtw.QMainWindow):
         """
         Checks if the user is in the correct page and notify with a dialog if it's not.
 
-        INPUT
-            int - page: the page to check for
+        Args:
+            page (int): the page to check for.
 
-        RETURN TYPE:
-            bool: whether the user is in the correct page orr not
+        Returns:
+            bool: whether the user is in the correct page or not.
         """
 
         if self.uiTabWidget.currentIndex() != page:
@@ -531,14 +534,14 @@ class MainWindow(qtw.QMainWindow):
 
 # MODEL FUNCTIONS
 
-    def setModel(self, model=None, filename=None):
+    def setModel(self, model = None, filename = None):
         """
         Sets the window model for all the different pages. Also if the model is from an external file
         the filename is updated.
 
-        INPUT:
-            QAbstractItemModel - model: the model to set
-            str - filename: the filename of the file
+        Args:
+            model (QAbstractItemModel): the model to set. Default is None.
+            filename (str): the name or path of the file. Default is None.
         """
 
         self.model = model
@@ -551,8 +554,8 @@ class MainWindow(qtw.QMainWindow):
         """
         Refreshes the bill model to update it.
 
-        INPUT:
-            int - index: the index of the tab widget
+        Args:
+            index (int): the current index of the tab widget.
         """
 
         if index == 1:
@@ -568,11 +571,11 @@ class MainWindow(qtw.QMainWindow):
         """
         Creates a dialog window with an OK button.
 
-        INPUT:
-            str - title: the title of the dialog
-            str - message: the message of the dialog
+        Args:
+            title (str): the title of the dialog.
+            message (str): the message of the dialog.
 
-        RETURN TYPE:
+        Returns:
             enum: the button pressed by the user
         """
 
@@ -590,12 +593,12 @@ class MainWindow(qtw.QMainWindow):
         """
         Creates a dialog window with a YES/NO choice.
 
-        INPUT:
-            str - title: the title of the dialog
-            str - message: the message of the dialog
+        Args:
+            title (str): the title of the dialog.
+            message (str): the message of the dialog.
 
-        RETURN TYPE:
-            enum: the button pressed by the user
+        Returns:
+            enum: the button pressed by the user.
         """
 
         self.msgBox = qtw.QMessageBox.warning(
@@ -612,12 +615,12 @@ class MainWindow(qtw.QMainWindow):
         """
         Creates a dialog window with an YES/NO/CANCEL choice.
 
-        INPUT:
-            str - title: the title of the dialog
-            str - message: the message of the dialog
+        Args:
+            title (str): the title of the dialog.
+            message (str): the message of the dialog.
 
-        RETURN TYPE:
-            enum: the button pressed by the user
+        Returns:
+            enum: the button pressed by the user.
         """
 
         self.msgBox = qtw.QMessageBox.warning(
@@ -634,8 +637,8 @@ class MainWindow(qtw.QMainWindow):
         """
         Creates the context menu in the components view when the right click is pressed.
 
-        INPUT:
-            position
+        Args:
+            position (?): the position of the cursor on the screen.
         """
 
         index = self.treeEditor.current

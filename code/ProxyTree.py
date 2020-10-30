@@ -5,44 +5,43 @@ from PyQt5 import QtCore as qtc
 from constants import COLUMN_LIST_TREE
 
 class ProxyTree(qtc.QSortFilterProxyModel):
-    """
-    This class changes the way the tree data is displayed on the view. Only important
-    information is shown in this page. A dictionary decides the columns to display.
-    This class also provides sorting and filtering.
-    """
+    """This class provides sorting and filtering for the unwanted items."""
 
     def __init__(self):
         super().__init__()
 
     def filterAcceptsColumn(self, source_column, source_parent):
         """
-        Selects the columns to show from the original model.
-        Filters out the unimportant columns.
+        Selects the column to show from the original model.
 
-        INPUT:
-            int - source_column: current column
-            QModelIndex - source_parent: index of the parent item
+        Args:
+            source_column (int): current column index.
+            source_parent (QModelIndex): index of the current parent item.
 
-        RETURN TYPE:
-            bool: whether to show or hide the column
+        Returns:
+            bool: whether to show or hide the column.
         """
 
-        if source_column not in COLUMN_LIST_TREE.keys():                       # if the column has to be hidden
-            return False                                                        # returns False
-        else:                                                                   # otherwise
-            return True                                                         # returns True
+        if source_column not in COLUMN_LIST_TREE.keys():
+            return False
+        else:
+            return True
 
     def filterAcceptsRow(self, source_row, source_parent):
         """
         Selects the rows to show from the original model.
-        If the row is a deprecated item it is not displayed, when the option is toggled.
+        If the row is a deprecated item and the option is on, the row is not displayed.
 
-        INPUT:
-            int - source_row: current row
-            QModelIndex - source_parent: index of the parent item
+        Custom functions:
+            BaseNode.getChildAt()
+            BaseNode.getFeature()
 
-        RETURN TYPE:
-            bool: whether to show or hide the column
+        Args:
+            source_row (int): current row index.
+            source_parent (QModelIndex): index of the current parent item.
+
+        Returns:
+            bool: whether to show or hide the row.
         """
 
         if source_parent.isValid():
@@ -57,12 +56,15 @@ class ProxyTree(qtc.QSortFilterProxyModel):
         is less than the value of the item referred to by the given index source_right,
         otherwise returns false.
 
-        INPUT:
-            source_left – QModelIndex
-            source_right – QModelIndex
+        Custom functions:
+            BaseNode.getSize()
 
-        RETURN TYPE:
-            bool
+        Args:
+            source_left (QModelIndex): the left item of the model.
+            source_right (QModelIndex): the right item of the model.
+
+        Returns:
+            bool: left < right.
         """
 
         if source_left.column() == 0 and source_right.column() == 0:

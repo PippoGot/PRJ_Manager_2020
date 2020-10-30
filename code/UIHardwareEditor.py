@@ -10,15 +10,18 @@ from CompositeNodes import HardwareNode, MeasuredNode, ConsumableNode
 class HardwareEditor(qtw.QWidget):
     """
     This widget is the one responsible for the editing of the hardware archive.
-    it can remove and add items from it, as well as edit them.
+    It can add and remove items from it, as well as edit them.
     """
 
     def __init__(self, archive):
         """
-        Loads the .ui file, connects the buttons to their respective functions and sets the widget model.
+        Loads the UI window, connects the buttons to their respective functions and sets the widget model.
 
-        INPUT:
-            ModelHardware - archive: model that connects to the hardware archive
+        Custom functions:
+            self.updateNumber()
+
+        Args:
+            archive (ModelHardware): model of the hardware archive.
         """
 
         super(HardwareEditor, self).__init__()
@@ -72,8 +75,14 @@ class HardwareEditor(qtw.QWidget):
 
     def updateNumber(self):
         """
-        When a radio button is checked the number of the current item that is being added
+        When a button is checked the number of the current item that is being added
         is recalculated and updated. The values are reset.
+
+        Custom functions:
+            BaseNode.getNewNumber()
+            self.checkFilters()
+            self.initFields()
+            self.changeFilter()
         """
 
         self.checkFilters()
@@ -82,7 +91,12 @@ class HardwareEditor(qtw.QWidget):
         self.changeFilter()
 
     def initFields(self):
-        """Resets all the editor values to a default value."""
+        """
+        Resets all the editor values to a default value.
+
+        Custom functions:
+            self.changeManufacture()
+        """
 
         self.uiNewName.setText('Name')
         self.uiNewDescription.setPlainText('Description')
@@ -99,13 +113,7 @@ class HardwareEditor(qtw.QWidget):
         self.changeManufacture()
 
     def changeManufacture(self):
-        """
-        Changes the manufacture field based on the number of the component.
-
-        INPUT:
-            str - number: the number of the component
-            QWidget - widgetPtr: the widget to change the value of
-        """
+        """Changes the manufacture field based on the number of the component."""
 
         if self.prefix == 'MMH':
             self.uiNewManufacture.setText('Cut to length')
@@ -113,7 +121,13 @@ class HardwareEditor(qtw.QWidget):
             self.uiNewManufacture.setText('Off the shelf')
 
     def changeFilter(self):
-        """When called, scans the buttons and filters the selected cathegory of items in the view."""
+        """
+        When called, scans the buttons and filters the selected cathegory of items in the view.
+
+        Custom functions:
+            self.checkFilters()
+            self.refreshView()
+        """
 
         text = self.uiSearchEntry.text()
         textString = '.*(' + text.replace(' ', ').*(') + ')'
@@ -124,7 +138,14 @@ class HardwareEditor(qtw.QWidget):
         self.refreshView()
 
     def addHardwareToArchive(self):
-        """Adds a new hardware item to the archive and resets the values for a new item."""
+        """
+        Adds a new hardware item to the archive and resets the values for a new item.
+
+        Custom functions:
+            BaseNode.addFeatures()
+            BaseNode.getLength()
+            self.checkFilters()
+        """
 
         data = {
             'number': self.uiNewNumberID.text(),
@@ -153,7 +174,7 @@ class HardwareEditor(qtw.QWidget):
         self.checkFilters()
         new = typeDict[self.prefix]
         new.addFeatures(**data)
-        row = len(self.archive.rootItem.getChildren())
+        row = self.archive.rootItem.getLength()
 
         self.archive.insertRows(row, new)
 
@@ -178,7 +199,14 @@ class HardwareEditor(qtw.QWidget):
         self.changeManufacture()
 
     def removeHardware(self):
-        """Removes the selected item from the archive model."""
+        """
+        Removes the selected item from the archive model and resets the selection.
+
+        Custom functions:
+            ModelHardware.getFilename()
+            ModelHardware.saveFile()
+            self.updateNumber()
+        """
 
         if not self.currentSelection:
             return
@@ -199,7 +227,7 @@ class HardwareEditor(qtw.QWidget):
         self.archive.saveFile(self.archive.getFilename())
 
     def refreshView(self):
-        """Updates the view."""
+        """Updates the view resizing the columns to content."""
 
         for column in range(self.archive.columnCount(qtc.QModelIndex())):
             if column != self.archive.columnCount(qtc.QModelIndex()):

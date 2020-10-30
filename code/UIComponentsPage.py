@@ -8,12 +8,17 @@ from constants import COMPONENTS_PAGE_SIZES
 
 class ComponentsPage(qtw.QWidget):
     """
-    This widget is the one managing the components list and editor. Displays the components
+    This window is the one managing the components list and editor. Displays the components
     and manages their modifications.
     """
 
     def __init__(self, manufacture_model):
-        """Loads the .ui file."""
+        """
+        Loads the UI window and set the manufacture model.
+
+        Args:
+            manufacture_model (QAbstractItemModel): the model with the values for the combobox.
+        """
 
         super(ComponentsPage, self).__init__()
 
@@ -30,8 +35,11 @@ class ComponentsPage(qtw.QWidget):
         """
         Sets the editor's and view's model, then refreshes the view.
 
-        INPUT:
-            ModelTree - model: the model that the widgets are set to
+        Custom function:
+            self.refreshView()
+
+        Args:
+            model (ModelTree): the model of the view and editor widget.
         """
 
         self.model = model
@@ -75,8 +83,11 @@ class ComponentsPage(qtw.QWidget):
         Convert the given index from a proxy model index to an original model index.
         Then the index is set as the current index of the editor.
 
-        INPUT:
-            QModelIndex - index: the index to convert
+        Custom functions:
+            self.changeManufacture()
+
+        Args:
+            index (QModelIndex): the index to convert.
         """
 
         index = self.treeProxyModel.mapToSource(index)
@@ -93,11 +104,10 @@ class ComponentsPage(qtw.QWidget):
     def changeManufacture(self):
         """
         Changes dinamically the manufacture widget and initializes it's text in every context.
+        The editable nodes will have a combobox, while non-editable nodes will have a read-only line edit.
 
-        INPUT:
-            str - nodeType: the type of the current component
-            QWidget - widgetPtr: the widget to modify
-            QWidget - numberPtr: the widget holding the number
+        Custom functions:
+            BaseNode.getFeature()
         """
 
         layout = self.uiManufacture.parentWidget().layout()
@@ -121,7 +131,10 @@ class ComponentsPage(qtw.QWidget):
         layout.update()
 
     def refreshView(self):
-        """Updates the view."""
+        """
+        Updates the view resizing the columns to a specified value and expanding the tree.
+        Also sorts the items.
+        """
 
         self.uiComponentsView.expandAll()
         for column in range(self.treeProxyModel.columnCount(qtc.QModelIndex())):

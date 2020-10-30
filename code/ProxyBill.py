@@ -4,7 +4,7 @@ from PyQt5 import QtCore as qtc
 
 
 class ProxyBill(qtc.QSortFilterProxyModel):
-    """Class for the filtering of unwanted columns for the bill page."""
+    """Class for the filtering and sorting of unwanted columns/rows for the bill page."""
 
     def __init__(self):
         super().__init__()
@@ -15,12 +15,15 @@ class ProxyBill(qtc.QSortFilterProxyModel):
         is less than the value of the item referred to by the given index source_right,
         otherwise returns false.
 
-        INPUT:
-            source_left – QModelIndex
-            source_right – QModelIndex
+        Custom functions:
+            BaseNode.getSize()
 
-        RETURN TYPE:
-            bool
+        Args:
+            source_left (QModelIndex): the left item of the model.
+            source_right (QModelIndex): the right item of the model.
+
+        Returns:
+            bool: left < right.
         """
 
         if source_left.column() == 0 and source_right.column() == 0:

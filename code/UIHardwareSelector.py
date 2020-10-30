@@ -9,18 +9,22 @@ from BaseNode import BaseNode
 class HardwareSelector(qtw.QWidget):
     """
     This class is a popup window for inserting hardware components into the list.
-    It can also add and remove hardware components to and from the archive file.
+    Has a filter to filter out the different hadware and component type.
     Emits the signal containing all the data when a component needs to be added.
     """
 
     submit = qtc.pyqtSignal(BaseNode)
 
     def __init__(self, archive):
-        """Loads the .ui file, connects the buttons to the respective functions,
+        """
+        Loads the UI window, connects the buttons to the respective functions,
         sets the widgets models for the views and finally refreshes the views.
 
-        INPUT:
-            HardwareModel - archive: model that connects to the hardware archive
+        Custom functions:
+            self.changeFilter()
+
+        Args:
+            archive (ModelHardware): model of the hardware archive.
         """
 
         super(HardwareSelector, self).__init__()
@@ -58,7 +62,13 @@ class HardwareSelector(qtw.QWidget):
         self.changeFilter()
 
     def changeFilter(self):
-        """When called, scans the buttons and filters the selected cathegory of items in the view."""
+        """
+        When called, scans the buttons and filters the selected category of items in the view.
+
+        Custom functions:
+            self.chekFilters()
+            self.refreshView()
+        """
 
         text = self.uiSearchEntry.text()
         textString = '.*(' + text.replace(' ', ').*(') + ')'
@@ -75,10 +85,10 @@ class HardwareSelector(qtw.QWidget):
 
     def setCurrentIndex(self, index):
         """
-        Updates the current selected item parameter.
+        Updates the current selected item.
 
-        INPUT:
-            QModelIndex - index: the index of the current selected item
+        Args:
+            index (QModelIndex): the index of the current selected item.
         """
 
         self.current = index
@@ -86,9 +96,13 @@ class HardwareSelector(qtw.QWidget):
 
     def onSubmit(self):
         """
-        Emits a signal with the current selected item data.
-        The signal can be connected to the TreeModel insertRows() function if a row and an index are set
-        as class parameters before emitting the signal.
+        Emits a signal with the current selected item.
+        If more than one item is selected the user is notified by a dialog box, and asked to
+        select only one item.
+
+        Custom functions:
+            BaseNode.copy()
+            BaseNode.addFeatures()
         """
 
         if self.currentSelection and len(self.currentSelection) > 1:
@@ -110,7 +124,7 @@ class HardwareSelector(qtw.QWidget):
             self.close()
 
     def refreshView(self):
-        """Updates the view."""
+        """Updates the view resizing the columns to the content."""
 
         for column in range(self.model.columnCount(qtc.QModelIndex())):
             if column != self.model.columnCount(qtc.QModelIndex()):
@@ -118,7 +132,12 @@ class HardwareSelector(qtw.QWidget):
         self.uiHardwareView.horizontalHeader().setStretchLastSection(True)
 
     def checkFilters(self):
-        """Checks the pushbuttons and changes the prefix accordingly."""
+        """
+        Checks the pushbuttons and returns the correspondinf prefix.
+
+        Returns:
+            str: the current selected category prefix.
+        """
 
         if self.uiMechanicalButton.isChecked():
             prefix = 'MEH'

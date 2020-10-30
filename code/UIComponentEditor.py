@@ -3,18 +3,28 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
-from constants import TYPES_FROM_EDITOR
-
 
 class ComponentEditor(qtw.QWidget):
     """
     This class is a popup window for components editing. Emits a signal when a new component
-    needs to be added.
+    needs to be added. The emitted signal contains a dictionary with the values of the new component.
     """
 
     submit = qtc.pyqtSignal(dict)
 
     def __init__(self, manufacture_model, node):
+        """
+        Loads the UI window, connects the buttons to the proper functions and initialises
+        the fields of the window's widgets.
+
+        Custom functions:
+            self.initFields()
+
+        Args:
+            manufacture_model (QAbstractItemModel): the model of the manufacture combobox.
+            node (BaseNode): the node to fill. Used to initialise the fields.
+        """
+
         super(ComponentEditor, self).__init__()
 
         self.uiManufacture = None
@@ -32,6 +42,11 @@ class ComponentEditor(qtw.QWidget):
     def initFields(self):
         """
         Initializes the fields when a new popup is opened.
+        The passed node is used as a reference for the data to set in the widgets.
+
+        Custom functions:
+            self.changeManufacture()
+            BaseNode.getFeature()
         """
 
         self.uiNumberID.setText(self.currentNode.getFeature('number'))
@@ -51,6 +66,10 @@ class ComponentEditor(qtw.QWidget):
     def changeManufacture(self):
         """
         Changes dinamically the manufacture widget and initializes it's text in every context.
+        Editable nodes will have a combobox, non-editable nodes will have a line edit.
+
+        Custom functions:
+            BaseNode.getFeature()
         """
 
         layout = self.uiManufacture.parentWidget().layout()
@@ -74,6 +93,10 @@ class ComponentEditor(qtw.QWidget):
     def calcManufacture(self):
         """
         Calculates the corresponding value for the manufacture field.
+        Used when submitting the dictionary.
+
+        Custom functions:
+            BaseNode.getFeature()
         """
 
         if self.currentNode.getFeature('type') == 'Assembly' or self.currentNode.getFeature('type') == 'Placeholder':
@@ -82,7 +105,7 @@ class ComponentEditor(qtw.QWidget):
             return self.uiManufacture.currentText()
 
     def onSubmit(self):
-        """Emits the ComponentTree object with the current data."""
+        """Emits the dictionary with the current data."""
 
         data = {
             'title': self.uiName.text(),

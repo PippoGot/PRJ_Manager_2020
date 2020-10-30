@@ -16,20 +16,6 @@ HEADERS = [
     'link',
 ]
 
-# values for the bill of material csv file
-
-BILL_HEADERS = [
-    'number',
-    'title',
-    'description',
-    'price',
-    'quantity',
-    'package',
-    'seller',
-    'kit',
-    'link'
-]
-
 # columns to show in the hardware list view
 
 COLUMN_LIST_HARDWARE = {
@@ -84,17 +70,9 @@ COLUMN_LIST_BILL = {
     12: 'link'
 }
 
-# types to assign in the initialization of a popoup editor
-
-TYPES_FROM_EDITOR = ['Jig', 'Project', 'Assembly', 'Assembly', 'Assembly', 'Part', 'Placeholder']
-
 # column sizes of the components page
 
 COMPONENTS_PAGE_SIZES = [150, 200, 340, 130, 130, 130, 340, 60, 60]
-
-# special prefixes used to calculate a number (not needed for now)
-
-SPECIAL_PREFIXES = ['MEH', 'MMH', 'ELH', 'EMH', 'CON']
 
 # columns to update when calling update special components
 
@@ -109,7 +87,3 @@ COLUMNS_TO_UPDATE = [
     'seller',
     'link'
 ]
-
-# sections to update when calling update special components
-
-SECTIONS_TO_UPDATE = [2, 3, 4, 5, 6, 8, 10, 11, 13]

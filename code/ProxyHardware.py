@@ -5,7 +5,10 @@ from constants import COLUMN_LIST_HARDWARE
 
 
 class HardwareProxyModel(qtc.QSortFilterProxyModel):
-    """This class filters out the unwanted items to display and also performs sorting."""
+    """
+    This class filters out the unwanted items (columns and rows) to display
+    and also performs sorting.
+    """
 
     def __init__(self):
         super().__init__()
@@ -14,12 +17,12 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
         """
         Selects the column to show from the original model.
 
-        INPUT:
-            int - source_column: current column
-            QModelIndex - source_parent: index of the parent item
+        Args:
+            source_column (int): current column index.
+            source_parent (QModelIndex): index of the current parent item.
 
-        OUTPUT:
-            bool: whether to show or hide the column
+        Returns:
+            bool: whether to show or hide the column.
         """
 
         if source_column not in COLUMN_LIST_HARDWARE.keys():
@@ -32,12 +35,16 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
         Selects the row to show from the original model.
         A regular expression selects the wanted rows.
 
-        INPUT:
-            int - source_row: current row
-            QModelIndex - source_parent: index of the parent item
+        Custom functions:
+            BaseNode.getChildAt()
+            BaseNode.getNodeString()
 
-        OUTPUT:
-            bool: whether to show or hide the row
+        Args:
+            source_row (int): current row index.
+            source_parent (QModelIndex): index of the current parent item.
+
+        Returns:
+            bool: whether to show or hide the row.
         """
 
         regexp = re.compile(self.filterRegExp().pattern(), re.I)
@@ -58,12 +65,15 @@ class HardwareProxyModel(qtc.QSortFilterProxyModel):
         is less than the value of the item referred to by the given index source_right,
         otherwise returns false.
 
-        INPUT:
-            source_left – QModelIndex
-            source_right – QModelIndex
+        Custom functions:
+            BaseNode.getSize()
 
-        RETURN TYPE:
-            bool
+        Args:
+            source_left (QModelIndex): the left item of the model.
+            source_right (QModelIndex): the right item of the model.
+
+        Returns:
+            bool: left > right.
         """
 
         if source_left.isValid() and source_left.column() == 0:

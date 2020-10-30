@@ -10,6 +10,16 @@ class ModelCombobox(qtc.QStringListModel):
     """
 
     def __init__(self, filename):
+        """
+        Reads a passed file for the item to insert in the combobox.
+
+        Custom functions:
+            self.readFile()
+
+        Args:
+            filename (str): the file to read.
+        """
+
         self.filename = filename
         data = self.readFile()
         super(ModelCombobox, self).__init__(data)
@@ -25,8 +35,8 @@ class ModelCombobox(qtc.QStringListModel):
         """
         Opens a .csv file with stored values.
 
-        RETURN TYPE:
-            list: the list of items for the combobox
+        Returns:
+            list[str]: the list of items for the combobox
         """
 
         with open(self.filename, 'r') as file:
