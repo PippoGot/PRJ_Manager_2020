@@ -57,3 +57,13 @@ class BillPage(qtw.QWidget):
 
         self.uiBillView.horizontalHeader().setStretchLastSection(True)
         self.proxyModel.sort(0, qtc.Qt.AscendingOrder)
+
+    def exportBOM(self, filename):
+        """
+        Saves the bill of materials in a .csv file.
+
+        Args:
+            filename (str): the name or path of the file.
+        """
+
+        self.model.saveFile(filename)

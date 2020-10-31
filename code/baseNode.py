@@ -70,7 +70,6 @@ class BaseNode():
             'quantity',     # the quantity of this node
             # 'package',      # the quantity per package of this node
             # 'seller',       # the seller of this component node
-            # 'kit',          # group of component sold together
             # 'link'          # the link to the shopping website
         ]
 
@@ -584,7 +583,7 @@ class BaseNode():
             check = True
 
             for key, value in features.items():
-                checkingValue = node.getFeature(key)
+                checkingValue = getattr(node, key, None)
                 if not checkingValue == value:
                     check = False
                     break

@@ -326,7 +326,6 @@ class ModelTree(qtc.QAbstractItemModel):
         'quantity',     # the quantity of this node
         'package',      # the quantity per package of this node
         'seller',       # the seller of this component node
-        'kit',          # group of component sold together
         'link',         # the link to the shopping website
         'length'        # for the measured hardware
     ]
@@ -351,41 +350,6 @@ class ModelTree(qtc.QAbstractItemModel):
             for node in self.first.iterDescendants():
                 nodeDict = node.getNodeDictionary(*self.fieldnames)
                 csv_writer.writerow(nodeDict)
-
-    def exportBOM(self, filename):
-        """
-        Exports the bill of material of this model. The output file is a .csv file.
-
-        Custom functions:
-            BaseNode.getNodesList()
-            BaseNode.getNodeDictionary()
-            BaseNode.getTotalQuantity()
-            BaseNode.getTotalCost()
-
-        Args:
-            filename (str): the name or path of the file to create.
-        """
-
-        fieldnames = [
-            'number',
-            'title',
-            'description',
-            'type',
-            'quantity',
-            'price',
-            'seller'
-        ]
-
-        with open(filename, 'w') as file:
-            csv_writer = csv.DictWriter(file, fieldnames = fieldnames)
-
-            csv_writer.writeheader()
-
-            for node in self.rootItem.getNodesList(level = '5'):
-                line = node.getNodeDictionary(*fieldnames)
-                line['quantity'] = node.getTotalQuantity()
-                line['price'] = node.getTotalCost()
-                csv_writer.writerow(line)
 
     def readFile(self, filename):
         """

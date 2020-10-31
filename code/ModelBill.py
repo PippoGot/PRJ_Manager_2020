@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+import csv
 
 from ModelHardware import ModelHardware
 from BaseNode import BaseNode
@@ -121,6 +122,37 @@ class ModelBill(ModelHardware):
         """
 
         return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable
+
+    def saveFile(self, filename):
+        """
+        Exports the bill of material of this model. The output file is a .csv file.
+
+        Custom functions:
+            BaseNode.getNodesList()
+            BaseNode.getNodeDictionary()
+
+        Args:
+            filename (str): the name or path of the file to create.
+        """
+
+        fieldnames = [
+            'number',
+            'title',
+            'description',
+            'type',
+            'quantity',
+            'price',
+            'seller'
+        ]
+
+        with open(filename, 'w') as file:
+            csv_writer = csv.DictWriter(file, fieldnames = fieldnames)
+
+            csv_writer.writeheader()
+
+            for node in self.rootItem.iterDescendants():
+                line = node.getNodeDictionary(*fieldnames)
+                csv_writer.writerow(line)
 
 # REPRESENTATION
 

@@ -65,8 +65,7 @@ class HardwareEditor(qtw.QWidget):
         self.mapper.addMapping(self.uiCurrentQuantityNeeded, 8)
         self.mapper.addMapping(self.uiCurrentQuantityUnit, 9)
         self.mapper.addMapping(self.uiCurrentSeller, 10)
-        self.mapper.addMapping(self.uiCurrentKit, 11)
-        self.mapper.addMapping(self.uiCurrentLink, 12)
+        self.mapper.addMapping(self.uiCurrentLink, 11)
 
         self.updateNumber()
 
@@ -159,7 +158,6 @@ class HardwareEditor(qtw.QWidget):
             'quantity': self.uiNewQuantityNeeded.text(),
             'package': self.uiNewQuantityUnit.text(),
             'seller': self.uiNewSeller.text(),
-            'kit': '',
             'link': self.uiNewLink.toPlainText()
         }
 

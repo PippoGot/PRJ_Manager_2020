@@ -118,7 +118,6 @@ class ComponentEditor(qtw.QWidget):
             'quantity': self.uiQuantityNeeded.text(),
             'package': self.uiQuantityUnit.text(),
             'seller': self.uiSeller.text(),
-            'kit': self.uiKit.currentText(),
             'link': self.uiLink.toPlainText()
         }
 

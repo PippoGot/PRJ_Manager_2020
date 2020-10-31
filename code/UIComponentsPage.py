@@ -62,8 +62,7 @@ class ComponentsPage(qtw.QWidget):
             self.mapper.addMapping(self.uiQuantityNeeded, 8)
             self.mapper.addMapping(self.uiQuantityUnit, 9)
             self.mapper.addMapping(self.uiSeller, 10)
-            self.mapper.addMapping(self.uiKit, 11)
-            self.mapper.addMapping(self.uiLink, 12)
+            self.mapper.addMapping(self.uiLink, 11)
 
             self.treeSelection = self.uiComponentsView.selectionModel()
             self.treeSelection.currentChanged.connect(self.mapTreeIndex)

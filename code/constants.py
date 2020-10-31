@@ -12,7 +12,6 @@ HEADERS = [
     'quantity',
     'package',
     'seller',
-    'kit',
     'link',
 ]
 
@@ -30,8 +29,7 @@ COLUMN_LIST_HARDWARE = {
     # 'quantity',
     9: 'package',
     10: 'seller',
-    # 'kit',
-    12: 'link'
+    11: 'link'
 }
 
 # columns to show in the component tree view
@@ -48,7 +46,6 @@ COLUMN_LIST_TREE = {
     8: 'quantity',
     # 'package',
     10: 'seller'
-    # 'kit',
     # 'link',
 }
 
@@ -66,8 +63,7 @@ COLUMN_LIST_BILL = {
     8: 'quantity',
     9: 'package',
     10: 'seller',
-    # 'kit',
-    12: 'link'
+    11: 'link'
 }
 
 # column sizes of the components page

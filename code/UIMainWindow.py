@@ -180,7 +180,7 @@ class MainWindow(qtw.QMainWindow):
 
             if filename:
                 try:
-                    self.model.exportBOM(filename)
+                    self.billPage.exportBOM(filename)
 
                 except Exception as e:
                     self.okDialog('Critical Error!', f'Could not save the file at {filename}\nbecause " {e} " exception occurred!')
