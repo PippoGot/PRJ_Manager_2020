@@ -113,11 +113,11 @@ class ModelTree(qtc.QAbstractItemModel):
             ItemFlags
         """
 
-        condition = index.column() in [0, 3] or (index.column() == 4 and not index.internalPointer().getFeature('editableManufacture'))
-
         if not index.isValid():
             return qtc.Qt.NoItemFlags
-        if condition:
+        if index.column() in [0, 3]:
+            return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable
+        elif index.column() == 4 and not index.internalPointer().getFeature('manufactureEditable'):
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable
         else:
             return qtc.Qt.ItemIsEnabled | qtc.Qt.ItemIsSelectable | qtc.Qt.ItemIsEditable

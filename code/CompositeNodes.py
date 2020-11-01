@@ -31,6 +31,7 @@ class ProjectNode(BaseNode):
             number = '#000-000',
             type = 'Project',
             manufacture = 'Assembled',
+            manufactureEditable = False,
             color = qtg.QColor(255, 121, 65),
             icon = qtg.QIcon('code/resources/icons/project.png'),
             **features

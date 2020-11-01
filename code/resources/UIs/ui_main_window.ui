@@ -187,9 +187,17 @@
     <addaction name="uiActionExpandAll"/>
     <addaction name="uiActionCollapseAll"/>
    </widget>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>Debug</string>
+    </property>
+    <addaction name="uiActionShowHashes"/>
+    <addaction name="uiActionShowLevel"/>
+   </widget>
    <addaction name="uiFileMenu"/>
    <addaction name="uiEditMenu"/>
    <addaction name="uiViewMenu"/>
+   <addaction name="menuDebug"/>
   </widget>
   <widget class="QToolBar" name="uiToolbar">
    <property name="windowTitle">
@@ -233,6 +241,9 @@
    <addaction name="uiActionHideDeprecated"/>
    <addaction name="uiActionCollapseAll"/>
    <addaction name="uiActionExpandAll"/>
+   <addaction name="separator"/>
+   <addaction name="uiActionShowHashes"/>
+   <addaction name="uiActionShowLevel"/>
   </widget>
   <action name="uiActionNew">
    <property name="icon">
@@ -482,6 +493,30 @@
    </property>
    <property name="text">
     <string>Add Placeholder</string>
+   </property>
+  </action>
+  <action name="uiActionShowHashes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../icons/id.png</normaloff>../icons/id.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Hashes</string>
+   </property>
+  </action>
+  <action name="uiActionShowLevel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../icons/lv.png</normaloff>../icons/lv.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Level</string>
    </property>
   </action>
  </widget>

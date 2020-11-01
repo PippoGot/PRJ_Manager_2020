@@ -34,6 +34,8 @@ class MainWindow(qtw.QMainWindow):
 
         uic.loadUi('code/resources/UIs/ui_main_window.ui', self)
 
+# MODEL INIT
+
         self.filename = None
         self.model = None
         self.copied = None
@@ -41,22 +43,29 @@ class MainWindow(qtw.QMainWindow):
         self.statuses = ModelCombobox('code/resources/archive/statuses.csv')
         self.manufactures = ModelCombobox('code/resources/archive/manufactures.csv')
 
+# COMPONENT PAGE
+
         self.treeEditor = ComponentsPage(self.manufactures)
         self.uiTreePage.layout().addWidget(self.treeEditor)
         self.treeEditor.uiStatus.setModel(self.statuses)
         self.treeEditor.uiComponentsView.setContextMenuPolicy(qtc.Qt.CustomContextMenu)
         self.treeEditor.uiComponentsView.customContextMenuRequested.connect(self.rightClickMenu)
 
+# HARDWARE EDITOR PAGE
+
         self.hardwareEditor = HardwareEditor(self.archive)
         self.hardwareEditor.uiCurrentStatus.setModel(self.statuses)
         self.hardwareEditor.uiNewStatus.setModel(self.statuses)
         self.uiHardwarePage.layout().addWidget(self.hardwareEditor)
 
+# BILL PAGE
+
         self.billPage = BillPage()
         self.uiBillPage.layout().addWidget(self.billPage)
         self.uiTabWidget.currentChanged.connect(self.refreshBillModel)
 
-        # FILE MENU ACTIONS
+# FILE MENU ACTIONS
+
         self.uiActionNew.triggered.connect(self.newFile)
         self.uiActionOpen.triggered.connect(self.openFile)
         self.uiActionSave.triggered.connect(self.saveFile)
@@ -64,7 +73,8 @@ class MainWindow(qtw.QMainWindow):
         self.uiActionClear.triggered.connect(self.clearFile)
         self.uiActionExportBOM.triggered.connect(self.exportBOM)
 
-        # EDIT MENU ACTIONS
+# EDIT MENU ACTIONS
+
         self.uiActionAddComponent.triggered.connect(self.addComponent)
         self.uiActionAddSpecialComponent.triggered.connect(self.addSpecialComponent)
         self.uiActionAddLeafComponent.triggered.connect(self.addLeafComponent)
@@ -81,11 +91,13 @@ class MainWindow(qtw.QMainWindow):
         # self.uiActionUndo.triggered.connect(self.undo)
         # self.uiActionRedo.triggered.connect(self.redo)
 
-        # VIEW MENU ACTIONS
+# VIEW MENU ACTIONS
+
         self.uiActionHideDeprecated.triggered.connect(self.hideDeprecated)
         self.uiActionExpandAll.triggered.connect(self.treeEditor.uiComponentsView.expandAll)
         self.uiActionCollapseAll.triggered.connect(self.treeEditor.uiComponentsView.collapseAll)
 
+#
         self.showMaximized()
 
 # --- ACTION FUNCTIONS ---
@@ -216,18 +228,12 @@ class MainWindow(qtw.QMainWindow):
             level = parentItem.getLevel()
             newNumber = parentItem.getNewNumber(parentItem.getPrefix(), level + 1)
 
-            def wrapper(nodeDict):
-                new.addFeatures(**nodeDict)
-                self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
-                new.updateHashes(self.model.rootItem)
-                self.treeEditor.refreshView()
-
             if level < 5:
                 new = AssemblyNode(number=newNumber, level=level + 1)
 
                 self.newComponentEditor = ComponentEditor(self.manufactures, new)
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(wrapper)
+                self.newComponentEditor.submit.connect(self.insertNode)
                 self.newComponentEditor.show()
 
             else:
@@ -244,18 +250,13 @@ class MainWindow(qtw.QMainWindow):
 
         currentSelection = self.treeEditor.current
 
-        def wrapper(node):
-            self.model.insertRows(len(parentItem.getChildren()), node, currentSelection)
-            node.updateHashes(self.model.rootItem)
-            self.treeEditor.refreshView()
-
         if currentSelection:
             parentItem = currentSelection.internalPointer()
             level = parentItem.getLevel()
 
             if level < 5:
                 self.hardwareSelector = HardwareSelector(self.archive)
-                self.hardwareSelector.submit.connect(wrapper)
+                self.hardwareSelector.submit.connect(self.insertNode)
                 self.hardwareSelector.show()
 
             else:
@@ -277,18 +278,12 @@ class MainWindow(qtw.QMainWindow):
             level = parentItem.getLevel()
             newNumber = parentItem.getNewNumber(parentItem.getPrefix(), 5)
 
-            def wrapper(nodeDict):
-                new.addFeatures(**nodeDict)
-                self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
-                new.updateHashes(self.model.rootItem)
-                self.treeEditor.refreshView()
-
             if level < 5:
                 new = LeafNode(number=newNumber)
 
                 self.newComponentEditor = ComponentEditor(self.manufactures, new)
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(wrapper)
+                self.newComponentEditor.submit.connect(self.insertNode)
                 self.newComponentEditor.show()
 
             else:
@@ -310,18 +305,12 @@ class MainWindow(qtw.QMainWindow):
             level = parentItem.getLevel()
             newNumber = parentItem.getNewNumber('JIG', 5)
 
-            def wrapper(nodeDict):
-                new.addFeatures(**nodeDict)
-                self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
-                new.updateHashes(self.model.rootItem)
-                self.treeEditor.refreshView()
-
             if level < 5:
                 new = JigNode(number=newNumber, level=level + 1)
 
                 self.newComponentEditor = ComponentEditor(self.manufactures, new)
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(wrapper)
+                self.newComponentEditor.submit.connect(self.wrapper)
                 self.newComponentEditor.show()
 
             else:
@@ -343,18 +332,12 @@ class MainWindow(qtw.QMainWindow):
             level = parentItem.getLevel()
             newNumber = parentItem.getNewNumber('PLC', 5)
 
-            def wrapper(nodeDict):
-                new.addFeatures(**nodeDict)
-                self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
-                new.updateHashes(self.model.rootItem)
-                self.treeEditor.refreshView()
-
             if level < 5:
-                new = PlaceholderNode(number=newNumber, level=level + 1)
+                new = PlaceholderNode(number = newNumber, level = level + 1)
 
                 self.newComponentEditor = ComponentEditor(self.manufactures, new)
                 self.newComponentEditor.uiStatus.setModel(self.statuses)
-                self.newComponentEditor.submit.connect(wrapper)
+                self.newComponentEditor.submit.connect(self.insertNode)
                 self.newComponentEditor.show()
 
             else:
@@ -371,10 +354,6 @@ class MainWindow(qtw.QMainWindow):
 
         currentSelection = self.treeEditor.current
 
-        def morphWrapper(node):
-            self.model.swapComponent(currentSelection.row(), node, currentSelection.parent())
-            self.treeEditor.refreshView()
-
         if currentSelection:
             item = currentSelection.internalPointer()
             level = item.getLevel()
@@ -383,7 +362,7 @@ class MainWindow(qtw.QMainWindow):
             if level == 5:
                 if tp in ['Hardware', 'Consumable']:
                     self.hardwareSelector = HardwareSelector(self.archive)
-                    self.hardwareSelector.submit.connect(morphWrapper)
+                    self.hardwareSelector.submit.connect(self.swapNode)
                     self.hardwareSelector.show()
                 else:
                     self.okDialog('Warning!', 'The item is not of an appropriate type!')
@@ -516,21 +495,38 @@ class MainWindow(qtw.QMainWindow):
 
 # --- OTHER FUNCTIONS ---
 
-    def checkPage(self, page):
+# NODE UTILITY
+
+    def insertNode(self, new):
         """
-        Checks if the user is in the correct page and notify with a dialog if it's not.
+        Inserts the node in the model at the right position, then updates the hashes
+        and refreshes the view.
 
         Args:
-            page (int): the page to check for.
-
-        Returns:
-            bool: whether the user is in the correct page or not.
+            new (BaseNode): the node to insert in the model.
         """
 
-        if self.uiTabWidget.currentIndex() != page:
-            self.okDialog('Warning!', 'You are not in the proper page!')
-            return True
-        return False
+        currentSelection = self.treeEditor.current
+        parentItem = currentSelection.internalPointer()
+
+        self.model.insertRows(len(parentItem.getChildren()), new, currentSelection)
+        new.updateHashes(self.model.rootItem)
+        self.treeEditor.refreshView()
+
+    def swapNode(self, node):
+        """
+        Swap a node with another node to update it, then updates the hashes and refreshes
+        the view.
+
+        Args:
+            node (BaseNode): the node to insert at the current location to replace the present one.
+        """
+
+        currentSelection = self.treeEditor.current
+
+        self.model.swapComponent(currentSelection.row(), node, currentSelection.parent())
+        node.updateHashes(self.model.rootItem)
+        self.treeEditor.refreshView()
 
 # MODEL FUNCTIONS
 
@@ -652,6 +648,30 @@ class MainWindow(qtw.QMainWindow):
 
             menu = qtw.QMenu()
 
+            if self.uiActionShowHashes.isChecked():
+                icon = qtg.QIcon('code/resources/icons/id.png')
+
+                parentHashString = 'Parent hash: ' + str(node.getFeature('parentHash'))
+                parentHash = qtw.QAction()
+                parentHash.setText(parentHashString)
+                parentHash.setIcon(icon)
+                menu.addAction(parentHash)
+
+                selfHashString = 'Self hash: ' + str(node.getFeature('selfHash'))
+                selfHash = qtw.QAction()
+                selfHash.setText(selfHashString)
+                selfHash.setIcon(icon)
+                menu.addAction(selfHash)
+
+            if self.uiActionShowLevel.isChecked():
+                icon = qtg.QIcon('code/resources/icons/lv.png')
+
+                levelInfo = 'Level: ' + str(level)
+                levelAction = qtw.QAction()
+                levelAction.setText(levelInfo)
+                levelAction.setIcon(icon)
+                menu.addAction(levelAction)
+
             if level < 5:
                 menu.addAction(self.uiActionAddComponent)
                 menu.addAction(self.uiActionAddSpecialComponent)
@@ -660,10 +680,27 @@ class MainWindow(qtw.QMainWindow):
                 menu.addAction(self.uiActionAddPlaceholder)
                 menu.addAction(separator)
 
-            if node.type == 'Hardware':
+            if node.getFeature('type') == 'Hardware':
                 menu.addAction(self.uiActionMorphSpecialComponent)
                 menu.addAction(separator)
 
-            menu.addAction(self.uiActionRemoveComponent)
+            if level > 1:
+                menu.addAction(self.uiActionRemoveComponent)
 
             menu.exec_(self.treeEditor.uiComponentsView.viewport().mapToGlobal(position))
+
+    def checkPage(self, page):
+        """
+        Checks if the user is in the correct page and notify with a dialog if it's not.
+
+        Args:
+            page (int): the page to check for.
+
+        Returns:
+            bool: whether the user is in the correct page or not.
+        """
+
+        if self.uiTabWidget.currentIndex() != page:
+            self.okDialog('Warning!', 'You are not in the proper page!')
+            return True
+        return False

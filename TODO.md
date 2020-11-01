@@ -4,9 +4,6 @@ TO DO:
 - implement special components filter or search bar in components page
 
 - better export bill of material file (excel ?)
-- move the filling of the nodes to the component editor window
-
-3 - debug menu - show level and hashn of the components, refresh the bill view
 
 - analytics page/status bar
 - number of total pieces

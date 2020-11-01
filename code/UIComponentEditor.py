@@ -3,6 +3,8 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
+from BaseNode import BaseNode
+
 
 class ComponentEditor(qtw.QWidget):
     """
@@ -10,7 +12,7 @@ class ComponentEditor(qtw.QWidget):
     needs to be added. The emitted signal contains a dictionary with the values of the new component.
     """
 
-    submit = qtc.pyqtSignal(dict)
+    submit = qtc.pyqtSignal(BaseNode)
 
     def __init__(self, manufacture_model, node):
         """
@@ -129,5 +131,7 @@ class ComponentEditor(qtw.QWidget):
         for key in toRemove:
             del data[key]
 
-        self.submit.emit(data)
+        self.currentNode.addFeatures(**data)
+
+        self.submit.emit(self.currentNode)
         self.close()
