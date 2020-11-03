@@ -149,8 +149,10 @@ class ModelHardware(ModelTree):
                 features = line.copy()
                 del features['number']
                 del features['level']
+                features['selfHash'] = int(features['selfHash'])
+                features['parentHash'] = int(features['parentHash'])
+
                 new = self.fillNode(line['number'], line['level'], **features)
-                new.addFeatures(**line)
                 first.addChild(new)
 
             return first

@@ -116,6 +116,7 @@ class MainWindow(qtw.QMainWindow):
                 return
 
         self.setModel(ModelTree())
+        self.uiTabWidget.setCurrentIndex(0)
 
     def openFile(self):
         """
@@ -140,6 +141,7 @@ class MainWindow(qtw.QMainWindow):
         if filename:
             try:
                 self.setModel(ModelTree(filename), filename)
+                self.uiTabWidget.setCurrentIndex(0)
 
             except Exception as e:
                 self.okDialog('Critical Error!', f'Could not open the file at {filename}\nbecause " {e} " exception occurred!')
@@ -543,7 +545,6 @@ class MainWindow(qtw.QMainWindow):
         self.model = model
         self.filename = filename
         self.treeEditor.setModel(self.model)
-        self.treeEditor.current = None
         self.refreshBillModel(1)
 
     def refreshBillModel(self, index):
@@ -557,9 +558,9 @@ class MainWindow(qtw.QMainWindow):
         if index == 1:
             if self.model:
                 nodesList = self.model.getBillNodes()
-                self.billPage.refreshModel(nodesList)
+                self.billPage.setModel(nodesList)
             else:
-                self.billPage.setModel(None)
+                self.billPage.setModel()
 
 # DIALOGS and MENUS
 
@@ -651,24 +652,30 @@ class MainWindow(qtw.QMainWindow):
             if self.uiActionShowHashes.isChecked():
                 icon = qtg.QIcon('code/resources/icons/id.png')
 
-                parentHashString = 'Parent hash: ' + str(node.getFeature('parentHash'))
-                parentHash = qtw.QAction()
-                parentHash.setText(parentHashString)
-                parentHash.setIcon(icon)
-                menu.addAction(parentHash)
+                value = node.getFeature('parentHash')
+                dataType = type(value)
+                string = f'Parent hash: {value}, type: {dataType}'
+                parentHashAction = qtw.QAction()
+                parentHashAction.setText(string)
+                parentHashAction.setIcon(icon)
+                menu.addAction(parentHashAction)
 
-                selfHashString = 'Self hash: ' + str(node.getFeature('selfHash'))
-                selfHash = qtw.QAction()
-                selfHash.setText(selfHashString)
-                selfHash.setIcon(icon)
-                menu.addAction(selfHash)
+                value = node.getFeature('selfHash')
+                dataType = type(value)
+                string = f'Self hash: {value}, type: {dataType}'
+                selfHashAction = qtw.QAction()
+                selfHashAction.setText(string)
+                selfHashAction.setIcon(icon)
+                menu.addAction(selfHashAction)
 
             if self.uiActionShowLevel.isChecked():
                 icon = qtg.QIcon('code/resources/icons/lv.png')
 
-                levelInfo = 'Level: ' + str(level)
+                value = node.getFeature('level')
+                dataType = type(value)
+                string = f'Level: {value}, type: {dataType}'
                 levelAction = qtw.QAction()
-                levelAction.setText(levelInfo)
+                levelAction.setText(string)
                 levelAction.setIcon(icon)
                 menu.addAction(levelAction)
 

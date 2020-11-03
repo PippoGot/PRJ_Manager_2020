@@ -3,6 +3,8 @@ TO DO:
 - implement undo/redo actions
 - implement special components filter or search bar in components page
 
+- measured hardware reimplementation of quantity
+
 - better export bill of material file (excel ?)
 
 - analytics page/status bar

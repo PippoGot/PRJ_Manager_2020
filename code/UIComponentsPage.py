@@ -43,6 +43,7 @@ class ComponentsPage(qtw.QWidget):
         """
 
         self.model = model
+        self.current = None
 
         if self.model:
             self.treeProxyModel = ProxyTree()
@@ -74,7 +75,7 @@ class ComponentsPage(qtw.QWidget):
             self.refreshView()
         else:
             self.uiComponentsView.setModel(None)
-            self.mapper.setModel((None))
+            self.mapper.setModel(None)
             self.uiComponentsEditor.setDisabled(True)
 
     def mapTreeIndex(self, index):

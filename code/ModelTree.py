@@ -374,15 +374,17 @@ class ModelTree(qtc.QAbstractItemModel):
 
             first = ProjectNode()
             first.addFeatures(**next(csv_reader))
+            first.updateFeature('selfHash', int(first.getFeature('selfHash')))
 
             for line in csv_reader:
                 features = line.copy()
                 del features['number']
                 del features['level']
+                features['selfHash'] = int(features['selfHash'])
+                features['parentHash'] = int(features['parentHash'])
 
                 new = self.fillNode(line['number'], line['level'], **features)
-                new.addFeatures(**line)
-                parent = first.searchNode(selfHash = line['parentHash'])
+                parent = first.searchNode(selfHash = int(line['parentHash']))
 
                 if parent:
                     parent.addChild(new)
@@ -452,16 +454,23 @@ class ModelTree(qtc.QAbstractItemModel):
 
     def getBillNodes(self):
         """
-        Returns a list of nodes to save in the bill of materials.
+        Returns a list of nodes to save in the bill of materials. Children of deprecated
+        nodes wont be included.
 
         Custom functions:
             BaseNode.getNodesList()
+            BaseNode.getFeature()
+            BaseNode.iterAncestor()
 
         Returns:
             list[BaseNode]: the list of nodes to write in the bill of material.
         """
 
-        nodesList = self.rootItem.getNodesList(level = '5')
+        nodesList = self.rootItem.getNodesList(level = 5)
+
+        for node in nodesList:
+            for parentNode in node.iterAncestor():
+                if parentNode.getFeature('status') == 'Deprecated': nodesList.remove(node)
 
         return nodesList
 

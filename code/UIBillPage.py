@@ -15,16 +15,14 @@ class BillPage(qtw.QWidget):
 
         Custom functions:
             self.refreshView()
+            self.setModel()
         """
 
         super(BillPage, self).__init__()
 
         uic.loadUi('code/resources/UIs/ui_bill_page.ui', self)
 
-        self.model = ModelBill()
-        self.proxyModel = ProxyBill()
-        self.proxyModel.setSourceModel(self.model)
-        self.uiBillView.setModel(self.proxyModel)
+        self.setModel()
         self.refreshView()
 
     def refreshModel(self, nodesList):
@@ -32,18 +30,14 @@ class BillPage(qtw.QWidget):
         Resets the model with the latest data.
 
         Custom functions:
-            ModelBill.isertRows()
-            self.refreshView()
+            ModelBill.insertRows()
 
         Args:
             nodesList (list[BaseNode]): the list of nodes to update or add.
         """
 
-        if nodesList:
-            for node in nodesList:
-                self.model.insertRows(node)
-
-        self.refreshView()
+        for node in nodesList:
+            self.model.insertRows(node)
 
     def refreshView(self):
         """
@@ -67,3 +61,23 @@ class BillPage(qtw.QWidget):
         """
 
         self.model.saveFile(filename)
+
+    def setModel(self, nodesList = None):
+        """
+        Resets the model if no nodes are passed in, fills and updates the model if
+        a list of nodes is passed.
+
+        Args:
+            nodesList (list[BaseNode]): the list of nodes to add. Defaults to None.
+        """
+
+        self.proxyModel = ProxyBill()
+
+        if nodesList and len(nodesList) > 0 :
+            self.refreshModel(nodesList)
+        else:
+            self.model = ModelBill()
+
+        self.proxyModel.setSourceModel(self.model)
+        self.uiBillView.setModel(self.proxyModel)
+        self.refreshView()

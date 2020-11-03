@@ -315,15 +315,11 @@ class BaseNode():
         """
         Updates the value of a feature of this node.
 
-        Custom functions:
-            convertToNumber()
-
         Args:
             key (str): the feature to update.
             value (PyObject): the new value to substitue.
         """
 
-        value = convertToNumber(value)
         setattr(self, key, value)
 
     def delFeatures(self, *features):
@@ -547,9 +543,6 @@ class BaseNode():
         """
         Returns the value of the passed key. If possible the value is converted to a number.
 
-        Custom functions:
-            convertToNumber()
-
         Args:
             feature (str): the feature to return the value of.
 
@@ -557,7 +550,7 @@ class BaseNode():
             PyObject: the value of the attribute under the given key.
         """
 
-        value = convertToNumber(getattr(self, feature, None))
+        value = getattr(self, feature, None)
 
         return value
 
@@ -583,7 +576,7 @@ class BaseNode():
             check = True
 
             for key, value in features.items():
-                checkingValue = getattr(node, key, None)
+                checkingValue = node.getFeature(key)
                 if not checkingValue == value:
                     check = False
                     break
@@ -659,11 +652,14 @@ class BaseNode():
         """
         Returns this node's level.
 
+        Custom functions:
+            self.getFeature()
+
         Returns:
             int: the level of this node.
         """
 
-        return self.getFeature('level')
+        return int(self.getFeature('level'))
 
     def getTotalCost(self, root):
         """
@@ -682,10 +678,10 @@ class BaseNode():
         """
 
         quantity = self.getTotalQuantity(root)
-        package = self.getFeature('package')
+        package = int(self.getFeature('package'))
         if not package or package == 0: package = 1
 
-        return ceil(quantity / package) * self.getFeature('price')
+        return ceil(quantity / package) * float(self.getFeature('price'))
 
     def getTotalQuantity(self, root):
         """
@@ -707,9 +703,12 @@ class BaseNode():
         quantity = 0
 
         for node in componentsList:
-            currentQuantity = node.getFeature('quantity')
+            currentQuantity = int(node.getFeature('quantity'))
             for ancestor in node.iterAncestor():
-                currentQuantity *= ancestor.getFeature('quantity')
+                currentQuantity *= int(ancestor.getFeature('quantity'))
+                if ancestor.getFeature('status') == 'Deprecated':
+                    currentQuantity = 0
+                    break
 
             quantity += currentQuantity
 
