@@ -2,11 +2,14 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+import os
 
 from BaseNode import BaseNode
 
+uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
+ui = uic.loadUiType(os.path.join(uiPath, "ui_component_editor.ui"))[0]
 
-class ComponentEditor(qtw.QWidget):
+class ComponentEditor(qtw.QWidget, ui):
     """
     This class is a popup window for components editing. Emits a signal when a new component
     needs to be added. The emitted signal contains a dictionary with the values of the new component.
@@ -28,10 +31,8 @@ class ComponentEditor(qtw.QWidget):
         """
 
         super(ComponentEditor, self).__init__()
-
+        self.setupUi(self)
         self.uiManufacture = None
-
-        uic.loadUi('code/resources/UIs/ui_component_editor.ui', self)
 
         self.manufactures = manufacture_model
         self.currentNode = node

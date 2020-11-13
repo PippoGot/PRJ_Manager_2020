@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 import csv
+import os
 
 from ModelTree import ModelTree
 from BaseNode import BaseNode
@@ -41,7 +42,8 @@ class ModelHardware(ModelTree):
         if filename:
             self.filename = filename
         else:
-            self.filename = 'code/resources/archive/HardwareArchive.csv'
+            archivePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\archive\\HardwareArchive.csv')
+            self.filename = archivePath
 
         self.rootItem = self.readFile(self.filename)
 

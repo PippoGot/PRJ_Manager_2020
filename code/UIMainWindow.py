@@ -2,6 +2,7 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+import os
 
 from UIComponentsPage import ComponentsPage
 from UIBillPage import BillPage
@@ -16,9 +17,12 @@ from ModelCombobox import ModelCombobox
 from CompositeNodes import AssemblyNode, LeafNode, JigNode, PlaceholderNode
 
 from constants import COLUMNS_TO_UPDATE
+from stylesheet import stylesheet as qss
 
+uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
+ui = uic.loadUiType(os.path.join(uiPath, "ui_main_window.ui"))[0]
 
-class MainWindow(qtw.QMainWindow):
+class MainWindow(qtw.QMainWindow, ui):
     """
     Class for the main window UI and the actions functions. This class manage every action that can
     be performed in the application.
@@ -31,8 +35,7 @@ class MainWindow(qtw.QMainWindow):
         """
 
         super(MainWindow, self).__init__()
-
-        uic.loadUi('code/resources/UIs/ui_main_window.ui', self)
+        self.setupUi(self)
 
 # MODEL INIT
 
@@ -40,8 +43,10 @@ class MainWindow(qtw.QMainWindow):
         self.model = None
         self.copied = None
         self.archive = ModelHardware()
-        self.statuses = ModelCombobox('code/resources/archive/statuses.csv')
-        self.manufactures = ModelCombobox('code/resources/archive/manufactures.csv')
+        statusPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\archive\\statuses.csv')
+        self.statuses = ModelCombobox(statusPath)
+        manufacturesPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\archive\\manufactures.csv')
+        self.manufactures = ModelCombobox(manufacturesPath)
 
 # COMPONENT PAGE
 
@@ -96,9 +101,6 @@ class MainWindow(qtw.QMainWindow):
         self.uiActionHideDeprecated.triggered.connect(self.hideDeprecated)
         self.uiActionExpandAll.triggered.connect(self.treeEditor.uiComponentsView.expandAll)
         self.uiActionCollapseAll.triggered.connect(self.treeEditor.uiComponentsView.collapseAll)
-
-#
-        self.showMaximized()
 
 # --- ACTION FUNCTIONS ---
 
@@ -711,3 +713,21 @@ class MainWindow(qtw.QMainWindow):
             self.okDialog('Warning!', 'You are not in the proper page!')
             return True
         return False
+
+
+
+# MAIN
+
+def main():
+    global mw
+    mw = MainWindow()
+    mw.showMaximized()
+
+if __name__ == '__main__':
+    import sys
+    app = qtw.QApplication(sys.argv)
+    app.setStyleSheet(qss)
+
+    main()
+
+    app.exec_()

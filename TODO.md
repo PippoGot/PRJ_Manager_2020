@@ -4,6 +4,9 @@ TO DO:
 - implement special components filter or search bar in components page
 
 - measured hardware reimplementation of quantity
+- implement checkable updateable hardware nodes
+- implement find/edit
+- implement optional node
 
 - better export bill of material file (excel ?)
 
@@ -12,6 +15,8 @@ TO DO:
 - number of unique pieces
 - number of hardware pieces
 - number of self designed pieces
+- number of assemblies
 - percentages
+- total price
 
 DONE:

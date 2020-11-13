@@ -2,11 +2,15 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+import os
 
 from ProxyTree import ProxyTree
 from constants import COMPONENTS_PAGE_SIZES
 
-class ComponentsPage(qtw.QWidget):
+uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
+ui = uic.loadUiType(os.path.join(uiPath, "ui_components_page.ui"))[0]
+
+class ComponentsPage(qtw.QWidget, ui):
     """
     This window is the one managing the components list and editor. Displays the components
     and manages their modifications.
@@ -21,10 +25,8 @@ class ComponentsPage(qtw.QWidget):
         """
 
         super(ComponentsPage, self).__init__()
-
+        self.setupUi(self)
         self.uiManufacture = None
-
-        uic.loadUi('code/resources/UIs/ui_components_page.ui', self)
 
         self.mapper = qtw.QDataWidgetMapper()
         self.current = None

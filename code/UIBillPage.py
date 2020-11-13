@@ -2,11 +2,15 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+import os
 
 from ProxyBill import ProxyBill
 from ModelBill import ModelBill
 
-class BillPage(qtw.QWidget):
+uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
+ui = uic.loadUiType(os.path.join(uiPath, "ui_bill_page.ui"))[0]
+
+class BillPage(qtw.QWidget, ui):
     """Class for the bill page. Provides a UI for the Bill page."""
 
     def __init__(self):
@@ -19,8 +23,7 @@ class BillPage(qtw.QWidget):
         """
 
         super(BillPage, self).__init__()
-
-        uic.loadUi('code/resources/UIs/ui_bill_page.ui', self)
+        self.setupUi(self)
 
         self.setModel()
         self.refreshView()

@@ -2,12 +2,15 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+import os
 
 from ProxyHardware import HardwareProxyModel
 from CompositeNodes import HardwareNode, MeasuredNode, ConsumableNode
 
+uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
+ui = uic.loadUiType(os.path.join(uiPath, "ui_hardware_editor_page.ui"))[0]
 
-class HardwareEditor(qtw.QWidget):
+class HardwareEditor(qtw.QWidget, ui):
     """
     This widget is the one responsible for the editing of the hardware archive.
     It can add and remove items from it, as well as edit them.
@@ -25,8 +28,7 @@ class HardwareEditor(qtw.QWidget):
         """
 
         super(HardwareEditor, self).__init__()
-
-        uic.loadUi('code/resources/UIs/ui_hardware_editor_page.ui', self)
+        self.setupUi(self)
 
         self.current = None
 

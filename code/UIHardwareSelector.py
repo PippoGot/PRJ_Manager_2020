@@ -2,11 +2,15 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+import os
 
 from ProxyHardware import HardwareProxyModel
 from BaseNode import BaseNode
 
-class HardwareSelector(qtw.QWidget):
+uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
+ui = uic.loadUiType(os.path.join(uiPath, "ui_hardware_selector.ui"))[0]
+
+class HardwareSelector(qtw.QWidget, ui):
     """
     This class is a popup window for inserting hardware components into the list.
     Has a filter to filter out the different hadware and component type.
@@ -28,8 +32,7 @@ class HardwareSelector(qtw.QWidget):
         """
 
         super(HardwareSelector, self).__init__()
-
-        uic.loadUi('code/resources/UIs/ui_hardware_selector.ui', self)
+        self.setupUi(self)
 
         self.uiOkButton.setDisabled(True)
 
