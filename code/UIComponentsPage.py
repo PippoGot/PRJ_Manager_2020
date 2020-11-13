@@ -25,8 +25,8 @@ class ComponentsPage(qtw.QWidget, ui):
         """
 
         super(ComponentsPage, self).__init__()
-        self.setupUi(self)
         self.uiManufacture = None
+        self.setupUi(self)
 
         self.mapper = qtw.QDataWidgetMapper()
         self.current = None

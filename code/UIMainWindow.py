@@ -717,17 +717,12 @@ class MainWindow(qtw.QMainWindow, ui):
 
 
 # MAIN
-
-def main():
-    global mw
-    mw = MainWindow()
-    mw.showMaximized()
-
 if __name__ == '__main__':
     import sys
     app = qtw.QApplication(sys.argv)
     app.setStyleSheet(qss)
 
-    main()
+    mw = MainWindow()
+    mw.showMaximized()
 
     app.exec_()
