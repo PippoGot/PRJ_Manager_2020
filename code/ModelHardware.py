@@ -9,7 +9,6 @@ from BaseNode import BaseNode
 
 from constants import HEADERS
 
-
 class ModelHardware(ModelTree):
     """
     Subclass of ModelTree.
@@ -42,7 +41,7 @@ class ModelHardware(ModelTree):
         if filename:
             self.filename = filename
         else:
-            archivePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\archive\\HardwareArchive.csv')
+            archivePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'HardwareArchive.csv')
             self.filename = archivePath
 
         self.rootItem = self.readFile(self.filename)

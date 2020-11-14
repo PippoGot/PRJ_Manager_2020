@@ -6,8 +6,7 @@ import os
 
 from BaseNode import BaseNode
 
-uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
-ui = uic.loadUiType(os.path.join(uiPath, "ui_component_editor.ui"))[0]
+from ui_component_editor import Ui_uiComponentsEditor as ui
 
 class ComponentEditor(qtw.QWidget, ui):
     """
@@ -31,8 +30,8 @@ class ComponentEditor(qtw.QWidget, ui):
         """
 
         super(ComponentEditor, self).__init__()
-        self.setupUi(self)
         self.uiManufacture = None
+        self.setupUi(self)
 
         self.manufactures = manufacture_model
         self.currentNode = node

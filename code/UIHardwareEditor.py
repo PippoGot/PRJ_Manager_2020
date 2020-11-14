@@ -7,8 +7,9 @@ import os
 from ProxyHardware import HardwareProxyModel
 from CompositeNodes import HardwareNode, MeasuredNode, ConsumableNode
 
-uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
-ui = uic.loadUiType(os.path.join(uiPath, "ui_hardware_editor_page.ui"))[0]
+import resources
+
+from ui_hardware_editor_page import Ui_uiHardwareEditor as ui
 
 class HardwareEditor(qtw.QWidget, ui):
     """
@@ -35,7 +36,7 @@ class HardwareEditor(qtw.QWidget, ui):
         self.uiSubmitButton.clicked.connect(self.addHardwareToArchive)
         self.uiRemoveButton.clicked.connect(self.removeHardware)
 
-        self.uiSearchEntry.addAction(qtg.QIcon('code/resources/icons/search.png'), qtw.QLineEdit.LeadingPosition)
+        self.uiSearchEntry.addAction(qtg.QIcon(":/search.png"), qtw.QLineEdit.LeadingPosition)
 
         self.uiMEHCheck.clicked.connect(self.updateNumber)
         self.uiMMHCheck.clicked.connect(self.updateNumber)

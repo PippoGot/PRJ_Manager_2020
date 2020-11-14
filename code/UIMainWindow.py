@@ -18,9 +18,9 @@ from CompositeNodes import AssemblyNode, LeafNode, JigNode, PlaceholderNode
 
 from constants import COLUMNS_TO_UPDATE
 from stylesheet import stylesheet as qss
+# import resources
 
-uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
-ui = uic.loadUiType(os.path.join(uiPath, "ui_main_window.ui"))[0]
+from ui_main_window import Ui_uiMainWindow as ui
 
 class MainWindow(qtw.QMainWindow, ui):
     """
@@ -43,9 +43,9 @@ class MainWindow(qtw.QMainWindow, ui):
         self.model = None
         self.copied = None
         self.archive = ModelHardware()
-        statusPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\archive\\statuses.csv')
+        statusPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'statuses.csv')
         self.statuses = ModelCombobox(statusPath)
-        manufacturesPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\archive\\manufactures.csv')
+        manufacturesPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'manufactures.csv')
         self.manufactures = ModelCombobox(manufacturesPath)
 
 # COMPONENT PAGE

@@ -115,11 +115,11 @@ stylesheet = """
     }
 
     QComboBox::down-arrow, QSpinBox::down-arrow {
-        image: url(code/resources/icons/downarrow.png);
+        image: url(:/downarrow.png);
     }
 
     QSpinBox::up-arrow {
-        image: url(code/resources/icons/uparrow.png);
+        image: url(:/uparrow.png);
         width: 10px;
     }
 
@@ -128,20 +128,20 @@ stylesheet = """
     }
 
     QComboBox::down-arrow:disabled, QSpinBox::down-arrow:disabled {
-        image: url(code/resources/icons/downarrow-disabled.png);
+        image: url(:/downarrow-disabled.png);
     }
 
     QSpinBox::up-arrow:disabled {
-        image: url(code/resources/icons/uparrow-disabled.png);
+        image: url(:/uparrow-disabled.png);
     }
 
     QComboBox::down-arrow:selected, QComboBox::down-arrow:hover,
     QSpinBox::down-arrow:selected, QSpinBox::down-arrow:hover {
-        image: url(code/resources/icons/downarrow-selected.png);
+        image: url(:/downarrow-selected.png);
     }
 
     QSpinBox::up-arrow:selected, QSpinBox::up-arrow:hover {
-        image: url(code/resources/icons/uparrow-selected.png);
+        image: url(:/uparrow-selected.png);
     }
 
     QSpinBox::up-button, QSpinBox::down-button {

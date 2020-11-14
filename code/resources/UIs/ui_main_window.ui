@@ -247,8 +247,8 @@
   </widget>
   <action name="uiActionNew">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/new.png</normaloff>../icons/new.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/new.png</normaloff>:/new.png</iconset>
    </property>
    <property name="text">
     <string>New</string>
@@ -259,9 +259,9 @@
   </action>
   <action name="uiActionOpen">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/open.png</normaloff>
-     <normalon>:/icons/open.png</normalon>../icons/open.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/open.png</normaloff>
+     <normalon>:/icons/open.png</normalon>:/open.png</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -272,8 +272,8 @@
   </action>
   <action name="uiActionSave">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/save.png</normaloff>../icons/save.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/save.png</normaloff>:/save.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -284,8 +284,8 @@
   </action>
   <action name="uiActionSaveAs">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/saveas.png</normaloff>../icons/saveas.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/saveas.png</normaloff>:/saveas.png</iconset>
    </property>
    <property name="text">
     <string>Save as...</string>
@@ -296,8 +296,8 @@
   </action>
   <action name="uiActionUndo">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/undo.png</normaloff>../icons/undo.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/undo.png</normaloff>:/undo.png</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -308,8 +308,8 @@
   </action>
   <action name="uiActionRedo">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/redo.png</normaloff>../icons/redo.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/redo.png</normaloff>:/redo.png</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
@@ -320,8 +320,8 @@
   </action>
   <action name="uiActionAddComponent">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/part.png</normaloff>../icons/part.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/part.png</normaloff>:/part.png</iconset>
    </property>
    <property name="text">
     <string>Add Component</string>
@@ -332,8 +332,8 @@
   </action>
   <action name="uiActionRemoveComponent">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/remove.png</normaloff>../icons/remove.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/remove.png</normaloff>:/remove.png</iconset>
    </property>
    <property name="text">
     <string>Remove Component</string>
@@ -344,8 +344,8 @@
   </action>
   <action name="uiActionExportBOM">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/bill.png</normaloff>../icons/bill.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/bill.png</normaloff>:/bill.png</iconset>
    </property>
    <property name="text">
     <string>Export Bill of Materials</string>
@@ -353,8 +353,8 @@
   </action>
   <action name="uiActionMorphSpecialComponent">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/morph.png</normaloff>../icons/morph.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/morph.png</normaloff>:/morph.png</iconset>
    </property>
    <property name="text">
     <string>Morph Special Component</string>
@@ -371,8 +371,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/deprecated.png</normaloff>../icons/deprecated.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/deprecated.png</normaloff>:/deprecated.png</iconset>
    </property>
    <property name="text">
     <string>Hide Deprecated</string>
@@ -383,8 +383,8 @@
   </action>
   <action name="uiActionClear">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/clear.png</normaloff>../icons/clear.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/clear.png</normaloff>:/clear.png</iconset>
    </property>
    <property name="text">
     <string>Clear</string>
@@ -395,8 +395,8 @@
   </action>
   <action name="uiActionUpdateSpecialComponents">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/update.png</normaloff>../icons/update.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/update.png</normaloff>:/update.png</iconset>
    </property>
    <property name="text">
     <string>Update Special Components</string>
@@ -407,8 +407,8 @@
   </action>
   <action name="uiActionAddLeafComponent">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/leaf.png</normaloff>../icons/leaf.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/leaf.png</normaloff>:/leaf.png</iconset>
    </property>
    <property name="text">
     <string>Add Leaf Component</string>
@@ -416,8 +416,8 @@
   </action>
   <action name="uiActionAddJig">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/jig.png</normaloff>../icons/jig.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/jig.png</normaloff>:/jig.png</iconset>
    </property>
    <property name="text">
     <string>Add Jig</string>
@@ -425,8 +425,8 @@
   </action>
   <action name="uiActionExpandAll">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/expand.png</normaloff>../icons/expand.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/expand.png</normaloff>:/expand.png</iconset>
    </property>
    <property name="text">
     <string>Expand All</string>
@@ -434,8 +434,8 @@
   </action>
   <action name="uiActionCollapseAll">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/collapse.png</normaloff>../icons/collapse.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/collapse.png</normaloff>:/collapse.png</iconset>
    </property>
    <property name="text">
     <string>Collapse All</string>
@@ -443,8 +443,8 @@
   </action>
   <action name="uiActionAddSpecialComponent">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/hardware.png</normaloff>../icons/hardware.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/hardware.png</normaloff>:/hardware.png</iconset>
    </property>
    <property name="text">
     <string>Add Special Component</string>
@@ -452,8 +452,8 @@
   </action>
   <action name="uiActionCut">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/cut.png</normaloff>../icons/cut.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/cut.png</normaloff>:/cut.png</iconset>
    </property>
    <property name="text">
     <string>Cut</string>
@@ -464,8 +464,8 @@
   </action>
   <action name="uiActionCopy">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/copy.png</normaloff>../icons/copy.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/copy.png</normaloff>:/copy.png</iconset>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -476,8 +476,8 @@
   </action>
   <action name="uiActionPaste">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/paste.png</normaloff>../icons/paste.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/paste.png</normaloff>:/paste.png</iconset>
    </property>
    <property name="text">
     <string>Paste</string>
@@ -488,8 +488,8 @@
   </action>
   <action name="uiActionAddPlaceholder">
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/placeholder.png</normaloff>../icons/placeholder.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/placeholder.png</normaloff>:/placeholder.png</iconset>
    </property>
    <property name="text">
     <string>Add Placeholder</string>
@@ -500,8 +500,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/id.png</normaloff>../icons/id.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/id.png</normaloff>:/id.png</iconset>
    </property>
    <property name="text">
     <string>Show Hashes</string>
@@ -512,14 +512,16 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../icons/lv.png</normaloff>../icons/lv.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/lv.png</normaloff>:/lv.png</iconset>
    </property>
    <property name="text">
     <string>Show Level</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

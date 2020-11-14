@@ -7,8 +7,9 @@ import os
 from ProxyHardware import HardwareProxyModel
 from BaseNode import BaseNode
 
-uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
-ui = uic.loadUiType(os.path.join(uiPath, "ui_hardware_selector.ui"))[0]
+import resources
+
+from ui_hardware_selector import Ui_uiHardwareEditor as ui
 
 class HardwareSelector(qtw.QWidget, ui):
     """
@@ -39,7 +40,7 @@ class HardwareSelector(qtw.QWidget, ui):
         self.uiCancelButton.clicked.connect(self.close)
         self.uiOkButton.clicked.connect(self.onSubmit)
 
-        self.uiSearchEntry.addAction(qtg.QIcon('code/resources/icons/search.png'), qtw.QLineEdit.LeadingPosition)
+        self.uiSearchEntry.addAction(qtg.QIcon(":/search.png"), qtw.QLineEdit.LeadingPosition)
 
         self.uiMechanicalButton.clicked.connect(self.changeFilter)
         self.uiMeasuredButton.clicked.connect(self.changeFilter)

@@ -7,8 +7,7 @@ import os
 from ProxyTree import ProxyTree
 from constants import COMPONENTS_PAGE_SIZES
 
-uiPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources\\UIs\\')
-ui = uic.loadUiType(os.path.join(uiPath, "ui_components_page.ui"))[0]
+from ui_components_page import Ui_uiComponentsPage as ui
 
 class ComponentsPage(qtw.QWidget, ui):
     """
