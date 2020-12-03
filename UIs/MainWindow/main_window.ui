@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>uiMainWindow</class>
+ <widget class="QMainWindow" name="uiMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1074</width>
+    <height>766</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="ComponentsPage">
+       <attribute name="title">
+        <string>Components</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
+         <number>5</number>
+        </property>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="BillPage">
+       <attribute name="title">
+        <string>Bill</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
+         <number>5</number>
+        </property>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="AnalyticsPage">
+       <attribute name="title">
+        <string>Analytics</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
+         <number>5</number>
+        </property>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="ArchivePage">
+       <attribute name="title">
+        <string>Archive</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
+         <number>5</number>
+        </property>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="uiMenu">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1074</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="uiActNew"/>
+    <addaction name="uiActSave"/>
+    <addaction name="uiActSaveas"/>
+    <addaction name="uiActOpen"/>
+    <addaction name="separator"/>
+    <addaction name="uiActClear"/>
+    <addaction name="separator"/>
+    <addaction name="uiActExportBill"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <widget class="QMenu" name="menuAdd">
+     <property name="title">
+      <string>Add Component</string>
+     </property>
+     <addaction name="uiActAddAssembly"/>
+     <addaction name="uiActAddPart"/>
+     <addaction name="uiActAddSpecial"/>
+     <addaction name="uiActAddJig"/>
+     <addaction name="uiActAddPlaceholder"/>
+    </widget>
+    <addaction name="menuAdd"/>
+    <addaction name="uiActRemove"/>
+    <addaction name="separator"/>
+    <addaction name="uiActMorph"/>
+    <addaction name="uiActUpdate"/>
+    <addaction name="separator"/>
+    <addaction name="uiActCut"/>
+    <addaction name="uiActCopy"/>
+    <addaction name="uiActPaste"/>
+    <addaction name="separator"/>
+    <addaction name="uiActUndo"/>
+    <addaction name="uiActRedo"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="uiActExpand"/>
+    <addaction name="uiActCollapse"/>
+    <addaction name="separator"/>
+    <addaction name="uiActDeprecated"/>
+   </widget>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>Debug</string>
+    </property>
+    <addaction name="uiActLevel"/>
+    <addaction name="uiActHash"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
+   <addaction name="menuDebug"/>
+  </widget>
+  <widget class="QStatusBar" name="uiStatusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="uiActNew"/>
+   <addaction name="uiActSave"/>
+   <addaction name="uiActSaveas"/>
+   <addaction name="uiActOpen"/>
+   <addaction name="uiActClear"/>
+   <addaction name="uiActExportBill"/>
+   <addaction name="separator"/>
+   <addaction name="uiActCut"/>
+   <addaction name="uiActCopy"/>
+   <addaction name="uiActPaste"/>
+   <addaction name="separator"/>
+   <addaction name="uiActUndo"/>
+   <addaction name="uiActRedo"/>
+   <addaction name="separator"/>
+   <addaction name="uiActAddAssembly"/>
+   <addaction name="uiActAddPart"/>
+   <addaction name="uiActAddSpecial"/>
+   <addaction name="uiActAddJig"/>
+   <addaction name="uiActAddPlaceholder"/>
+   <addaction name="separator"/>
+   <addaction name="uiActRemove"/>
+   <addaction name="uiActMorph"/>
+   <addaction name="uiActUpdate"/>
+   <addaction name="separator"/>
+   <addaction name="uiActExpand"/>
+   <addaction name="uiActCollapse"/>
+   <addaction name="uiActDeprecated"/>
+   <addaction name="uiActLevel"/>
+   <addaction name="uiActHash"/>
+  </widget>
+  <action name="uiActNew">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/new.png</normaloff>:/new.png</iconset>
+   </property>
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="uiActSave">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/save.png</normaloff>:/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="uiActSaveas">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/saveas.png</normaloff>:/saveas.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save as...</string>
+   </property>
+  </action>
+  <action name="uiActOpen">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/open.png</normaloff>:/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="uiActClear">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/clear.png</normaloff>:/clear.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="uiActExportBill">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/bill.png</normaloff>:/bill.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export Bill</string>
+   </property>
+  </action>
+  <action name="uiActAddAssembly">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/assembly.png</normaloff>:/assembly.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Assembly</string>
+   </property>
+  </action>
+  <action name="uiActAddPart">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/part.png</normaloff>:/part.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Part</string>
+   </property>
+  </action>
+  <action name="uiActAddSpecial">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/hardware.png</normaloff>:/hardware.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Special Component</string>
+   </property>
+  </action>
+  <action name="uiActAddJig">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/jig.png</normaloff>:/jig.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Jig</string>
+   </property>
+  </action>
+  <action name="uiActMorph">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/morph.png</normaloff>:/morph.png</iconset>
+   </property>
+   <property name="text">
+    <string>Morph Special Component</string>
+   </property>
+  </action>
+  <action name="uiActUpdate">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/update.png</normaloff>:/update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Update Special Components</string>
+   </property>
+  </action>
+  <action name="uiActExpand">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/expand.png</normaloff>:/expand.png</iconset>
+   </property>
+   <property name="text">
+    <string>Expand All</string>
+   </property>
+  </action>
+  <action name="uiActCollapse">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/collapse.png</normaloff>:/collapse.png</iconset>
+   </property>
+   <property name="text">
+    <string>Collapse All</string>
+   </property>
+  </action>
+  <action name="uiActDeprecated">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/deprecated.png</normaloff>:/deprecated.png</iconset>
+   </property>
+   <property name="text">
+    <string>Hide Deprecated</string>
+   </property>
+  </action>
+  <action name="uiActLevel">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/lv.png</normaloff>:/lv.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Level</string>
+   </property>
+  </action>
+  <action name="uiActHash">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/id.png</normaloff>:/id.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Hashes</string>
+   </property>
+  </action>
+  <action name="uiActRemove">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/remove.png</normaloff>:/remove.png</iconset>
+   </property>
+   <property name="text">
+    <string>Remove</string>
+   </property>
+  </action>
+  <action name="uiActCut">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/cut.png</normaloff>:/cut.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="uiActCopy">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/copy.png</normaloff>:/copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="uiActPaste">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/paste.png</normaloff>:/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
+  <action name="uiActUndo">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/undo.png</normaloff>:/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="uiActRedo">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/redo.png</normaloff>:/redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="uiActAddPlaceholder">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/placeholder.png</normaloff>:/placeholder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Placeholder</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
