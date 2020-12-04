@@ -1,4 +1,4 @@
-from .Bundles.AbstractFeatureBundle import AbstractFeatureBundle
+from Data.Bundles.AbstractFeatureBundle import AbstractFeatureBundle
 
 class AbstractNode(AbstractFeatureBundle):
     """
@@ -463,6 +463,9 @@ class AbstractNode(AbstractFeatureBundle):
 
     def __str__(self):
         return self.toString()
+
+    def __bool__(self):
+        return True
 
 
 # TEST CODE

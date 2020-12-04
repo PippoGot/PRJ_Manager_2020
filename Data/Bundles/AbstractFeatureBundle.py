@@ -77,10 +77,6 @@ class AbstractFeatureBundle():
             featureKey (str): the feature to delete if it exists
         """
 
-        if featureKey not in self.featureList:
-            print(f'KeyError in deleting the feature "{featureKey}')
-            return
-
         delattr(self, featureKey)
         self.featureList.remove(featureKey)
 
@@ -105,9 +101,6 @@ class AbstractFeatureBundle():
             PyObject: the value under the given featureKey
         """
 
-        if featureKey not in self.featureList:
-            print(f'KeyError in finding the feature "{featureKey}"')
-            return
         return getattr(self, featureKey, None)
 
 # COPY

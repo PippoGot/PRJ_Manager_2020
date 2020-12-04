@@ -58,10 +58,6 @@ class ComponentsPage(qtw.QWidget, ui):
 
         self.uiEditor.setStatusModel(statusModel)
 
-    def getNewNode(self, tp):
-        parentNode = self.uiEditor.currentNode
-        return self.model.getNewNode(parentNode, tp)
-
     def _mapIndex(self, index):
         """
         The index is set as the current index of the editor.
@@ -82,19 +78,54 @@ class ComponentsPage(qtw.QWidget, ui):
             self.uiView.resizeColumnToContents(column)
 
     def addNode(self, newNode):
-        parentItem = self.uiEditor.currentNode
-        currentSelection = self.uiEditor.currentIndex
+        """
+        Adds a generic component node to the tree in the selected location.
+
+        Args:
+            newNode (ComponentNode): the new node to add
+        """
+
+        currentSelection = self.getCurrentIndex()
+        parentItem = currentSelection.internalPointer()
 
         self.model.insertRows(len(parentItem), newNode, currentSelection)
 
         self._resizeView()
 
-# MAIN
-if __name__ == '__main__':
-    import sys
-    app = qtw.QApplication(sys.argv)
+    def getCurrentNode(self):
+        """
+        Returns the current selected node.
 
-    mw = ComponentsPage()
-    mw.show()
+        Returns:
+            ComponentNode: the current selected node
+        """
 
-    app.exec_()
+        if self.getCurrentIndex():
+            return self.getCurrentIndex().internalPointer()
+
+    def getCurrentIndex(self):
+        """
+        Returns the current selected item's index.
+
+        Returns:
+            QModelIndex: the current item's index
+        """
+
+        return self.uiEditor.currentIndex
+
+    def getNewNode(self, tp):
+        """
+        Returns a new node given the parent and the type. The node isn't inserted in the
+        tree, it is a temporary node instead, that has the values of the one that should
+        be inserted as next with the given properties.
+
+        Args:
+            tp (str): the node type of the new node
+
+        Returns:
+            ComponentNode: the next node
+        """
+
+        currentNode = self.getCurrentNode()
+        if currentNode:
+            return self.model.getNewNode(currentNode, tp)

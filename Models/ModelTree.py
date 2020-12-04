@@ -167,7 +167,10 @@ class ModelTree(qtc.QAbstractItemModel):
             parentItem = parent.internalPointer()
 
         childItem = parentItem.getChildAt(row)
-        return self.createIndex(row, column, childItem)
+
+        if childItem:
+            return self.createIndex(row, column, childItem)
+        return qtc.QModelIndex()
 
     def parent(self, index):
         """
@@ -193,12 +196,11 @@ class ModelTree(qtc.QAbstractItemModel):
         childItem = index.internalPointer()
         parentItem = childItem.getParent()
 
-        if parentItem == self.rootItem:
-            return qtc.QModelIndex()
+        if parentItem:
+            row = parentItem.getIndex()
+            return self.createIndex(row, 0, parentItem)
 
-        row = parentItem.getIndex()
-
-        return self.createIndex(row, 0, parentItem)
+        return qtc.QModelIndex()
 
     def rowCount(self, parent):
         """

@@ -61,11 +61,11 @@ class HardwareSelector(qtw.QWidget, ui):
             index (QModelIndex): the index to update
         """
 
-        self.currentNode = index.internalPointer()
+        self.current = index.internalPointer()
         self._enableSubmit()
 
     def _enableSubmit(self):
-        if self.currentNode:
+        if self.current:
             self.uiOkBtn.setDisabled(False)
         else:
             self.uiOkBtn.setDisabled(True)

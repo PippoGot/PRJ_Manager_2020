@@ -118,8 +118,3 @@ class AbstractTree():
 
     def __str__(self):
         return self.toString()
-
-
-# TEST CODE
-if __name__ == '__main__':
-    pass

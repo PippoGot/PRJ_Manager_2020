@@ -105,13 +105,26 @@ class ComponentTree(AbstractTree):
         ct = 1
         number = incrementID(prefix, suffix, level, ct)
 
-        while self.searchNode(number = number):
+        while self.searchNode(numberID = number):
             ct += 1
             number = incrementID(prefix, suffix, level, ct)
 
         return number
 
     def getNewNode(self, parentNode, tp):
+        """
+        Returns a new node given the parent and the type. The node isn't inserted in the
+        tree, it is a temporary node instead, that has the values of the one that should
+        be inserted as next with the given properties.
+
+        Args:
+            parentNode (ComponentNode): the node that will be the parent of the returned node
+            tp (str): the node type of the new node
+
+        Returns:
+            ComponentNode: the next node
+        """
+
         types = {
             'Assembly': comp_nodes.AssemblyNode,
             'Leaf': comp_nodes.LeafNode,
@@ -119,8 +132,11 @@ class ComponentTree(AbstractTree):
             'Placeholder': comp_nodes.PlaceholderNode
         }
 
-        newNumber = self.getNewNumber(parentNode.getPrefix(), parentNode.getLevel() + 1)
+        if tp == 'Leaf':
+            newNumber = self.getNewNumber(parentNode.getPrefix(), 5)
+            return types[tp](numberID = newNumber)
 
+        newNumber = self.getNewNumber(parentNode.getPrefix(), parentNode.getLevel() + 1)
         return types[tp](parentNode.getLevel() + 1, numberID = newNumber)
 
 # REPRESENTATION

@@ -3,9 +3,6 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 import os
 
-# change to tree when implemented
-from Data.Nodes.CompositeNodes import AssemblyNode, LeafNode, JigNode, PlaceholderNode
-
 from Models.ModelCombobox import ModelCombobox
 from Models.ModelTree import ModelTree
 
@@ -27,8 +24,8 @@ class MainWindow(qtw.QMainWindow, ui):
         self.setupUi(self)
 
 # COMBOBOX MODELS
-        self.manufactureModel = ModelCombobox(r'D:\Data\_PROGETTI\APPS\PRJ_MANAGER_2020\UIs\MainWindow\manufactures.csv')
-        self.statusModel = ModelCombobox(r'D:\Data\_PROGETTI\APPS\PRJ_MANAGER_2020\UIs\MainWindow\statuses.csv')
+        self.manufactureModel = ModelCombobox(r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\UIs\MainWindow\manufactures.csv')
+        self.statusModel = ModelCombobox(r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\UIs\MainWindow\statuses.csv')
 
 # COMPONENTS PAGE
         self.componentsPage = ComponentsPage()
@@ -44,7 +41,7 @@ class MainWindow(qtw.QMainWindow, ui):
         self.archivePage.setManufactureModel(self.manufactureModel)
         self.archivePage.setStatusModel(self.statusModel)
 
-# DATA MOELS
+# DATA MODELS
         self._setModel(ModelTree())
 
 # EDIT MENU
@@ -57,43 +54,194 @@ class MainWindow(qtw.QMainWindow, ui):
 # EDIT MENU FUNCTIONS
 
     def addAssemblyNode(self):
-        newNode = self.componentsPage.getNewNode('Assembly')
-        self._addGenericNode(newNode)
+        """
+        Adds an assembly node.
+        """
+
+        def func():
+            newNode = self.componentsPage.getNewNode('Assembly')
+            if newNode:
+                self._addGenericNode(newNode)
+
+        self._checkGenericNode(func)
 
     def addLeafNode(self):
-        newNode = LeafNode()# dummy code
-        self._addGenericNode(newNode)
+        """
+        Adds a leaf node.
+        """
+
+        def func():
+            newNode = self.treeModel.getNewNode('Leaf')
+            if newNode:
+                self._addGenericNode(newNode)
+
+        self._checkGenericNode(func)
 
     def addSpecialNode(self):
-        self.newSelector = HardwareSelector()
-        self.newSelector.submit.connect(self.componentsPage.addNode)
+        """
+        Adds a special node, either hardware or product.
+        """
+
+        def func():
+            self.newSelector = HardwareSelector()
+            self.newSelector.submit.connect(self.componentsPage.addNode)
+
+        self._checkGenericNode(func)
 
     def addJigNode(self):
-        newNode = JigNode(level = 3)# dummy code
-        self._addGenericNode(newNode)
+        """
+        Adds a jig node.
+        """
+
+        def func():
+            newNode = self.treeModel.getNewNode('Jig')
+            if newNode:
+                self._addGenericNode(newNode)
+
+        self._checkGenericNode(func)
 
     def addPlaceholderNode(self):
-        newNode = PlaceholderNode(level = 3)# dummy code
-        self._addGenericNode(newNode)
+        """
+        Adds a placeholder node.
+        """
+
+        def func():
+            newNode = self.treeModel.getNewNode('Placeholder')
+            if newNode:
+                self._addGenericNode(newNode)
+
+        self._checkGenericNode(func)
 
 # PRIVATE UTILITY FUNCTIONS
 
     def _setModel(self, model):
+        """
+        Sets the models if one is given, then updates the models of the other widgets.
+
+        Args:
+            model (ModelTree): the new model
+        """
+
         self.treeModel = model
         self.componentsPage.setModel(self.treeModel)
 
+    def _checkGenericNode(self, func):
+        """
+        Does all the checkings to add a node then executes the specific passed function
+        to add the node. A node can be added only in the proper page and on a component
+        with a level lower than 5.
+
+        Args:
+            func (PyFunction): the function to execute to add the node in the proper way
+        """
+
+        if self._checkPage(0): return
+
+        currentNode = self.componentsPage.getCurrentNode()
+
+        if currentNode:
+            if currentNode.getLevel() < 5:
+                func()
+            else:
+                self._okDialog('Warning!', 'The selected item is not of an appropriate level!')
+        else:
+            self._okDialog('Warning!', 'No item currently selected.')
+
     def _addGenericNode(self, node):
+        """
+        Pops up an editor window with an initialised node to edit. If "Add" is
+        pressed the node is added to the tree, while if "Cancel" is pressed
+        the node will not be added to the tree.
+
+        Args:
+            node (ComponentNode): the node to edit
+        """
+
         self.newEditor = NewComponentEditor(node)
         self.newEditor.setManufactureModel(self.manufactureModel)
         self.newEditor.setStatusModel(self.statusModel)
         self.newEditor.submit.connect(self.componentsPage.addNode)
 
-# MAIN
-if __name__ == '__main__':
-    import sys
-    app = qtw.QApplication(sys.argv)
+# DIALOGS and MENUS
 
-    mw = MainWindow()
-    mw.show()
+    def _okDialog(self, title, message):
+        """
+        Creates a dialog window with an OK button.
 
-    app.exec_()
+        Args:
+            title (str): the title of the dialog.
+            message (str): the message of the dialog.
+
+        Returns:
+            enum: the button pressed by the user
+        """
+
+        self.msgBox = qtw.QMessageBox.warning(
+            self,
+            title,
+            message,
+            qtw.QMessageBox.Ok,
+            qtw.QMessageBox.Ok
+        )
+
+        return self.msgBox
+
+    def _choiceDialog(self, title, message):
+        """
+        Creates a dialog window with a YES/NO choice.
+
+        Args:
+            title (str): the title of the dialog.
+            message (str): the message of the dialog.
+
+        Returns:
+            enum: the button pressed by the user.
+        """
+
+        self.msgBox = qtw.QMessageBox.warning(
+            self,
+            title,
+            message,
+            qtw.QMessageBox.Yes | qtw.QMessageBox.No,
+            qtw.QMessageBox.Yes
+        )
+
+        return self.msgBox
+
+    def _cancelDialog(self, title, message):
+        """
+        Creates a dialog window with an YES/NO/CANCEL choice.
+
+        Args:
+            title (str): the title of the dialog.
+            message (str): the message of the dialog.
+
+        Returns:
+            enum: the button pressed by the user.
+        """
+
+        self.msgBox = qtw.QMessageBox.warning(
+            self,
+            title,
+            message,
+            qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel,
+            qtw.QMessageBox.Yes
+        )
+
+        return self.msgBox
+
+    def _checkPage(self, page):
+        """
+        Checks if the user is in the correct page and notify with a dialog if it's not.
+
+        Args:
+            page (int): the page to check for.
+
+        Returns:
+            bool: whether the user is in the correct page or not.
+        """
+
+        if self.tabWidget.currentIndex() != page:
+            self._okDialog('Warning!', 'You are not in the proper page!')
+            return True
+        return False
