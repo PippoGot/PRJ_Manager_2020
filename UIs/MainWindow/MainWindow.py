@@ -1,17 +1,25 @@
+# LIBRARIES
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 import os
 
+# MODELS
 from Models.ModelCombobox import ModelCombobox
 from Models.ModelTree import ModelTree
 
+# POPUPS
 from ..NewComponentEditor.NewComponentEditor import NewComponentEditor
 from ..HardwareSelector.HardwareSelector import HardwareSelector
 
+# PAGES
 from ..ComponentsPage.ComponentsPage import ComponentsPage
 from ..ArchivePage.ArchivePage import ArchivePage
 
+# RESOURCES
+from .. import resources
+
+# UI
 from .main_window import Ui_uiMainWindow as ui
 
 class MainWindow(qtw.QMainWindow, ui):
@@ -33,6 +41,8 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.componentsPage.setManufactureModel(self.manufactureModel)
         self.componentsPage.setStatusModel(self.statusModel)
+
+        self.componentsPage.uiView.customContextMenuRequested.connect(self._rightClickMenu)
 
 # ARCHIVE PAGE
         self.archivePage = ArchivePage()
@@ -124,6 +134,8 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.treeModel = model
         self.componentsPage.setModel(self.treeModel)
+
+# NODES HANDLING
 
     def _checkGenericNode(self, func):
         """
@@ -229,6 +241,71 @@ class MainWindow(qtw.QMainWindow, ui):
         )
 
         return self.msgBox
+
+    def _rightClickMenu(self, position):
+        """
+        Creates the context menu in the components view when the right click is pressed.
+
+        Args:
+            position (?): the position of the cursor on the screen.
+        """
+
+        index = self.componentsPage.getCurrentIndex()
+
+        separator = qtw.QAction()
+        separator.setSeparator(True)
+        menu = qtw.QMenu()
+
+        if index:
+            node = index.internalPointer()
+            level = node.getLevel()
+
+            if self.uiActHash.isChecked():
+                icon = qtg.QIcon(':id.png')
+
+                value = node.getFeature('parentHash')
+                dataType = type(value)
+                string = f'Parent hash: {value}, type: {dataType}'
+                parentHashAction = qtw.QAction()
+                parentHashAction.setText(string)
+                parentHashAction.setIcon(icon)
+                menu.addAction(parentHashAction)
+
+                value = node.getFeature('selfHash')
+                dataType = type(value)
+                string = f'Self hash: {value}, type: {dataType}'
+                selfHashAction = qtw.QAction()
+                selfHashAction.setText(string)
+                selfHashAction.setIcon(icon)
+                menu.addAction(selfHashAction)
+
+            if self.uiActLevel.isChecked():
+                icon = qtg.QIcon(':lv.png')
+
+                dataType = type(level)
+                string = f'Level: {level}, type: {dataType}'
+                levelAction = qtw.QAction()
+                levelAction.setText(string)
+                levelAction.setIcon(icon)
+                menu.addAction(levelAction)
+
+            if level < 5:
+                menu.addAction(self.uiActAddAssembly)
+                menu.addAction(self.uiActAddSpecial)
+                menu.addAction(self.uiActAddPart)
+                menu.addAction(self.uiActAddJig)
+                menu.addAction(self.uiActAddPlaceholder)
+                menu.addAction(separator)
+
+            if node.getFeature('type') == 'Hardware':
+                menu.addAction(self.uiActMorph)
+                menu.addAction(separator)
+
+            if level > 1:
+                menu.addAction(self.uiActRemove)
+
+            menu.exec_(self.componentsPage.uiView.viewport().mapToGlobal(position))
+
 
     def _checkPage(self, page):
         """

@@ -20,6 +20,7 @@ class Ui_uiComponentsPage(object):
         self.horizontalLayout.setSpacing(5)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.uiView = QtWidgets.QTreeView(uiComponentsPage)
+        self.uiView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.uiView.setIconSize(QtCore.QSize(25, 25))
         self.uiView.setIndentation(0)
         self.uiView.setAnimated(True)
