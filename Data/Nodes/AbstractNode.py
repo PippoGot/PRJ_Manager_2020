@@ -1,4 +1,4 @@
-from Data.Bundles.AbstractFeatureBundle import AbstractFeatureBundle
+from ..Bundles.AbstractFeatureBundle import AbstractFeatureBundle
 
 class AbstractNode(AbstractFeatureBundle):
     """

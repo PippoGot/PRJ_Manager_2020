@@ -3,7 +3,7 @@ from random import randint
 from .ADTutil import unpackID, toBase10
 
 from .AbstractNode import AbstractNode
-from Data.Bundles.ComponentFeatureBundle import ComponentFeatureBundle
+from ..Bundles.ComponentFeatureBundle import ComponentFeatureBundle
 
 class ComponentNode(AbstractNode):
     """

@@ -115,7 +115,8 @@ class AbstractFeatureBundle():
         """
 
         newBundle = self.__class__()
-        newBundle.addFeatures(**self.getBundleDictionary().copy())
+        features = self.getBundleDictionary().copy()
+        newBundle.addFeatures(**features)
         return newBundle
 
 # REPRESENTATION

@@ -73,9 +73,10 @@ class ComponentsPage(qtw.QWidget, ui):
         Updates the view resizing the columns to a specified value and expanding the tree.
         """
 
-        self.uiView.expandAll()
-        for column in range(self.model.columnCount(qtc.QModelIndex())):
-            self.uiView.resizeColumnToContents(column)
+        if self.model:
+            self.uiView.expandAll()
+            for column in range(self.model.columnCount(qtc.QModelIndex())):
+                self.uiView.resizeColumnToContents(column)
 
     def addNode(self, newNode):
         """

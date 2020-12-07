@@ -55,6 +55,21 @@ class AssemblyNode(ComponentNode):
 
         self.color = colors[self.level - 2]
 
+    # REIMPLEMENTATIONS
+
+    def superficialCopy(self):
+        """
+        Copies and returns this node with only it's features. The parent and children
+        are not copied.
+
+        Returns:
+            ComponentNode: a superficial copy of the node
+        """
+
+        copiedNode = self.__class__(self.getLevel())
+        copiedNode.replaceBundle(self.bundle.copy())
+        return copiedNode
+
 class LeafNode(ComponentNode):
     """
     self.level = 5
@@ -157,6 +172,21 @@ class JigNode(ComponentNode):
 
         self.addFeatures(type = 'Jig')
 
+    # REIMPLEMENTATIONS
+
+    def superficialCopy(self):
+        """
+        Copies and returns this node with only it's features. The parent and children
+        are not copied.
+
+        Returns:
+            ComponentNode: a superficial copy of the node
+        """
+
+        copiedNode = self.__class__(self.getLevel())
+        copiedNode.replaceBundle(self.bundle.copy())
+        return copiedNode
+
 class PlaceholderNode(ComponentNode):
     """
     self.ID prefix = PLC
@@ -174,3 +204,18 @@ class PlaceholderNode(ComponentNode):
         self.icon = qtg.QIcon(":/placeholder.png")
 
         self.addFeatures(type = 'Placeholder', status = 'Not Designed')
+
+    # REIMPLEMENTATIONS
+
+    def superficialCopy(self):
+        """
+        Copies and returns this node with only it's features. The parent and children
+        are not copied.
+
+        Returns:
+            ComponentNode: a superficial copy of the node
+        """
+
+        copiedNode = self.__class__(self.getLevel())
+        copiedNode.replaceBundle(self.bundle.copy())
+        return copiedNode

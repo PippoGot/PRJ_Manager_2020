@@ -18,6 +18,7 @@ from ..ArchivePage.ArchivePage import ArchivePage
 
 # RESOURCES
 from .. import resources
+from . import decorators as decor
 
 # UI
 from .main_window import Ui_uiMainWindow as ui
@@ -30,6 +31,9 @@ class MainWindow(qtw.QMainWindow, ui):
 
         super(MainWindow, self).__init__()
         self.setupUi(self)
+
+        self.filename = None
+        self.copiedNode = None
 
 # COMBOBOX MODELS
         self.manufactureModel = ModelCombobox(r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\UIs\MainWindow\manufactures.csv')
@@ -54,6 +58,10 @@ class MainWindow(qtw.QMainWindow, ui):
 # DATA MODELS
         self._setModel(ModelTree())
 
+# FILE MENU
+        self.uiActNew.triggered.connect(self.newFile)
+        self.uiActClear.triggered.connect(self.clearFile)
+
 # EDIT MENU
         self.uiActAddAssembly.triggered.connect(self.addAssemblyNode)
         self.uiActAddPart.triggered.connect(self.addLeafNode)
@@ -61,70 +69,142 @@ class MainWindow(qtw.QMainWindow, ui):
         self.uiActAddJig.triggered.connect(self.addJigNode)
         self.uiActAddPlaceholder.triggered.connect(self.addPlaceholderNode)
 
+        self.uiActRemove.triggered.connect(self.removeComponent)
+
+        self.uiActCut.triggered.connect(self.cut)
+        self.uiActCopy.triggered.connect(self.copy)
+
+# FILE MENU FUNCTIONS
+
+    @decor.ifHasModel
+    @decor.ifNotFilename
+    @decor.askForSaving
+    def newFile(self, *args):
+        """
+        Creates a new model for a new file. When a new file is created the page
+        index is set to the components page.
+        """
+
+        self._setModel(ModelTree())
+        self.tabWidget.setCurrentIndex(0)
+
+    def openFile(self, *args):
+        pass
+
+    def saveFile(self, *args):
+        pass
+
+    def saveFileAs(self, *args):
+        pass
+
+    def exportBill(self, *args):
+        pass
+
+    @decor.ifHasModel
+    @decor.askForSaving
+    def clearFile(self, *args):
+        """
+        Clears the current model.
+        """
+
+        self._setModel()
+
 # EDIT MENU FUNCTIONS
 
-    def addAssemblyNode(self):
+    @decor.ComponentsAction
+    @decor.ifHasNode
+    @decor.ifNotLeaf
+    def addAssemblyNode(self, *args):
         """
         Adds an assembly node.
         """
 
-        def func():
-            newNode = self.componentsPage.getNewNode('Assembly')
-            if newNode:
-                self._addGenericNode(newNode)
+        newNode = self.componentsPage.getNewNode('Assembly')
+        if newNode:
+            self._addGenericNode(newNode)
 
-        self._checkGenericNode(func)
-
-    def addLeafNode(self):
+    @decor.ComponentsAction
+    @decor.ifHasNode
+    @decor.ifNotLeaf
+    def addLeafNode(self, *args):
         """
         Adds a leaf node.
         """
 
-        def func():
-            newNode = self.treeModel.getNewNode('Leaf')
-            if newNode:
-                self._addGenericNode(newNode)
+        newNode = self.componentsPage.getNewNode('Leaf')
+        if newNode:
+            self._addGenericNode(newNode)
 
-        self._checkGenericNode(func)
-
-    def addSpecialNode(self):
+    @decor.ComponentsAction
+    @decor.ifHasNode
+    @decor.ifNotLeaf
+    def addSpecialNode(self, *args):
         """
         Adds a special node, either hardware or product.
         """
 
-        def func():
-            self.newSelector = HardwareSelector()
-            self.newSelector.submit.connect(self.componentsPage.addNode)
+        self.newSelector = HardwareSelector()
+        self.newSelector.submit.connect(self.componentsPage.addNode)
 
-        self._checkGenericNode(func)
-
-    def addJigNode(self):
+    @decor.ComponentsAction
+    @decor.ifHasNode
+    @decor.ifNotLeaf
+    def addJigNode(self, *args):
         """
         Adds a jig node.
         """
 
-        def func():
-            newNode = self.treeModel.getNewNode('Jig')
-            if newNode:
-                self._addGenericNode(newNode)
+        newNode = self.componentsPage.getNewNode('Jig')
+        if newNode:
+            self._addGenericNode(newNode)
 
-        self._checkGenericNode(func)
-
-    def addPlaceholderNode(self):
+    @decor.ComponentsAction
+    @decor.ifHasNode
+    @decor.ifNotLeaf
+    def addPlaceholderNode(self, *args):
         """
         Adds a placeholder node.
         """
 
-        def func():
-            newNode = self.treeModel.getNewNode('Placeholder')
-            if newNode:
-                self._addGenericNode(newNode)
+        newNode = self.componentsPage.getNewNode('Placeholder')
+        if newNode:
+            self._addGenericNode(newNode)
 
-        self._checkGenericNode(func)
+    @decor.ComponentsAction
+    @decor.ifHasNode
+    @decor.ifNotRoot
+    def removeComponent(self, *args):
+        """
+        Removes a component node that is not at level 1.
+
+            Returns:
+                ComponentNode: the removed node
+        """
+
+        currentNode = self.componentsPage.getCurrentNode()
+        currentIndex = self.componentsPage.getCurrentIndex()
+
+        return self.treeModel.removeRows(currentNode.getIndex(), currentIndex.parent())
+
+    def cut(self, *args):
+        """
+        Removes and stores a component for later pasting. Inherits the decorators from
+        removeComponents.
+        """
+
+        self.copiedNode = self.removeComponent()
+
+    @decor.ComponentsAction
+    @decor.ifHasNode
+    @decor.ifNotRoot
+    def copy(self, *args):# bugged
+        currentNode = self.componentsPage.getCurrentNode()
+        self.copiedNode = currentNode.deepCopy()
+        print(self.copiedNode)
 
 # PRIVATE UTILITY FUNCTIONS
 
-    def _setModel(self, model):
+    def _setModel(self, model = None):
         """
         Sets the models if one is given, then updates the models of the other widgets.
 
@@ -136,28 +216,6 @@ class MainWindow(qtw.QMainWindow, ui):
         self.componentsPage.setModel(self.treeModel)
 
 # NODES HANDLING
-
-    def _checkGenericNode(self, func):
-        """
-        Does all the checkings to add a node then executes the specific passed function
-        to add the node. A node can be added only in the proper page and on a component
-        with a level lower than 5.
-
-        Args:
-            func (PyFunction): the function to execute to add the node in the proper way
-        """
-
-        if self._checkPage(0): return
-
-        currentNode = self.componentsPage.getCurrentNode()
-
-        if currentNode:
-            if currentNode.getLevel() < 5:
-                func()
-            else:
-                self._okDialog('Warning!', 'The selected item is not of an appropriate level!')
-        else:
-            self._okDialog('Warning!', 'No item currently selected.')
 
     def _addGenericNode(self, node):
         """
@@ -305,7 +363,6 @@ class MainWindow(qtw.QMainWindow, ui):
                 menu.addAction(self.uiActRemove)
 
             menu.exec_(self.componentsPage.uiView.viewport().mapToGlobal(position))
-
 
     def _checkPage(self, page):
         """
