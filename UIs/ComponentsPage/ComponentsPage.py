@@ -130,3 +130,14 @@ class ComponentsPage(qtw.QWidget, ui):
         currentNode = self.getCurrentNode()
         if currentNode:
             return self.model.getNewNode(currentNode, tp)
+
+    def readFile(self, filename):
+        """
+        Reads a .csv file and turns it into a component tree data structure.
+
+        Args:
+            filename (str): the name or path of the file
+        """
+
+        if self.model:
+            self.model.readFile(filename)

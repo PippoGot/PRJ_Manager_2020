@@ -243,7 +243,6 @@ class AbstractNode(AbstractFeatureBundle):
             newBundle (AbstractFeatureBundle): the new bundle
         """
 
-        if type(newBundle) is not AbstractFeatureBundle: return
         self.bundle = newBundle
 
     def getBundle(self):

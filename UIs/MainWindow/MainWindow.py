@@ -1,3 +1,4 @@
+# --- IMPORTS ---
 # LIBRARIES
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
@@ -23,6 +24,8 @@ from . import decorators as decor
 # UI
 from .main_window import Ui_uiMainWindow as ui
 
+# --- CLASS ---
+
 class MainWindow(qtw.QMainWindow, ui):
     def __init__(self):
         """
@@ -34,6 +37,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.filename = None
         self.copiedNode = None
+        self.unsavedChanges = False
 
 # COMBOBOX MODELS
         self.manufactureModel = ModelCombobox(r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\UIs\MainWindow\manufactures.csv')
@@ -60,6 +64,10 @@ class MainWindow(qtw.QMainWindow, ui):
 
 # FILE MENU
         self.uiActNew.triggered.connect(self.newFile)
+        self.uiActOpen.triggered.connect(self.openFile)
+        self.uiActSave.triggered.connect(self.saveFile)
+        self.uiActSaveas.triggered.connect(self.saveFileAs)
+        self.uiActExportBill.triggered.connect(self.exportBill)
         self.uiActClear.triggered.connect(self.clearFile)
 
 # EDIT MENU
@@ -73,12 +81,12 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.uiActCut.triggered.connect(self.cut)
         self.uiActCopy.triggered.connect(self.copy)
+        self.uiActPaste.triggered.connect(self.paste)
 
-# FILE MENU FUNCTIONS
+# --- FILE MENU FUNCTIONS ---
 
-    @decor.ifHasModel
-    @decor.ifNotFilename
-    @decor.askForSaving
+    @decor.askSave
+    @decor.produceChanges
     def newFile(self, *args):
         """
         Creates a new model for a new file. When a new file is created the page
@@ -88,20 +96,36 @@ class MainWindow(qtw.QMainWindow, ui):
         self._setModel(ModelTree())
         self.tabWidget.setCurrentIndex(0)
 
+    @decor.askSave
+    @decor.produceChanges
     def openFile(self, *args):
-        pass
+        filename, _ = qtw.QFileDialog.getOpenFileName(
+            self,
+            "Select a file to open...",
+            qtc.QDir.homePath(),
+            'CSV Documents (*.csv) ;; All Files (*)',
+            'CSV Documents (*.csv)'
+        )
+
+        if filename:
+            model = ModelTree()
+            model.readFile(filename)
+            self._setModel(model)
+            self.tabWidget.setCurrentIndex(0)
 
     def saveFile(self, *args):
-        pass
+        self.unsavedChanges = False
+        print(self.unsavedChanges)
 
     def saveFileAs(self, *args):
-        pass
+        self.unsavedChanges = False
+        print(self.unsavedChanges)
 
     def exportBill(self, *args):
         pass
 
-    @decor.ifHasModel
-    @decor.askForSaving
+    @decor.askSave
+    @decor.produceChanges
     def clearFile(self, *args):
         """
         Clears the current model.
@@ -112,7 +136,7 @@ class MainWindow(qtw.QMainWindow, ui):
 # EDIT MENU FUNCTIONS
 
     @decor.ComponentsAction
-    @decor.ifHasNode
+    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addAssemblyNode(self, *args):
         """
@@ -124,7 +148,7 @@ class MainWindow(qtw.QMainWindow, ui):
             self._addGenericNode(newNode)
 
     @decor.ComponentsAction
-    @decor.ifHasNode
+    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addLeafNode(self, *args):
         """
@@ -136,7 +160,7 @@ class MainWindow(qtw.QMainWindow, ui):
             self._addGenericNode(newNode)
 
     @decor.ComponentsAction
-    @decor.ifHasNode
+    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addSpecialNode(self, *args):
         """
@@ -145,9 +169,10 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.newSelector = HardwareSelector()
         self.newSelector.submit.connect(self.componentsPage.addNode)
+        self.newSelector.submit.connect(self._produceChanges)
 
     @decor.ComponentsAction
-    @decor.ifHasNode
+    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addJigNode(self, *args):
         """
@@ -159,7 +184,7 @@ class MainWindow(qtw.QMainWindow, ui):
             self._addGenericNode(newNode)
 
     @decor.ComponentsAction
-    @decor.ifHasNode
+    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addPlaceholderNode(self, *args):
         """
@@ -171,8 +196,9 @@ class MainWindow(qtw.QMainWindow, ui):
             self._addGenericNode(newNode)
 
     @decor.ComponentsAction
-    @decor.ifHasNode
+    @decor.ifNodeSelected
     @decor.ifNotRoot
+    @decor.produceChanges
     def removeComponent(self, *args):
         """
         Removes a component node that is not at level 1.
@@ -186,6 +212,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
         return self.treeModel.removeRows(currentNode.getIndex(), currentIndex.parent())
 
+    @decor.produceChanges
     def cut(self, *args):
         """
         Removes and stores a component for later pasting. Inherits the decorators from
@@ -195,14 +222,29 @@ class MainWindow(qtw.QMainWindow, ui):
         self.copiedNode = self.removeComponent()
 
     @decor.ComponentsAction
-    @decor.ifHasNode
+    @decor.ifNodeSelected
     @decor.ifNotRoot
-    def copy(self, *args):# bugged
+    def copy(self, *args):
+        """
+        Copies a node with it's children to paste it in other nodes.
+        """
+
         currentNode = self.componentsPage.getCurrentNode()
         self.copiedNode = currentNode.deepCopy()
-        print(self.copiedNode)
 
-# PRIVATE UTILITY FUNCTIONS
+    @decor.ComponentsAction
+    @decor.ifNodeSelected
+    @decor.ifNotLeaf
+    @decor.produceChanges
+    def paste(self, *args):
+        """
+        Insert the copied or cut node in the currently selected node.
+        """
+
+        newNode = self.copiedNode.deepCopy()
+        self.componentsPage.addNode(newNode)
+
+# --- PRIVATE UTILITY FUNCTIONS ---
 
     def _setModel(self, model = None):
         """
@@ -214,6 +256,14 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.treeModel = model
         self.componentsPage.setModel(self.treeModel)
+
+    @decor.produceChanges
+    def _produceChanges(self):
+        """
+        Sets the unsaved changes bit to true.
+        """
+
+        return
 
 # NODES HANDLING
 
@@ -231,6 +281,7 @@ class MainWindow(qtw.QMainWindow, ui):
         self.newEditor.setManufactureModel(self.manufactureModel)
         self.newEditor.setStatusModel(self.statusModel)
         self.newEditor.submit.connect(self.componentsPage.addNode)
+        self.newEditor.submit.connect(self._produceChanges)
 
 # DIALOGS and MENUS
 
@@ -321,7 +372,7 @@ class MainWindow(qtw.QMainWindow, ui):
             if self.uiActHash.isChecked():
                 icon = qtg.QIcon(':id.png')
 
-                value = node.getFeature('parentHash')
+                value = node.parentHash
                 dataType = type(value)
                 string = f'Parent hash: {value}, type: {dataType}'
                 parentHashAction = qtw.QAction()
@@ -329,7 +380,7 @@ class MainWindow(qtw.QMainWindow, ui):
                 parentHashAction.setIcon(icon)
                 menu.addAction(parentHashAction)
 
-                value = node.getFeature('selfHash')
+                value = node.selfHash
                 dataType = type(value)
                 string = f'Self hash: {value}, type: {dataType}'
                 selfHashAction = qtw.QAction()

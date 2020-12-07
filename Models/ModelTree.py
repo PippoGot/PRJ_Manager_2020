@@ -259,6 +259,7 @@ class ModelTree(qtc.QAbstractItemModel):
         self.beginInsertRows(parent.siblingAtColumn(0), position, position)
 
         success = parentItem.addChild(item)
+        self.tree.updateHashes(parentItem)
 
         self.endInsertRows()
 
@@ -293,6 +294,17 @@ class ModelTree(qtc.QAbstractItemModel):
 # --- CUSTOM FUNCTIONS ---
 
     def getNewNode(self, parent, tp):
+        """
+        Returns the next new node to be added to the tree with the right number and level.
+
+        Args:
+            parent (ComponentNode): the parent of the node that would be added
+            tp (str): the type of node to be added
+
+        Returns:
+            ComponentNode: the node that would be added with default values and the correct number and level
+        """
+
         return self.tree.getNewNode(parent, tp)
 
 # FILE MANAGEMENT
@@ -337,45 +349,16 @@ class ModelTree(qtc.QAbstractItemModel):
     #             nodeDict = node.getNodeDictionary(*self.fieldnames)
     #             csv_writer.writerow(nodeDict)
 
-    # def readFile(self, filename):
-    #     """
-    #     Reads a .csv file and transforms it, if possible, into a tree data structure.
+    def readFile(self, filename):
+        """
+        Reads a .csv file and transforms it, if possible, into a tree data structure.
 
-    #     Custom functions:
-    #         BaseNode.copy()
-    #         BaseNode.addFeatures()
-    #         BaseNode.searchNode()
-    #         BaseNode.addChild()
-    #         self.fillNode()
+        Args:
+            filename (str): name or path of the file to read.
+        """
 
-    #     Args:
-    #         filename (str): name or path of the file to read.
-
-    #     Returns:
-    #         BaseNode: the tree extracted from the file.
-    #     """
-
-    #     with open(filename, 'r') as file:
-    #         csv_reader = csv.DictReader(file)
-
-    #         first = ProjectNode()
-    #         first.addFeatures(**next(csv_reader))
-    #         first.updateFeature('selfHash', int(first.getFeature('selfHash')))
-
-    #         for line in csv_reader:
-    #             features = line.copy()
-    #             del features['number']
-    #             del features['level']
-    #             features['selfHash'] = int(features['selfHash'])
-    #             features['parentHash'] = int(features['parentHash'])
-
-    #             new = self.fillNode(line['number'], line['level'], **features)
-    #             parent = first.searchNode(selfHash = int(line['parentHash']))
-
-    #             if parent:
-    #                 parent.addChild(new)
-
-    #         return first
+        self.tree = self.tree.readFile(filename)
+        self.rootItem = self.tree.getRoot()
 
 # UTILITY
 
@@ -396,57 +379,10 @@ class ModelTree(qtc.QAbstractItemModel):
         self.removeRows(position, parent)
         self.insertRows(position, newNode, parent)
 
-    # def fillNode(self, number, level, **features):
-    #     """
-    #     Returns a filled node of the read type.
-
-    #     Custom functions:
-    #         BaseNode.addFeatures()
-
-    #     Args:
-    #         number (str): the number of the node.
-    #         level (int): the level of the node.
-    #         **features (kwargs): additional features to add to the node.
-
-    #     Returns:
-    #         BaseNode: the filled node.
-    #     """
-
-    #     if level:
-    #         level = int(level)
-    #     else:
-    #         level = 5
-
-    #     if number[1:4] == 'MMH':
-    #         tp = 'Measured'
-    #     else:
-    #         tp = features['type']
-
-    #     typeDict = {
-    #         'Project': ProjectNode(),
-    #         'Assembly': AssemblyNode(number, level),
-    #         'Part': LeafNode(number),
-    #         'Measured': MeasuredNode(number),
-    #         'Hardware': HardwareNode(number),
-    #         'Consumable': ConsumableNode(number),
-    #         'Jig': JigNode(number, level),
-    #         'Placeholder': PlaceholderNode(number, level)
-    #     }
-
-    #     node = typeDict[tp]
-    #     node.addFeatures(**features)
-
-    #     return node
-
     # def getBillNodes(self):
     #     """
     #     Returns a list of nodes to save in the bill of materials. Children of deprecated
     #     nodes wont be included.
-
-    #     Custom functions:
-    #         BaseNode.getNodesList()
-    #         BaseNode.getFeature()
-    #         BaseNode.iterAncestor()
 
     #     Returns:
     #         list[BaseNode]: the list of nodes to write in the bill of material.

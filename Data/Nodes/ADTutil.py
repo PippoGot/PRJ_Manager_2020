@@ -1,5 +1,15 @@
 import re
 
+SPECIAL_PREFIXES = [
+    'PRO',
+    'MEH',
+    'ELH',
+    'EMH',
+    'MMH',
+    'PLC',
+    'JIG'
+]
+
 # ID UTILITY
 
 def incrementPrefix(prefix, level, quantity):
@@ -20,7 +30,7 @@ def incrementPrefix(prefix, level, quantity):
         str: the incremented number converted to base 36
     """
 
-    if not 1 < level < 5:
+    if not 1 < level < 5 or prefix in SPECIAL_PREFIXES:
         return prefix
 
     if level == 2:
@@ -71,6 +81,9 @@ def incrementID(prefix, suffix, level, quantity):
     """
 
     prefix = incrementPrefix(prefix, level, quantity)
+
+    if prefix in SPECIAL_PREFIXES: level = 5
+
     suffix = incrementSuffix(suffix, level, quantity)
 
     return packID(prefix, suffix)

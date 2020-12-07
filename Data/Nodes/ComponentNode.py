@@ -120,7 +120,10 @@ class ComponentNode(AbstractNode):
 
         for featureKey in featureKeys:
             featureValue = self.bundle.getFeature(featureKey)
-            string += f' - {featureValue}'
+            if featureValue:
+                string += f' - {featureValue}'
+            else:
+                string += ' - _'
 
         return string
 

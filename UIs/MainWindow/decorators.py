@@ -32,7 +32,7 @@ def ifHasModel(func):
 
     return wrapper
 
-def ifHasNode(func):
+def ifNodeSelected(func):
     """
     Executes the passed function only if a node is currently selected.
 
@@ -47,21 +47,6 @@ def ifHasNode(func):
             return func(*args, **kwargs)
         else:
             self._okDialog('Warning!', 'No item currently selected.')
-
-    return wrapper
-
-def ifNotFilename(func):
-    """
-    Executes a function only if a filename is not present.
-
-    Args:
-        func (PyFunction): the function to execute if the filename is not present
-    """
-
-    def wrapper(*args, **kwargs):
-        self = args[0]
-        if not self.filename:
-            return func(*args, **kwargs)
 
     return wrapper
 
@@ -101,9 +86,11 @@ def ifNotLeaf(func):
 
     return wrapper
 
-def askForSaving(func):
+def askSave(func):
     """
-    Asks the user if the file has to be saved before executing the operations.
+    Checks for a model, if a model is not present executes the function.
+    otherwise, checks for unsaved changes, if no changes are present
+    excecutes the function, otherwise asks for saving.
     If the user chooses yes, the file is saved, then the function is run.
     If the user chooses no, the file is not saved and the function is run.
     If the user chooses cancel, the file is not saved and the function is not run.
@@ -114,6 +101,10 @@ def askForSaving(func):
 
     def wrapper(*args, **kwargs):
         self = args[0]
+
+        if not self.treeModel: return func(*args, **kwargs)
+        if not self.unsavedChanges: return func(*args, **kwargs)
+
         dialog = self._cancelDialog('File not saved...', 'Save changes to current file?')
 
         if dialog == qtw.QMessageBox.Yes:
@@ -123,5 +114,23 @@ def askForSaving(func):
             return func(*args, **kwargs)
         elif dialog == qtw.QMessageBox.Cancel:
             return
+
+    return wrapper
+
+def produceChanges(func):
+    """
+    Updates the variable for unsaved changes.
+
+    Args:
+        func (PyFunction): the function that produces unsaved changes
+    """
+
+    def wrapper(*args, **kwargs):
+        self = args[0]
+
+        val = func(*args, **kwargs)
+        self.unsavedChanges = True
+        print(self.unsavedChanges)
+        return val
 
     return wrapper
