@@ -8,6 +8,7 @@ import os
 # MODELS
 from Models.ModelCombobox import ModelCombobox
 from Models.ModelTree import ModelTree
+from Models.ModelArchive import ModelArchive
 
 # POPUPS
 from ..NewComponentEditor.NewComponentEditor import NewComponentEditor
@@ -38,6 +39,7 @@ class MainWindow(qtw.QMainWindow, ui):
         self.filename = None
         self.copiedNode = None
         self.unsavedChanges = False
+        self.archivePath = r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\HardwareArchive.csv'
 
 # COMBOBOX MODELS
         self.manufactureModel = ModelCombobox(r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\UIs\MainWindow\manufactures.csv')
@@ -61,6 +63,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
 # DATA MODELS
         self._setModel(ModelTree())
+        self._setArchive(self.archivePath)
 
 # FILE MENU
         self.uiActNew.triggered.connect(self.newFile)
@@ -70,6 +73,8 @@ class MainWindow(qtw.QMainWindow, ui):
         self.uiActExportBill.triggered.connect(self.exportBill)
         self.uiActClear.triggered.connect(self.clearFile)
 
+        self.uiActArchive.triggered.connect(self.findArchive)
+
 # EDIT MENU
         self.uiActAddAssembly.triggered.connect(self.addAssemblyNode)
         self.uiActAddPart.triggered.connect(self.addLeafNode)
@@ -78,6 +83,8 @@ class MainWindow(qtw.QMainWindow, ui):
         self.uiActAddPlaceholder.triggered.connect(self.addPlaceholderNode)
 
         self.uiActRemove.triggered.connect(self.removeComponent)
+        self.uiActMorph.triggered.connect(self.morphComponent)
+        self.uiActUpdate.triggered.connect(self.updateSpecialComponents)
 
         self.uiActCut.triggered.connect(self.cut)
         self.uiActCopy.triggered.connect(self.copy)
@@ -99,6 +106,10 @@ class MainWindow(qtw.QMainWindow, ui):
     @decor.askSave
     @decor.produceChanges
     def openFile(self, *args):
+        """
+        Opens a file given it's name or path.
+        """
+
         filename, _ = qtw.QFileDialog.getOpenFileName(
             self,
             "Select a file to open...",
@@ -108,18 +119,44 @@ class MainWindow(qtw.QMainWindow, ui):
         )
 
         if filename:
+            self.clearFile()
+
             model = ModelTree()
             model.readFile(filename)
             self._setModel(model)
+            self.filename = filename
+
             self.tabWidget.setCurrentIndex(0)
 
+    @decor.ifHasModel
     def saveFile(self, *args):
-        self.unsavedChanges = False
-        print(self.unsavedChanges)
+        """
+        Saves a file given it's name or path.
+        """
 
+        if self.filename:
+            self.componentsPage.saveFile(self.filename)
+            self.unsavedChanges = False
+        else:
+            self.saveFileAs()
+
+    @decor.ifHasModel
     def saveFileAs(self, *args):
-        self.unsavedChanges = False
-        print(self.unsavedChanges)
+        """
+        Saves a file with a new name.
+        """
+
+        filename, _ = qtw.QFileDialog.getSaveFileName(
+            self,
+            "Select the file to save to...",
+            qtc.QDir.homePath(),
+            'CSV Documents (*.csv)'
+        )
+
+        if filename:
+            self.componentsPage.saveFile(filename)
+            self.filename = filename
+            self.unsavedChanges = False
 
     def exportBill(self, *args):
         pass
@@ -133,9 +170,22 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self._setModel()
 
+    def findArchive(self, *args):
+        filename, _ = qtw.QFileDialog.getOpenFileName(
+            self,
+            "Select a file to open...",
+            qtc.QDir.homePath(),
+            'CSV Documents (*.csv) ;; All Files (*)',
+            'CSV Documents (*.csv)'
+        )
+
+        if filename:
+            self.archivePath = filename
+            self._setArchive(self.archivePath)
+
 # EDIT MENU FUNCTIONS
 
-    @decor.ComponentsAction
+    @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addAssemblyNode(self, *args):
@@ -147,7 +197,7 @@ class MainWindow(qtw.QMainWindow, ui):
         if newNode:
             self._addGenericNode(newNode)
 
-    @decor.ComponentsAction
+    @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addLeafNode(self, *args):
@@ -159,7 +209,7 @@ class MainWindow(qtw.QMainWindow, ui):
         if newNode:
             self._addGenericNode(newNode)
 
-    @decor.ComponentsAction
+    @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addSpecialNode(self, *args):
@@ -168,10 +218,11 @@ class MainWindow(qtw.QMainWindow, ui):
         """
 
         self.newSelector = HardwareSelector()
+        self.newSelector.setModel(self.archiveModel)
         self.newSelector.submit.connect(self.componentsPage.addNode)
         self.newSelector.submit.connect(self._produceChanges)
 
-    @decor.ComponentsAction
+    @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addJigNode(self, *args):
@@ -183,7 +234,7 @@ class MainWindow(qtw.QMainWindow, ui):
         if newNode:
             self._addGenericNode(newNode)
 
-    @decor.ComponentsAction
+    @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addPlaceholderNode(self, *args):
@@ -195,7 +246,7 @@ class MainWindow(qtw.QMainWindow, ui):
         if newNode:
             self._addGenericNode(newNode)
 
-    @decor.ComponentsAction
+    @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotRoot
     @decor.produceChanges
@@ -212,6 +263,25 @@ class MainWindow(qtw.QMainWindow, ui):
 
         return self.treeModel.removeRows(currentNode.getIndex(), currentIndex.parent())
 
+    @decor.componentsAction
+    @decor.ifNodeSelected
+    @decor.ifIsLeaf
+    @decor.ifIsHardware
+    def morphComponent(self, *args):
+        """
+        Swaps two archive components.
+        """
+
+        self.newSelector = HardwareSelector()
+        self.newSelector.setModel(self.archiveModel)
+        self.newSelector.submit.connect(self.componentsPage.swapNode)
+        self.newSelector.submit.connect(self._produceChanges)
+
+    @decor.componentsAction
+    @decor.produceChanges
+    def updateSpecialComponents(self, *args):
+        pass
+
     @decor.produceChanges
     def cut(self, *args):
         """
@@ -221,7 +291,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.copiedNode = self.removeComponent()
 
-    @decor.ComponentsAction
+    @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotRoot
     def copy(self, *args):
@@ -232,7 +302,7 @@ class MainWindow(qtw.QMainWindow, ui):
         currentNode = self.componentsPage.getCurrentNode()
         self.copiedNode = currentNode.deepCopy()
 
-    @decor.ComponentsAction
+    @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotLeaf
     @decor.produceChanges
@@ -257,8 +327,19 @@ class MainWindow(qtw.QMainWindow, ui):
         self.treeModel = model
         self.componentsPage.setModel(self.treeModel)
 
+    def _setArchive(self, archivePath = None):
+        """
+        Sets the archive model.
+
+        Args:
+            archivePath (str): the name or path of the archive file. Defaults to None.
+        """
+
+        self.archiveModel = ModelArchive(self.archivePath)
+        self.archivePage.setModel(self.archiveModel)
+
     @decor.produceChanges
-    def _produceChanges(self):
+    def _produceChanges(self, *args):
         """
         Sets the unsaved changes bit to true.
         """

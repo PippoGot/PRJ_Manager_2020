@@ -149,7 +149,3 @@ class ComponentNode(AbstractNode):
         if isinstance(other, ComponentNode):
             return other.getSize() == self.getSize()
         return False
-
-
-if __name__ == '__main__':
-    pass

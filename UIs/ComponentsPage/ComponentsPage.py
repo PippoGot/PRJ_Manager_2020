@@ -93,6 +93,19 @@ class ComponentsPage(qtw.QWidget, ui):
 
         self._resizeView()
 
+    def swapNode(self, node):
+        """
+        Removes the selected component and then adds a new component in it's place.
+
+        Args:
+            node (ComponentNode): the new component to add
+        """
+        index = self.getCurrentIndex()
+        position = index.row()
+        parent = index.parent()
+
+        self.model.swapComponent(position, node, parent)
+
     def getCurrentNode(self):
         """
         Returns the current selected node.
@@ -141,3 +154,14 @@ class ComponentsPage(qtw.QWidget, ui):
 
         if self.model:
             self.model.readFile(filename)
+
+    def saveFile(self, filename):
+        """
+        Saves a component tree data structure to a .csv file for storage.
+
+        Args:
+            filename (str): name or path of the file
+        """
+
+        if self.model:
+            self.model.saveFile(filename)

@@ -24,7 +24,12 @@ class Ui_uiArchiveView(object):
         self.uiSearchEntry.setObjectName("uiSearchEntry")
         self.verticalLayout_2.addWidget(self.uiSearchEntry)
         self.uiView = QtWidgets.QTableView(uiArchiveView)
+        self.uiView.setAlternatingRowColors(True)
+        self.uiView.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.uiView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.uiView.setObjectName("uiView")
+        self.uiView.horizontalHeader().setStretchLastSection(True)
+        self.uiView.verticalHeader().setStretchLastSection(False)
         self.verticalLayout_2.addWidget(self.uiView)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
         self.verticalLayout = QtWidgets.QVBoxLayout()
@@ -64,6 +69,7 @@ class Ui_uiArchiveView(object):
     def retranslateUi(self, uiArchiveView):
         _translate = QtCore.QCoreApplication.translate
         uiArchiveView.setWindowTitle(_translate("uiArchiveView", "Form"))
+        self.uiSearchEntry.setPlaceholderText(_translate("uiArchiveView", "Search..."))
         self.uiMEHBtn.setText(_translate("uiArchiveView", "MEH"))
         self.uiMMHBtn.setText(_translate("uiArchiveView", "MMH"))
         self.uiEMHBtn.setText(_translate("uiArchiveView", "EMH"))

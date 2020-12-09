@@ -29,6 +29,7 @@ class HardwareSelector(qtw.QWidget, ui):
         self.uiOkBtn.clicked.connect(self.submitNode)
 
         self._enableSubmit()
+        self.archiveView._refreshView()
         self.show()
 
     def setModel(self, model):
@@ -42,15 +43,18 @@ class HardwareSelector(qtw.QWidget, ui):
         self.model = model
         self.archiveView.setModel(self.model)
 
-        self.selection = self.uiArchiveView.selectionModel()
-        self.selection.currentChanged.connect(self._mapIndex)
+        if self.model:
+            self.selection = self.archiveView.uiView.selectionModel()
+            self.selection.currentChanged.connect(self._mapIndex)
 
     def submitNode(self):
         """
         Emits the currently selected node to add it to the tree.
         """
 
-        self.submit.emit(self.currentNode)
+        self.current.addFeatures(quantity = self.uiQuantity.text())
+
+        self.submit.emit(self.current)
         self.close()
 
     def _mapIndex(self, index):
@@ -65,17 +69,11 @@ class HardwareSelector(qtw.QWidget, ui):
         self._enableSubmit()
 
     def _enableSubmit(self):
+        """
+        Enables or disables the submit button based on the current selection.
+        """
+
         if self.current:
             self.uiOkBtn.setDisabled(False)
         else:
             self.uiOkBtn.setDisabled(True)
-
-# MAIN
-if __name__ == '__main__':
-    import sys
-    app = qtw.QApplication(sys.argv)
-
-    mw = HardwareSelector()
-    mw.show()
-
-    app.exec_()

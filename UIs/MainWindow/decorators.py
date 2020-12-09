@@ -2,7 +2,9 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
-def ComponentsAction(func):
+# PAGE SELECTION
+
+def componentsAction(func):
     """
     Executes a function only if the current page is the components page.
 
@@ -17,6 +19,8 @@ def ComponentsAction(func):
 
     return wrapper
 
+# DATA PRESENT
+
 def ifHasModel(func):
     """
     Executes a function only if a model is present.
@@ -29,6 +33,8 @@ def ifHasModel(func):
         self = args[0]
         if self.treeModel:
             return func(*args, **kwargs)
+        else:
+            self._okDialog('Warning!', 'No file currently open.')
 
     return wrapper
 
@@ -50,6 +56,8 @@ def ifNodeSelected(func):
 
     return wrapper
 
+# NODE TYPING
+
 def ifNotRoot(func):
     """
     Executes the passed funtion if the current node is not the root.
@@ -62,6 +70,24 @@ def ifNotRoot(func):
         self = args[0]
         currentNode = self.componentsPage.getCurrentNode()
         if currentNode.getLevel() != 1:
+            return func(*args, **kwargs)
+        else:
+            self._okDialog('Warning!', 'The selected item is not of an appropriate level!')
+
+    return wrapper
+
+def ifIsLeaf(func):
+    """
+    Executes the passed funtion if the current node is a leaf.
+
+    Args:
+        func (PyFunction): the function to execute if the node is a leaf
+    """
+
+    def wrapper(*args, **kwargs):
+        self = args[0]
+        currentNode = self.componentsPage.getCurrentNode()
+        if currentNode.getLevel() == 5:
             return func(*args, **kwargs)
         else:
             self._okDialog('Warning!', 'The selected item is not of an appropriate level!')
@@ -85,6 +111,26 @@ def ifNotLeaf(func):
             self._okDialog('Warning!', 'The selected item is not of an appropriate level!')
 
     return wrapper
+
+def ifIsHardware(func):
+    """
+    Executes the passed funtion if the current node is of hardware type.
+
+    Args:
+        func (PyFunction): the function to execute if the node is hardware
+    """
+
+    def wrapper(*args, **kwargs):
+        self = args[0]
+        currentNode = self.componentsPage.getCurrentNode()
+        if currentNode.getFeature('type') == 'Hardware':
+            return func(*args, **kwargs)
+        else:
+            self._okDialog('Warning!', 'The selected item is not of the correct type!')
+
+    return wrapper
+
+# FILE MANAGING
 
 def askSave(func):
     """
@@ -130,7 +176,6 @@ def produceChanges(func):
 
         val = func(*args, **kwargs)
         self.unsavedChanges = True
-        print(self.unsavedChanges)
         return val
 
     return wrapper

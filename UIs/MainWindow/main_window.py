@@ -199,6 +199,8 @@ class Ui_uiMainWindow(object):
         icon23.addPixmap(QtGui.QPixmap(":/placeholder.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.uiActAddPlaceholder.setIcon(icon23)
         self.uiActAddPlaceholder.setObjectName("uiActAddPlaceholder")
+        self.uiActArchive = QtWidgets.QAction(uiMainWindow)
+        self.uiActArchive.setObjectName("uiActArchive")
         self.menuFile.addAction(self.uiActNew)
         self.menuFile.addAction(self.uiActSave)
         self.menuFile.addAction(self.uiActSaveas)
@@ -207,6 +209,8 @@ class Ui_uiMainWindow(object):
         self.menuFile.addAction(self.uiActClear)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.uiActExportBill)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.uiActArchive)
         self.menuAdd.addAction(self.uiActAddAssembly)
         self.menuAdd.addAction(self.uiActAddPart)
         self.menuAdd.addAction(self.uiActAddSpecial)
@@ -305,4 +309,5 @@ class Ui_uiMainWindow(object):
         self.uiActUndo.setText(_translate("uiMainWindow", "Undo"))
         self.uiActRedo.setText(_translate("uiMainWindow", "Redo"))
         self.uiActAddPlaceholder.setText(_translate("uiMainWindow", "Add Placeholder"))
+        self.uiActArchive.setText(_translate("uiMainWindow", "Find Archive"))
 from .. import resources

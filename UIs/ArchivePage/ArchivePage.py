@@ -22,9 +22,18 @@ class ArchivePage(qtw.QWidget, ui):
         self.model = None
         self.manufactureModel = None
         self.statusModel = None
+        self.currentNode = None
+        self.currentIndex = None
+        self.currentSelection = None
 
         self.layout().insertWidget(1, self.uiArchiveView)
         self.layout().insertWidget(2, self.uiEditor)
+
+        self.uiAddBtn.clicked.connect(self._addNode)
+        self.uiDelBtn.clicked.connect(self._deleteNode)
+        self.uiArchiveView.indexChanged.connect(self.setCurrentSelection)
+
+        self._disableRemove()
 
     def setModel(self, model):
         """
@@ -62,12 +71,46 @@ class ArchivePage(qtw.QWidget, ui):
         self.uiEditor.setStatusModel(statusModel)
         self.uiStatus.setModel(self.statusModel)
 
-# MAIN
-if __name__ == '__main__':
-    import sys
-    app = qtw.QApplication(sys.argv)
+    def setCurrentSelection(self, index):
+        """
+        Updates the currently selected model index for the editor.
 
-    mw = ArchivePage()
-    mw.show()
+        Args:
+            index (QModelIndex): the new index
+        """
 
-    app.exec_()
+        self.uiEditor.setCurrentSelection(index)
+        self.currentIndex = self.uiEditor.currentIndex
+        self.currentNode = self.uiEditor.currentNode
+        self.currentSelection = self.uiArchiveView.indexSelection
+        self._disableRemove()
+
+    def _addNode(self):
+        pass
+
+    def _deleteNode(self):
+        """
+        Removes the currently selected node from the archive model.
+        """
+
+        if self.currentIndex:
+            indexSet = {index.siblingAtColumn(0) for index in self.currentSelection}
+            for index in indexSet:
+                self.model.removeRows(index)
+
+            self.currentNode = None
+            self.currentIndex = None
+            self.currentSelection = None
+
+            self._disableRemove()
+            self._updateNewNode()
+
+    def _disableRemove(self):
+        """
+        Disables the delete button based on the current selection.
+        """
+
+        self.uiDelBtn.setDisabled(not self.currentIndex)
+
+    def _updateNewNode(self):
+        pass

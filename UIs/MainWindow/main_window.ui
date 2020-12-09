@@ -148,6 +148,8 @@
     <addaction name="uiActClear"/>
     <addaction name="separator"/>
     <addaction name="uiActExportBill"/>
+    <addaction name="separator"/>
+    <addaction name="uiActArchive"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -470,6 +472,11 @@
    </property>
    <property name="text">
     <string>Add Placeholder</string>
+   </property>
+  </action>
+  <action name="uiActArchive">
+   <property name="text">
+    <string>Find Archive</string>
    </property>
   </action>
  </widget>

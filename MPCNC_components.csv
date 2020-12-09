@@ -1,4 +1,4 @@
-parentHash,selfHash,numberID,title,description,type,manufacture,status,comment,price,quantity,package,seller,link,length
+parentHash,selfHash,numberID,name,description,type,manufacture,status,comment,price,quantity,package,seller,link,length
 78707446,52300490,#000-000,MPCNC,CNC machine with 3D printed parts.,Project,Assembled,Design in Progress,-,0,1,1,-,-,
 52300490,732,#100-000,Chassis,"Main chassis structure of the machine, contains the frame and the base.",Assembly,Assembled,Done,-,0,1,1,-,-,
 732,6193,#110-000,Angle column,Connects the structure to the base and the sliding pipes.,Assembly,Assembled,Done,-,0,4,1,-,-,
