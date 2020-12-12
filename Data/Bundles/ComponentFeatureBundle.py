@@ -2,6 +2,8 @@ from .AbstractFeatureBundle import AbstractFeatureBundle
 
 class ComponentFeatureBundle(AbstractFeatureBundle):
     """
+    Limits the superclass functionality to have only these features.
+
     self.numberID
     self.name
     self.description
@@ -57,8 +59,3 @@ COMPONENT_VALUES = [
     'seller',
     'link'
 ]
-
-
-# TEST CODE
-if __name__ == '__main__':
-    pass

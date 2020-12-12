@@ -7,6 +7,8 @@ from ..Bundles.ComponentFeatureBundle import ComponentFeatureBundle
 
 class ComponentNode(AbstractNode):
     """
+    Generic component node. Inherited by the composite nodes.
+
     self.selfHash
     self.parentHash
     self.level
@@ -14,6 +16,10 @@ class ComponentNode(AbstractNode):
     """
 
     def __init__(self, **features):
+        """
+        Initialise the added fields.
+        """
+
         super().__init__()
         self.bundle = ComponentFeatureBundle(**features)
 
@@ -92,7 +98,13 @@ class ComponentNode(AbstractNode):
         """
 
         valuesList = self.bundle.getBundleValues()
-        return ' '.join(valuesList)
+
+        existingValues = []
+        for item in valuesList:
+            if item: existingValues.append(item)
+        if existingValues: return ' '.join(existingValues)
+
+        return ''
 
     def getNodeDictionary(self, *featureKeys):
         """
@@ -134,18 +146,3 @@ class ComponentNode(AbstractNode):
 
     def __repr__(self):
         return self.toString(*self.bundle.getBundleKeys())
-
-    def __eq__(self, other):
-        """
-        Enables the "==" operator.
-
-        Args:
-            other (PyObject): the item to compare this item with
-
-        Returns:
-            bool: the result of the comparison
-        """
-
-        if isinstance(other, ComponentNode):
-            return other.getSize() == self.getSize()
-        return False

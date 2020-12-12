@@ -6,6 +6,7 @@ class AbstractTree():
 
     self.root
     """
+
     def __init__(self):
         self.root = AbstractNode()
 

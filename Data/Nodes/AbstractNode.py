@@ -465,8 +465,3 @@ class AbstractNode(AbstractFeatureBundle):
 
     def __bool__(self):
         return True
-
-
-# TEST CODE
-if __name__ == '__main__':
-    pass

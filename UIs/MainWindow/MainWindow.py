@@ -90,6 +90,9 @@ class MainWindow(qtw.QMainWindow, ui):
         self.uiActCopy.triggered.connect(self.copy)
         self.uiActPaste.triggered.connect(self.paste)
 
+# VIEW MENU
+        self.uiActDeprecated.triggered.connect(self.hideDeprecated)
+
 # --- FILE MENU FUNCTIONS ---
 
     @decor.askSave
@@ -119,10 +122,9 @@ class MainWindow(qtw.QMainWindow, ui):
         )
 
         if filename:
-            self.clearFile()
+            self._setModel()
 
-            model = ModelTree()
-            model.readFile(filename)
+            model = ModelTree(filename)
             self._setModel(model)
             self.filename = filename
 
@@ -131,7 +133,8 @@ class MainWindow(qtw.QMainWindow, ui):
     @decor.ifHasModel
     def saveFile(self, *args):
         """
-        Saves a file given it's name or path.
+        Saves a file given it's name or path. Otherwise the filename is asked
+        to the user.
         """
 
         if self.filename:
@@ -171,6 +174,10 @@ class MainWindow(qtw.QMainWindow, ui):
         self._setModel()
 
     def findArchive(self, *args):
+        """
+        Opens the editor to look for an archive file to open and use.
+        """
+
         filename, _ = qtw.QFileDialog.getOpenFileName(
             self,
             "Select a file to open...",
@@ -183,7 +190,7 @@ class MainWindow(qtw.QMainWindow, ui):
             self.archivePath = filename
             self._setArchive(self.archivePath)
 
-# EDIT MENU FUNCTIONS
+# --- EDIT MENU FUNCTIONS ---
 
     @decor.componentsAction
     @decor.ifNodeSelected
@@ -195,7 +202,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
         newNode = self.componentsPage.getNewNode('Assembly')
         if newNode:
-            self._addGenericNode(newNode)
+            self._addNode(newNode)
 
     @decor.componentsAction
     @decor.ifNodeSelected
@@ -207,7 +214,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
         newNode = self.componentsPage.getNewNode('Leaf')
         if newNode:
-            self._addGenericNode(newNode)
+            self._addNode(newNode)
 
     @decor.componentsAction
     @decor.ifNodeSelected
@@ -232,7 +239,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
         newNode = self.componentsPage.getNewNode('Jig')
         if newNode:
-            self._addGenericNode(newNode)
+            self._addNode(newNode)
 
     @decor.componentsAction
     @decor.ifNodeSelected
@@ -244,7 +251,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
         newNode = self.componentsPage.getNewNode('Placeholder')
         if newNode:
-            self._addGenericNode(newNode)
+            self._addNode(newNode)
 
     @decor.componentsAction
     @decor.ifNodeSelected
@@ -254,14 +261,11 @@ class MainWindow(qtw.QMainWindow, ui):
         """
         Removes a component node that is not at level 1.
 
-            Returns:
-                ComponentNode: the removed node
+        Returns:
+            ComponentNode: the removed node
         """
 
-        currentNode = self.componentsPage.getCurrentNode()
-        currentIndex = self.componentsPage.getCurrentIndex()
-
-        return self.treeModel.removeRows(currentNode.getIndex(), currentIndex.parent())
+        return self.componentsPage.removeNode()
 
     @decor.componentsAction
     @decor.ifNodeSelected
@@ -269,7 +273,7 @@ class MainWindow(qtw.QMainWindow, ui):
     @decor.ifIsHardware
     def morphComponent(self, *args):
         """
-        Swaps two archive components.
+        Swaps two archive components in the component tree model.
         """
 
         self.newSelector = HardwareSelector()
@@ -282,7 +286,6 @@ class MainWindow(qtw.QMainWindow, ui):
     def updateSpecialComponents(self, *args):
         pass
 
-    @decor.produceChanges
     def cut(self, *args):
         """
         Removes and stores a component for later pasting. Inherits the decorators from
@@ -314,6 +317,19 @@ class MainWindow(qtw.QMainWindow, ui):
         newNode = self.copiedNode.deepCopy()
         self.componentsPage.addNode(newNode)
 
+# --- VIEW MENU FUNCTIONS ---
+
+    @decor.ifHasModel
+    def hideDeprecated(self, *args):
+        """
+        Hides or shows the deprecated nodes in the tree view.
+        """
+
+        if self.uiActDeprecated.isChecked():
+            self.componentsPage.hideDeprecated(True)
+        else:
+            self.componentsPage.hideDeprecated(False)
+
 # --- PRIVATE UTILITY FUNCTIONS ---
 
     def _setModel(self, model = None):
@@ -326,6 +342,9 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.treeModel = model
         self.componentsPage.setModel(self.treeModel)
+
+        if self.treeModel:
+            self.treeModel.dataChanged.connect(self.hideDeprecated)
 
     def _setArchive(self, archivePath = None):
         """
@@ -341,14 +360,15 @@ class MainWindow(qtw.QMainWindow, ui):
     @decor.produceChanges
     def _produceChanges(self, *args):
         """
-        Sets the unsaved changes bit to true.
+        Sets the unsaved changes variable to true. Used in functions that cannot
+        use the corresponding decorator.
         """
 
         return
 
 # NODES HANDLING
 
-    def _addGenericNode(self, node):
+    def _addNode(self, node):
         """
         Pops up an editor window with an initialised node to edit. If "Add" is
         pressed the node is added to the tree, while if "Cancel" is pressed

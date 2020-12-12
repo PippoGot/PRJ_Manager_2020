@@ -42,12 +42,12 @@ class ModelTree(qtc.QAbstractItemModel):
 
         self.rootItem = ComponentNode()
 
-        self.first = comp_nodes.ProjectNode()
-        self.tree = ComponentTree(self.first)
-
         if filename:
-            self.readFile(filename)
+            self.first = self.readFile(filename)
+        else:
+            self.first = comp_nodes.ProjectNode()
 
+        self.tree = ComponentTree(self.first)
         self.rootItem.addChild(self.first)
 
 # --- MODEL FUNCTIONS ---
@@ -196,11 +196,11 @@ class ModelTree(qtc.QAbstractItemModel):
         childItem = index.internalPointer()
         parentItem = childItem.getParent()
 
-        if parentItem:
-            row = parentItem.getIndex()
-            return self.createIndex(row, 0, parentItem)
+        if parentItem == self.rootItem:
+            return qtc.QModelIndex()
 
-        return qtc.QModelIndex()
+        row = parentItem.getIndex()
+        return self.createIndex(row, 0, parentItem)
 
     def rowCount(self, parent):
         """
@@ -243,12 +243,12 @@ class ModelTree(qtc.QAbstractItemModel):
         Insert a node row in the specified position.
 
         Args:
-            position (int): the index where the item will be added.
-            item (BaseNode): the node to add to the model.
-            parent (QModelIndex): the index of the parent item. Default is an invalid index.
+            position (int): the index where the item will be added
+            item (ComponentNode): the node to add to the model
+            parent (QModelIndex): the index of the parent item. Default is an invalid index
 
         Returns:
-            bool: the success of the operation.
+            bool: the success of the operation
         """
 
         if parent.isValid():
@@ -257,10 +257,8 @@ class ModelTree(qtc.QAbstractItemModel):
             parentItem = self.first
 
         self.beginInsertRows(parent.siblingAtColumn(0), position, position)
-
         success = parentItem.addChild(item)
         self.tree.updateHashes(parentItem)
-
         self.endInsertRows()
 
         return success
@@ -344,18 +342,26 @@ class ModelTree(qtc.QAbstractItemModel):
         if filename:
             with open(filename, 'r') as file:
                 csv_reader = csv.DictReader(file)
+
                 firstLine = next(csv_reader)
-                self.first.selfHash = firstLine['selfHash']
+                first = comp_nodes.ProjectNode()
+                first.selfHash = int(firstLine['selfHash'])
                 del firstLine['selfHash']
                 del firstLine['parentHash']
-                self.first.addFeatures(**firstLine)
+                first.addFeatures(**firstLine)
+
+                tempTree = ComponentTree(first)
 
                 for line in csv_reader:
+                    line = line.copy()
                     prefix = line['numberID'][1:4]
-                    parent = self.tree.searchByHash(int(line['parentHash']))
+                    parent = tempTree.searchByHash(int(line['parentHash']))
+
                     newNode = self.getNodeByType(line['type'], prefix)
                     newNode = self.fillNode(newNode, line, parent)
                     parent.addChild(newNode)
+
+            return first
 
     def getNodeByType(self, tp, prefix):
         """

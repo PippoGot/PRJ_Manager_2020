@@ -5,9 +5,14 @@ from PyQt5 import QtCore as qtc
 from .component_editor import  Ui_uiComponentEditor as ui
 
 class ComponentEditor(qtw.QWidget, ui):
+    """
+    General purpose component node editor. Used to edit nodes in a
+    tree or archive model.
+    """
+
     def __init__(self):
         """
-        Loads the UI window.
+        Loads the UI window and initialise the class variables.
         """
 
         super(ComponentEditor, self).__init__()
@@ -16,10 +21,12 @@ class ComponentEditor(qtw.QWidget, ui):
         self.model = None
         self.manufactureModel = None
         self.statusModel = None
-        self.currentIndex = None
+        self.currentIndex = qtc.QModelIndex()
         self.mapper = qtw.QDataWidgetMapper()
 
         self._enableSelf()
+
+# --- MODELS ---
 
     def setModel(self, model):
         """
@@ -30,7 +37,7 @@ class ComponentEditor(qtw.QWidget, ui):
         """
 
         self.model = model
-        self.currentIndex = None
+        self.currentIndex = qtc.QModelIndex()
 
         self.mapper.setModel(self.model)
 
@@ -52,24 +59,6 @@ class ComponentEditor(qtw.QWidget, ui):
             self.model.dataChanged.connect(self.mapper.revert)
         else:
             self._enableSelf()
-
-    def setCurrentSelection(self, newIndex):
-        """
-        The index is set as the current index of the editor.
-
-        Args:
-            index (QModelIndex): the index to update
-        """
-
-        self.currentIndex = newIndex
-        self.currentNode = self.currentIndex.internalPointer()
-
-        indexParent = newIndex.parent()
-        self.mapper.setRootIndex(indexParent)
-        self.mapper.setCurrentModelIndex(self.currentIndex)
-
-        self._changeManufacture()
-        self._enableSelf()
 
     def setManufactureModel(self, manufactureModel):
         """
@@ -93,6 +82,30 @@ class ComponentEditor(qtw.QWidget, ui):
         self.statusModel = statusModel
         self.uiStatus.setModel(self.statusModel)
 
+# --- SELECTION ---
+
+    def setCurrentSelection(self, newIndex):
+        """
+        The index is set as the current index of the editor.
+
+        Args:
+            index (QModelIndex): the index to update
+        """
+
+        self.currentIndex = newIndex
+        self._enableSelf()
+        if not self.currentIndex.isValid(): return
+
+        self.currentNode = self.currentIndex.internalPointer()
+
+        indexParent = newIndex.parent()
+        self.mapper.setRootIndex(indexParent)
+        self.mapper.setCurrentModelIndex(self.currentIndex)
+
+        self._changeManufacture()
+
+# --- UTILITY
+
     def _changeManufacture(self):
         """
         Changes dinamically the manufacture widget. The editable nodes will
@@ -111,7 +124,7 @@ class ComponentEditor(qtw.QWidget, ui):
         Enables or disables the widget based on the selection.
         """
 
-        if self.currentIndex:
+        if self.currentIndex.isValid():
             self.setDisabled(False)
         else:
             self.setDisabled(True)

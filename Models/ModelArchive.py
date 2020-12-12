@@ -1,21 +1,30 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+import csv
 
 from Data.Trees.ComponentTree import ComponentTree
 from Data.Nodes.ComponentNode import ComponentNode
+from Data.Nodes.CompositeNodes import ProjectNode
 
 from Models.ModelTree import ModelTree
 
 class ModelArchive(ModelTree):
+    """
+    Model for the hardware archive view. Subclass of ModelTree, reimplements
+    data, remove/insert Rows and getNewNode to better suit the model and it's logic.
+    """
+
     def __init__(self, filename = None):
-        super().__init__()
+        """
+        Initialise the model. An optional filename can be passed to read a file.
 
-        self.rootItem = ComponentNode()
-        self.tree = ComponentTree(self.rootItem)
+        Args:
+            filename (str): the name or path of the file. Defaults to None.
+        """
 
-        if filename:
-            self.readFile(filename)
+        super().__init__(filename)
+        self.rootItem = self.first
 
     def data(self, index, role):
         """
@@ -39,7 +48,7 @@ class ModelArchive(ModelTree):
             column = self.HEADERS[index.column()]
             return item.getFeature(column)
 
-    def removeRows(self, index, parent = qtc.QModelIndex()):
+    def removeRows(self, indexes, parent = qtc.QModelIndex()):
         """
         Removes the selected rows from the archive model.
 
@@ -52,11 +61,45 @@ class ModelArchive(ModelTree):
         """
 
         parentItem = self.rootItem
-        item = index.internalPointer()
-        position = item.getIndex()
 
-        self.beginRemoveRows(parent.siblingAtColumn(0), position, position)
-        parentItem.removeChild(item)
-        self.endRemoveRows()
+        for index in indexes:
+            item = index.internalPointer()
+            position = item.getIndex()
+
+            self.beginRemoveRows(parent.siblingAtColumn(0), position, position)
+            parentItem.removeChild(item)
+            self.endRemoveRows()
 
         return True
+
+    def insertRows(self, position, item, parent = qtc.QModelIndex()):
+        """
+        Insert a node row in the specified position.
+
+        Args:
+            node (ComponentNode): the node to add to the model
+
+        Returns:
+            bool: the success of the operation.
+        """
+
+        parentItem = self.rootItem
+
+        self.beginInsertRows(qtc.QModelIndex(), position, position)
+        success = parentItem.addChild(item)
+        self.endInsertRows()
+
+        return success
+
+    def getNewNode(self, prefix):
+        """
+        Returns the new correct node to insert.
+
+        Args:
+            prefix (str): the prefix of the node to add
+
+        Returns:
+            ComponentNode: the next node to be added
+        """
+
+        return self.tree.getNewHardwareNode(prefix)

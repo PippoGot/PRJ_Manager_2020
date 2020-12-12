@@ -43,7 +43,7 @@ def ifNodeSelected(func):
     Executes the passed function only if a node is currently selected.
 
     Args:
-        func (PyFunction): the function to execute if a node is selected.
+        func (PyFunction): the function to execute if a node is selected
     """
 
     def wrapper(*args, **kwargs):

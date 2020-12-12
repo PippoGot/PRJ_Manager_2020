@@ -6,6 +6,10 @@ from ..Nodes import CompositeNodes as comp_nodes
 from .AbstractTree import AbstractTree
 
 class ComponentTree(AbstractTree):
+    """
+    Extends AbstractTree class, implements component nodes functionality.
+    """
+
     def __init__(self, root):
         super().__init__()
         self.root = root
@@ -64,10 +68,9 @@ class ComponentTree(AbstractTree):
         """
 
         for node in self.iterPreorder():
-            currentHash = getattr(node, 'selfHash')
+            currentHash = getattr(node, 'selfHash', None)
             if currentHash == nextHash:
                 return node
-        return self.root
 
     def searchNodes(self, **parameters):
         """
@@ -158,6 +161,30 @@ class ComponentTree(AbstractTree):
         else:
             newNumber = self.getNewNumber(parentNode.getPrefix(), parentNode.getLevel() + 1)
             return types[tp](parentNode.getLevel() + 1, numberID = newNumber)
+
+    def getNewHardwareNode(self, prefix):
+        """
+        Returns a new hardware node given the prefix. The node isn't inserted in the
+        tree, it is a temporary node instead, that has the values of the one that should
+        be inserted as next with the given properties.
+
+        Args:
+            prefix (str): the prefix of the new node
+
+        Returns:
+            ComponentNode: the next node
+        """
+
+        nodes = {
+            'MEH': comp_nodes.HardwareNode,
+            'ELH': comp_nodes.HardwareNode,
+            'EMH': comp_nodes.HardwareNode,
+            'PRO': comp_nodes.ProductNode,
+            'MMH': comp_nodes.MeasuredNode
+        }
+
+        newNumber = self.getNewNumber(prefix, 5)
+        return nodes[prefix](numberID = newNumber)
 
 # REPRESENTATION
 

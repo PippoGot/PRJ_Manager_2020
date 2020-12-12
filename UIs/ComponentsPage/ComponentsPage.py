@@ -2,23 +2,35 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
+from Models.ProxyTree import ProxyTree
+
 from ..ComponentEditor.ComponentEditor import ComponentEditor
 from ..NewComponentEditor.NewComponentEditor import NewComponentEditor
 
 from .components_page import  Ui_uiComponentsPage as ui
 
 class ComponentsPage(qtw.QWidget, ui):
+    """
+    Main tree page, displays the current working component tree and provides a
+    component editor to edit the inserted nodes. Offers a toolkit of functions to
+    add remove and swap nodes in the tree model.
+    Uses the ComponentEditor widget.
+    """
+
     def __init__(self):
         """
-        Loads the UI window and set the manufacture model.
+        Loads the UI window and initialise the class variables.
         """
 
         super(ComponentsPage, self).__init__()
         self.setupUi(self)
 
         self.model = None
+        self.proxy = ProxyTree()
         self.uiEditor = ComponentEditor()
         self.horizontalLayout.addWidget(self.uiEditor)
+
+# --- MODELS ---
 
     def setModel(self, model):
         """
@@ -29,8 +41,11 @@ class ComponentsPage(qtw.QWidget, ui):
         """
 
         self.model = model
-        self.uiView.setModel(self.model)
-        self.uiEditor.setModel(model)
+        self.proxy.setSourceModel(self.model)
+        self.uiView.setModel(self.proxy)
+        self.uiEditor.setModel(self.model)
+
+        self.proxy.sort(0, qtc.Qt.DescendingOrder)
 
         if self.model:
             self.selection = self.uiView.selectionModel()
@@ -58,6 +73,8 @@ class ComponentsPage(qtw.QWidget, ui):
 
         self.uiEditor.setStatusModel(statusModel)
 
+# --- SELECTION ---
+
     def _mapIndex(self, index):
         """
         The index is set as the current index of the editor.
@@ -66,17 +83,10 @@ class ComponentsPage(qtw.QWidget, ui):
             index (QModelIndex): the index to update
         """
 
+        index = self.proxy.mapToSource(index)
         self.uiEditor.setCurrentSelection(index)
 
-    def _resizeView(self):
-        """
-        Updates the view resizing the columns to a specified value and expanding the tree.
-        """
-
-        if self.model:
-            self.uiView.expandAll()
-            for column in range(self.model.columnCount(qtc.QModelIndex())):
-                self.uiView.resizeColumnToContents(column)
+# --- NODES LOGIC ---
 
     def addNode(self, newNode):
         """
@@ -86,10 +96,10 @@ class ComponentsPage(qtw.QWidget, ui):
             newNode (ComponentNode): the new node to add
         """
 
-        currentSelection = self.getCurrentIndex()
-        parentItem = currentSelection.internalPointer()
+        currentIndex = self.getCurrentIndex()
+        parentItem = currentIndex.internalPointer()
 
-        self.model.insertRows(len(parentItem), newNode, currentSelection)
+        self.model.insertRows(len(parentItem), newNode, currentIndex)
 
         self._resizeView()
 
@@ -100,11 +110,33 @@ class ComponentsPage(qtw.QWidget, ui):
         Args:
             node (ComponentNode): the new component to add
         """
+
         index = self.getCurrentIndex()
         position = index.row()
         parent = index.parent()
 
         self.model.swapComponent(position, node, parent)
+
+        self._resizeView()
+
+    def removeNode(self):
+        """
+        Removes a component node.
+
+        Returns:
+            ComponentNode: the removed node
+        """
+
+        currentNode = self.getCurrentNode()
+        currentIndex = self.getCurrentIndex()
+
+        removedNode = self.model.removeRows(currentNode.getIndex(), currentIndex.parent())
+
+        self._resizeView()
+
+        return removedNode
+
+# --- GETTERS ---
 
     def getCurrentNode(self):
         """
@@ -125,7 +157,9 @@ class ComponentsPage(qtw.QWidget, ui):
             QModelIndex: the current item's index
         """
 
-        return self.uiEditor.currentIndex
+        currentIndex = self.selection.currentIndex()
+        currentIndex = self.proxy.mapToSource(currentIndex)
+        return currentIndex
 
     def getNewNode(self, tp):
         """
@@ -144,24 +178,32 @@ class ComponentsPage(qtw.QWidget, ui):
         if currentNode:
             return self.model.getNewNode(currentNode, tp)
 
-    def readFile(self, filename):
+# --- FILTERING ---
+
+    def hideDeprecated(self, hide):
         """
-        Reads a .csv file and turns it into a component tree data structure.
+        Changes the proxy filter regular expression based on this function's
+        input variable.
 
         Args:
-            filename (str): the name or path of the file
+            hide (bool): whether to show or hide the deprecated nodes
+        """
+
+        if hide:
+            self.proxy.setFilterRegExp('Deprecated')
+        else:
+            self.proxy.setFilterRegExp(None)
+
+        self._resizeView()
+
+# --- UTILITY ---
+
+    def _resizeView(self):
+        """
+        Updates the view resizing the columns to a specified value and expanding the tree.
         """
 
         if self.model:
-            self.model.readFile(filename)
-
-    def saveFile(self, filename):
-        """
-        Saves a component tree data structure to a .csv file for storage.
-
-        Args:
-            filename (str): name or path of the file
-        """
-
-        if self.model:
-            self.model.saveFile(filename)
+            self.uiView.expandAll()
+            for column in range(self.model.columnCount(qtc.QModelIndex())):
+                self.uiView.resizeColumnToContents(column)
