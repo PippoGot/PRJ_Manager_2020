@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets as qtw
 
-from UIs.stylesheet import stylesheet as qss
-from UIs.MainWindow.MainWindow import MainWindow
+from uis.stylesheet import stylesheet as qss
+from uis.main_window.MainWindow import MainWindow
 
 if __name__ == '__main__':
     import sys
