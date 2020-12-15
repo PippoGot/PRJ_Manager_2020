@@ -58,6 +58,7 @@ class HardwareSelector(qtw.QWidget, ui):
         Emits the currently selected node to add it to the tree.
         """
 
+        self.currentNode = self.currentNode.superficialCopy()
         self.currentNode.addFeatures(quantity = self.uiQuantity.text())
 
         self.submit.emit(self.currentNode)

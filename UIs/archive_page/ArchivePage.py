@@ -34,6 +34,7 @@ class ArchivePage(qtw.QWidget, ui):
         self.currentSelection = None
         self.newNode = None
         self.prefix = 'MEH'
+        self.filename = None
 
         self.layout().insertWidget(1, self.uiArchiveView)
         self.layout().insertWidget(2, self.uiEditor)
@@ -48,17 +49,25 @@ class ArchivePage(qtw.QWidget, ui):
 
 # --- MODELS ---
 
-    def setModel(self, model):
+    def setModel(self, model, filename = None):
         """
         Sets the editor's and view's model.
 
         Args:
             model (ModelTree): the model of the view and editor widget
+            filename (str): the archive path or name. Default to None.
         """
 
         self.model = model
         self.uiArchiveView.setModel(self.model)
         self.uiEditor.setModel(self.model)
+
+        if filename:
+            self.filename = filename
+
+        if self.model:
+            self.model.dataChanged.connect(self._saveArchive)
+
         self._updateNewNode()
 
     def setManufactureModel(self, manufactureModel):
@@ -121,7 +130,9 @@ class ArchivePage(qtw.QWidget, ui):
         dataDict = self._gatherData()
         self.newNode.addFeatures(**dataDict)
         self.model.insertRows(len(self.model.rootItem), self.newNode)
+
         self._updateNewNode()
+        self._saveArchive()
 
     def _gatherData(self):
         """
@@ -155,13 +166,14 @@ class ArchivePage(qtw.QWidget, ui):
         updated.
         """
 
-        if not self.currentSelection: return
-
         indexes = []
-        for index in self.currentSelection:
-            newIndex = index.siblingAtColumn(0)
-            if newIndex not in indexes:
-                indexes.append(newIndex)
+        if not self.currentSelection:
+            indexes.append(self.currentIndex)
+        else:
+            for index in self.currentSelection:
+                newIndex = index.siblingAtColumn(0)
+                if newIndex not in indexes:
+                    indexes.append(newIndex)
 
         self.model.removeRows(indexes)
 
@@ -171,6 +183,7 @@ class ArchivePage(qtw.QWidget, ui):
         self.uiEditor.setCurrentSelection(self.currentIndex)
         self._disableRemove()
         self._updateNewNode()
+        self._saveArchive()
 
 # --- UTILITY ---
 
@@ -203,3 +216,10 @@ class ArchivePage(qtw.QWidget, ui):
         self.uiType.setText(self.newNode.getFeature('type'))
         self.uiSeller.setText(self.newNode.getFeature('seller'))
         self.uiLink.setText(self.newNode.getFeature('link'))
+
+    def _saveArchive(self):
+        """
+        Saves the arcvhive file.
+        """
+
+        self.model.saveFile(self.filename)

@@ -29,6 +29,7 @@ class ComponentsPage(qtw.QWidget, ui):
         self.proxy = TreeProxy()
         self.uiEditor = ComponentEditor()
         self.horizontalLayout.addWidget(self.uiEditor)
+        self.expandLvl = 0
 
 # --- MODELS ---
 
@@ -45,11 +46,12 @@ class ComponentsPage(qtw.QWidget, ui):
         self.uiView.setModel(self.proxy)
         self.uiEditor.setModel(self.model)
 
-        self.proxy.sort(0, qtc.Qt.DescendingOrder)
+        self.proxy.sort(0, qtc.Qt.AscendingOrder)
 
         if self.model:
             self.selection = self.uiView.selectionModel()
             self.selection.currentChanged.connect(self._mapIndex)
+            self.expandAll()
 
         self._resizeView()
 
@@ -100,6 +102,8 @@ class ComponentsPage(qtw.QWidget, ui):
         parentItem = currentIndex.internalPointer()
 
         self.model.insertRows(len(parentItem), newNode, currentIndex)
+        currentIndex = self.proxy.mapFromSource(self.getCurrentIndex().siblingAtColumn(0))
+        self.uiView.expandRecursively(currentIndex, 0)
 
         self._resizeView()
 
@@ -204,6 +208,46 @@ class ComponentsPage(qtw.QWidget, ui):
         """
 
         if self.model:
-            self.uiView.expandAll()
             for column in range(self.model.columnCount(qtc.QModelIndex())):
                 self.uiView.resizeColumnToContents(column)
+
+    def expandAll(self):
+        """
+        Expands all of the items in the view.
+        """
+
+        self.uiView.expandAll()
+        self.expandLvl = self.model.tree.getHeight() - 1
+
+        self._resizeView()
+
+    def expandOne(self):
+        """
+        Expands the current lowest level of items in the tree.
+        """
+
+        if self.expandLvl >= self.model.tree.getHeight() - 1: return
+
+        rootIndex = self.model.createIndex(0, 0, self.model.first)
+        rootIndex = self.proxy.mapFromSource(rootIndex)
+
+        self.uiView.expandRecursively(rootIndex, self.expandLvl + 1)
+        self.expandLvl += 1
+
+        self._resizeView()
+
+    def collapseOne(self):
+        """
+        Collapses the lowest level currently expanded in the tree.
+        """
+
+        if self.expandLvl < 1: return
+
+        self.uiView.collapseAll()
+        rootIndex = self.model.createIndex(0, 0, self.model.first)
+        rootIndex = self.proxy.mapFromSource(rootIndex)
+
+        self.uiView.expandRecursively(rootIndex, self.expandLvl - 1)
+        self.expandLvl -= 1
+
+        self._resizeView()

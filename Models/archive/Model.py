@@ -103,3 +103,32 @@ class ArchiveModel(TreeModel):
         """
 
         return self.tree.getNewHardwareNode(prefix)
+
+    def readFile(self, filename):
+        """
+        Reads a .csv file and transforms it, if possible, into a tree data structure.
+
+        Args:
+            filename (str): name or path of the file to read.
+        """
+
+        if filename:
+            with open(filename, 'r') as file:
+                csv_reader = csv.DictReader(file)
+
+                firstLine = next(csv_reader)
+                first = ProjectNode()
+                first.selfHash = int(firstLine['selfHash'])
+                del firstLine['selfHash']
+                del firstLine['parentHash']
+                first.addFeatures(**firstLine)
+
+                for line in csv_reader:
+                    line = line.copy()
+                    prefix = line['numberID'][1:4]
+
+                    newNode = self.getNodeByType(line['type'], prefix)
+                    newNode = self.fillNode(newNode, line, first)
+                    first.addChild(newNode)
+
+            return first

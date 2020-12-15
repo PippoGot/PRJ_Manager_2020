@@ -40,7 +40,6 @@ class ComponentNode(AbstractNode):
 
         numberID = self.bundle.getFeature('numberID')
         if not numberID: return
-
         return numberID[1:4]
 
     def getSize(self):
@@ -146,3 +145,6 @@ class ComponentNode(AbstractNode):
 
     def __repr__(self):
         return self.toString(*self.bundle.getBundleKeys())
+
+    def __eq__(self, other):
+        return self.getFeature('numberID') == other.getFeature('numberID')

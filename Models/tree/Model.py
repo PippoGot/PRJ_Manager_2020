@@ -421,8 +421,14 @@ class TreeModel(qtc.QAbstractItemModel):
             ComponentNode: the complete node with all the data
         """
 
-        parentHash = int(dataDict['parentHash'])
-        selfHash = int(dataDict['selfHash'])
+        if dataDict['parentHash']:
+            parentHash = int(dataDict['parentHash'])
+        else: parentHash = 0
+
+        if dataDict['selfHash']:
+            selfHash = int(dataDict['selfHash'])
+        else: selfHash = 0
+
         del dataDict['selfHash']
         del dataDict['parentHash']
 

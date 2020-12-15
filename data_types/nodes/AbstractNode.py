@@ -142,8 +142,9 @@ class AbstractNode(AbstractFeatureBundle):
             AbstractNode: a superficial copy of the node
         """
 
-        copiedNode = self.__class__()
-        copiedNode.replaceBundle(self.bundle.copy())
+        bundle = self.bundle.copy()
+        bundleDict = bundle.getBundleDictionary()
+        copiedNode = self.__class__(**bundleDict)
         return copiedNode
 
     def deepCopy(self):

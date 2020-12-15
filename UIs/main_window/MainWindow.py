@@ -92,6 +92,9 @@ class MainWindow(qtw.QMainWindow, ui):
 
 # VIEW MENU
         self.uiActDeprecated.triggered.connect(self.hideDeprecated)
+        self.uiActExpandAll.triggered.connect(self.expandAll)
+        self.uiActExpandOne.triggered.connect(self.expandOne)
+        self.uiActCollapseOne.triggered.connect(self.collapseOne)
 
 # --- FILE MENU FUNCTIONS ---
 
@@ -138,7 +141,7 @@ class MainWindow(qtw.QMainWindow, ui):
         """
 
         if self.filename:
-            self.componentsPage.saveFile(self.filename)
+            self.treeModel.saveFile(self.filename)
             self.unsavedChanges = False
         else:
             self.saveFileAs()
@@ -157,7 +160,7 @@ class MainWindow(qtw.QMainWindow, ui):
         )
 
         if filename:
-            self.componentsPage.saveFile(filename)
+            self.treeModel.saveFile(filename)
             self.filename = filename
             self.unsavedChanges = False
 
@@ -282,9 +285,36 @@ class MainWindow(qtw.QMainWindow, ui):
         self.newSelector.submit.connect(self._produceChanges)
 
     @decor.componentsAction
+    @decor.ifHasModel
     @decor.produceChanges
     def updateSpecialComponents(self, *args):
-        pass
+        """
+        Updates all of the components in the tree model with data of the archive model.
+        """
+
+        archiveComponents = self.archiveModel.rootItem.getChildren()
+        treeComponents = self.treeModel.tree.searchNodes(type = 'Hardware')
+        treeComponents.extend(self.treeModel.tree.searchNodes(type = 'Product'))
+
+        COLUMNS_TO_UPDATE = [
+            'name',
+            'description',
+            'type',
+            'manufacture',
+            'status',
+            'price',
+            'package',
+            'seller',
+            'link'
+        ]
+
+        for treeNode in treeComponents:
+            for archiveNode in archiveComponents:
+                if treeNode == archiveNode:
+                    features = archiveNode.getNodeDictionary(*COLUMNS_TO_UPDATE)
+                    for key, value in features.items():
+                        treeNode.addFeature(key, value)
+        self.componentsPage._resizeView()
 
     def cut(self, *args):
         """
@@ -330,6 +360,30 @@ class MainWindow(qtw.QMainWindow, ui):
         else:
             self.componentsPage.hideDeprecated(False)
 
+    @decor.ifHasModel
+    def expandAll(self, *args):
+        """
+        Expands all of the items in the view.
+        """
+
+        self.componentsPage.expandAll()
+
+    @decor.ifHasModel
+    def expandOne(self, *args):
+        """
+        Expands the current lowest level of items in the tree.
+        """
+
+        self.componentsPage.expandOne()
+
+    @decor.ifHasModel
+    def collapseOne(self, *args):
+        """
+        Collapses the lowest level currently expanded in the tree.
+        """
+
+        self.componentsPage.collapseOne()
+
 # --- PRIVATE UTILITY FUNCTIONS ---
 
     def _setModel(self, model = None):
@@ -355,7 +409,7 @@ class MainWindow(qtw.QMainWindow, ui):
         """
 
         self.archiveModel = ArchiveModel(self.archivePath)
-        self.archivePage.setModel(self.archiveModel)
+        self.archivePage.setModel(self.archiveModel, self.archivePath)
 
     @decor.produceChanges
     def _produceChanges(self, *args):
