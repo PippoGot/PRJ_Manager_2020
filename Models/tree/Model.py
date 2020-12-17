@@ -295,20 +295,6 @@ class TreeModel(qtc.QAbstractItemModel):
 
 # --- CUSTOM FUNCTIONS ---
 
-    def getNewNode(self, parent, classname):
-        """
-        Returns the next new node to be added to the tree with the right number and level.
-
-        Args:
-            parent (ComponentNode): the parent of the node that would be added
-            classname (str): the type of node to be added
-
-        Returns:
-            ComponentNode: the node that would be added with default values and the correct number and level
-        """
-
-        return self.tree.getNewNode(parent, classname)
-
 # FILE MANAGEMENT
 
     def saveFile(self, filename):
@@ -324,7 +310,7 @@ class TreeModel(qtc.QAbstractItemModel):
 
     def readFile(self, filename):
         """
-        Reads a .csv file and transforms it, if possible, into a tree data structure.
+        Reads a .json file and transforms it, if possible, into a tree data structure.
 
         Args:
             filename (str): name or path of the file to read.
@@ -333,6 +319,20 @@ class TreeModel(qtc.QAbstractItemModel):
         if filename:
             self.tree = ComponentTree.jsonRead(filename)
             self.first = self.tree.getRoot()
+            self.rootItem.children = []
+            self.rootItem.addChild(self.first)
+
+    def readString(self, string):
+        """
+        Reads a json string and transforms it, if possible, into a tree data structure.
+
+        Args:
+            string (str): name or path of the file to read.
+        """
+
+        if string:
+            self.first = ComponentTree.jsonParse(string)
+            self.tree = ComponentTree(self.first)
             self.rootItem.children = []
             self.rootItem.addChild(self.first)
 
@@ -351,14 +351,24 @@ class TreeModel(qtc.QAbstractItemModel):
         self.removeRows(position, parent)
         self.insertRows(position, newNode, parent)
 
-# REPRESENTATION
-
-    def __repr__(self):
+    def getNewNode(self, parent, classname):
         """
-        Enables the user to represent the model with the print() function.
+        Returns the next new node to be added to the tree with the right number and level.
+
+        Args:
+            parent (ComponentNode): the parent of the node that would be added
+            classname (str): the type of node to be added
 
         Returns:
-            str: the string of the current rootItem object.
+            ComponentNode: the node that would be added with default values and the correct number and level
         """
 
+        return self.tree.getNewNode(parent, classname)
+
+# DUNDERS
+
+    def __repr__(self):
+        return self.tree.toString()
+
+    def __str__(self):
         return self.tree.toString()

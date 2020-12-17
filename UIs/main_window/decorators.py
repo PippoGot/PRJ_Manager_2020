@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+from functools import wraps
 
 # PAGE SELECTION
 
@@ -12,6 +13,7 @@ def componentsAction(func):
         func (PyFunction): the functions to execute if the page is correct
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
         if self._checkPage(0): return
@@ -19,7 +21,9 @@ def componentsAction(func):
 
     return wrapper
 
-# DATA PRESENT
+# --- BOOLEANS ---
+
+# DATA SELECTED
 
 def ifHasModel(func):
     """
@@ -29,6 +33,7 @@ def ifHasModel(func):
         func (PyFunction): the function to execute if the model is present
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
         if self.treeModel:
@@ -46,6 +51,7 @@ def ifNodeSelected(func):
         func (PyFunction): the function to execute if a node is selected
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
         currentNode = self.componentsPage.getCurrentNode()
@@ -66,6 +72,7 @@ def ifNotRoot(func):
         func (PyFunction): the function to execute if the node is not a root
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
         currentNode = self.componentsPage.getCurrentNode()
@@ -84,6 +91,7 @@ def ifIsLeaf(func):
         func (PyFunction): the function to execute if the node is a leaf
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
         currentNode = self.componentsPage.getCurrentNode()
@@ -102,6 +110,7 @@ def ifNotLeaf(func):
         func (PyFunction): the function to execute if the node is not a root
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
         currentNode = self.componentsPage.getCurrentNode()
@@ -120,6 +129,7 @@ def ifIsHardware(func):
         func (PyFunction): the function to execute if the node is hardware
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
         currentNode = self.componentsPage.getCurrentNode()
@@ -145,6 +155,7 @@ def askSave(func):
         func (PyFunction): the function to run in yes/no cases
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
 
@@ -163,7 +174,7 @@ def askSave(func):
 
     return wrapper
 
-def produceChanges(func):
+def producesChanges(func):
     """
     Updates the variable for unsaved changes.
 
@@ -171,11 +182,34 @@ def produceChanges(func):
         func (PyFunction): the function that produces unsaved changes
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
 
         val = func(*args, **kwargs)
         self.unsavedChanges = True
+        return val
+
+    return wrapper
+
+def undoable(func):
+    """
+    Adds a snapshot to the UndoStack to undo the currently performed action.
+
+    Args:
+        func (PyFunction): the function that is undoable
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        self = args[0]
+
+        val = func(*args, **kwargs)
+
+        data = str(self.treeModel)
+        name = func.__name__
+        self.undoStack.addSnapshot(data, name)
+
         return val
 
     return wrapper

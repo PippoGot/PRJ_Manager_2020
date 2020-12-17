@@ -5,6 +5,8 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 import os
 
+from data_types.UndoStack import UndoStack
+
 # MODELS
 from models.ComboboxModel import ComboboxModel
 from models.tree.Model import TreeModel
@@ -40,6 +42,7 @@ class MainWindow(qtw.QMainWindow, ui):
         self.copiedNode = None
         self.unsavedChanges = False
         self.archivePath = r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\HardwareArchive.json'
+        self.undoStack = UndoStack()
 
 # COMBOBOX MODELS
         self.manufactureModel = ComboboxModel(r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\uis\main_window\manufactures.csv')
@@ -63,6 +66,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
 # DATA MODELS
         self._setModel(TreeModel())
+        self.undoStack.addSnapshot(str(self.treeModel), 'init')
         self._setArchive(self.archivePath)
 
 # FILE MENU
@@ -89,6 +93,8 @@ class MainWindow(qtw.QMainWindow, ui):
         self.uiActCut.triggered.connect(self.cut)
         self.uiActCopy.triggered.connect(self.copy)
         self.uiActPaste.triggered.connect(self.paste)
+        self.uiActUndo.triggered.connect(self.undo)
+        self.uiActRedo.triggered.connect(self.redo)
 
 # VIEW MENU
         self.uiActDeprecated.triggered.connect(self.hideDeprecated)
@@ -99,7 +105,7 @@ class MainWindow(qtw.QMainWindow, ui):
 # --- FILE MENU FUNCTIONS ---
 
     @decor.askSave
-    @decor.produceChanges
+    @decor.undoable
     def newFile(self, *args):
         """
         Creates a new model for a new file. When a new file is created the page
@@ -110,7 +116,7 @@ class MainWindow(qtw.QMainWindow, ui):
         self.tabWidget.setCurrentIndex(0)
 
     @decor.askSave
-    @decor.produceChanges
+    @decor.undoable
     def openFile(self, *args):
         """
         Opens a file given it's name or path.
@@ -168,7 +174,7 @@ class MainWindow(qtw.QMainWindow, ui):
         pass
 
     @decor.askSave
-    @decor.produceChanges
+    @decor.undoable
     def clearFile(self, *args):
         """
         Clears the current model.
@@ -230,7 +236,8 @@ class MainWindow(qtw.QMainWindow, ui):
         self.newSelector = HardwareSelector()
         self.newSelector.setModel(self.archiveModel)
         self.newSelector.submit.connect(self.componentsPage.addNode)
-        self.newSelector.submit.connect(self._produceChanges)
+        self.newSelector.submit.connect(self._undoable)
+        self.newSelector.submit.connect(self._producesChanges)
 
     @decor.componentsAction
     @decor.ifNodeSelected
@@ -259,7 +266,8 @@ class MainWindow(qtw.QMainWindow, ui):
     @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotRoot
-    @decor.produceChanges
+    @decor.producesChanges
+    @decor.undoable
     def removeComponent(self, *args):
         """
         Removes a component node that is not at level 1.
@@ -274,6 +282,7 @@ class MainWindow(qtw.QMainWindow, ui):
     @decor.ifNodeSelected
     @decor.ifIsLeaf
     @decor.ifIsHardware
+    @decor.undoable
     def morphComponent(self, *args):
         """
         Swaps two archive components in the component tree model.
@@ -282,11 +291,12 @@ class MainWindow(qtw.QMainWindow, ui):
         self.newSelector = HardwareSelector()
         self.newSelector.setModel(self.archiveModel)
         self.newSelector.submit.connect(self.componentsPage.swapNode)
-        self.newSelector.submit.connect(self._produceChanges)
+        self.newSelector.submit.connect(self._producesChanges)
 
     @decor.componentsAction
     @decor.ifHasModel
-    @decor.produceChanges
+    @decor.producesChanges
+    @decor.undoable
     def updateSpecialComponents(self, *args):
         """
         Updates all of the components in the tree model with data of the archive model.
@@ -338,7 +348,8 @@ class MainWindow(qtw.QMainWindow, ui):
     @decor.componentsAction
     @decor.ifNodeSelected
     @decor.ifNotLeaf
-    @decor.produceChanges
+    @decor.producesChanges
+    @decor.undoable
     def paste(self, *args):
         """
         Insert the copied or cut node in the currently selected node.
@@ -346,6 +357,28 @@ class MainWindow(qtw.QMainWindow, ui):
 
         newNode = self.copiedNode.deepCopy()
         self.componentsPage.addNode(newNode)
+
+    @decor.producesChanges
+    def undo(self, *args):
+        """
+        Undo the current action.
+        """
+
+        string = self.undoStack.undo()
+        model = TreeModel()
+        model.readString(string)
+        self._setModel(model)
+
+    @decor.producesChanges
+    def redo(self, *args):
+        """
+        Redo the currently undone action.
+        """
+
+        string = self.undoStack.redo()
+        model = TreeModel()
+        model.readString(string)
+        self._setModel(model)
 
 # --- VIEW MENU FUNCTIONS ---
 
@@ -411,14 +444,23 @@ class MainWindow(qtw.QMainWindow, ui):
         self.archiveModel = ArchiveModel(self.archivePath)
         self.archivePage.setModel(self.archiveModel, self.archivePath)
 
-    @decor.produceChanges
-    def _produceChanges(self, *args):
+    @decor.producesChanges
+    def _producesChanges(self, *args):
         """
         Sets the unsaved changes variable to true. Used in functions that cannot
         use the corresponding decorator.
         """
 
-        return
+        pass
+
+    @decor.undoable
+    def _undoable(self, *args):
+        """
+        Saves a snapshot of the current file. Used in functions that cannot
+        use the corresponding decorator.
+        """
+
+        pass
 
 # NODES HANDLING
 
@@ -436,7 +478,8 @@ class MainWindow(qtw.QMainWindow, ui):
         self.newEditor.setManufactureModel(self.manufactureModel)
         self.newEditor.setStatusModel(self.statusModel)
         self.newEditor.submit.connect(self.componentsPage.addNode)
-        self.newEditor.submit.connect(self._produceChanges)
+        self.newEditor.submit.connect(self._undoable)
+        self.newEditor.submit.connect(self._producesChanges)
 
 # DIALOGS and MENUS
 

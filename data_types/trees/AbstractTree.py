@@ -197,18 +197,34 @@ class AbstractTree():
     @staticmethod
     def jsonRead(filename):
         """
-        Converts a .json file to an AbstractTree data structure.
+        Converts a .json file to an AbstractNode data structure.
 
         Args:
             filename (str): the name or path of the file
 
         Returns:
-            ComponentNode: the root of the resulting tree
+            AnstractNode: the root of the resulting tree
         """
 
         with open(filename, 'r') as file:
             data = json.load(file)
 
+        root = extractNode(data)
+        return root
+
+    @staticmethod
+    def jsonParse(string):
+        """
+        Converts a json type string to an AbstractNode data structure.
+
+        Args:
+            filename (str): the name or path of the file
+
+        Returns:
+            AbstractNode: the root of the resulting tree
+        """
+
+        data = json.loads(string)
         root = extractNode(data)
         return root
 
