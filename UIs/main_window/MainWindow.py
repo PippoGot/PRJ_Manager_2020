@@ -39,7 +39,7 @@ class MainWindow(qtw.QMainWindow, ui):
         self.filename = None
         self.copiedNode = None
         self.unsavedChanges = False
-        self.archivePath = r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\HardwareArchive.csv'
+        self.archivePath = r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\HardwareArchive.json'
 
 # COMBOBOX MODELS
         self.manufactureModel = ComboboxModel(r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\uis\main_window\manufactures.csv')
@@ -120,8 +120,8 @@ class MainWindow(qtw.QMainWindow, ui):
             self,
             "Select a file to open...",
             qtc.QDir.homePath(),
-            'CSV Documents (*.csv) ;; All Files (*)',
-            'CSV Documents (*.csv)'
+            'JSON Documents (*.json) ;; All Files (*)',
+            'JSON Documents (*.json)'
         )
 
         if filename:
@@ -156,7 +156,7 @@ class MainWindow(qtw.QMainWindow, ui):
             self,
             "Select the file to save to...",
             qtc.QDir.homePath(),
-            'CSV Documents (*.csv)'
+            'JSON Documents (*.json)'
         )
 
         if filename:
@@ -185,8 +185,8 @@ class MainWindow(qtw.QMainWindow, ui):
             self,
             "Select a file to open...",
             qtc.QDir.homePath(),
-            'CSV Documents (*.csv) ;; All Files (*)',
-            'CSV Documents (*.csv)'
+            'JSON Documents (*.json) ;; All Files (*)',
+            'JSON Documents (*.json)'
         )
 
         if filename:
@@ -203,7 +203,7 @@ class MainWindow(qtw.QMainWindow, ui):
         Adds an assembly node.
         """
 
-        newNode = self.componentsPage.getNewNode('Assembly')
+        newNode = self.componentsPage.getNewNode('AssemblyNode')
         if newNode:
             self._addNode(newNode)
 
@@ -215,7 +215,7 @@ class MainWindow(qtw.QMainWindow, ui):
         Adds a leaf node.
         """
 
-        newNode = self.componentsPage.getNewNode('Leaf')
+        newNode = self.componentsPage.getNewNode('LeafNode')
         if newNode:
             self._addNode(newNode)
 
@@ -240,7 +240,7 @@ class MainWindow(qtw.QMainWindow, ui):
         Adds a jig node.
         """
 
-        newNode = self.componentsPage.getNewNode('Jig')
+        newNode = self.componentsPage.getNewNode('JigNode')
         if newNode:
             self._addNode(newNode)
 
@@ -252,7 +252,7 @@ class MainWindow(qtw.QMainWindow, ui):
         Adds a placeholder node.
         """
 
-        newNode = self.componentsPage.getNewNode('Placeholder')
+        newNode = self.componentsPage.getNewNode('PlaceholderNode')
         if newNode:
             self._addNode(newNode)
 
@@ -523,35 +523,6 @@ class MainWindow(qtw.QMainWindow, ui):
         if index:
             node = index.internalPointer()
             level = node.getLevel()
-
-            if self.uiActHash.isChecked():
-                icon = qtg.QIcon(':id.png')
-
-                value = node.parentHash
-                dataType = type(value)
-                string = f'Parent hash: {value}, type: {dataType}'
-                parentHashAction = qtw.QAction()
-                parentHashAction.setText(string)
-                parentHashAction.setIcon(icon)
-                menu.addAction(parentHashAction)
-
-                value = node.selfHash
-                dataType = type(value)
-                string = f'Self hash: {value}, type: {dataType}'
-                selfHashAction = qtw.QAction()
-                selfHashAction.setText(string)
-                selfHashAction.setIcon(icon)
-                menu.addAction(selfHashAction)
-
-            if self.uiActLevel.isChecked():
-                icon = qtg.QIcon(':lv.png')
-
-                dataType = type(level)
-                string = f'Level: {level}, type: {dataType}'
-                levelAction = qtw.QAction()
-                levelAction.setText(string)
-                levelAction.setIcon(icon)
-                menu.addAction(levelAction)
 
             if level < 5:
                 menu.addAction(self.uiActAddAssembly)

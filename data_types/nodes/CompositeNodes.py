@@ -1,221 +1,143 @@
-from PyQt5 import QtGui as qtg
-
 from .ComponentNode import ComponentNode
 
-from uis import resources
-
-# ASSEMBLY
+# --- ASSEMBLY NODES ---
 
 class ProjectNode(ComponentNode):
-    """
-    self.level = 1
-    self.numberID = #000-000
-    self.type = Project
-    self.manufacture = Assembled
-    self.editable = False
-    """
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-    def __init__(self, **features):
-        super().__init__(**features)
-
-        self.editable = False
-        self.level = 1
-        self.color = qtg.QColor(255, 121, 65)
-        self.icon = qtg.QIcon(":/project.png")
+        self.setEditable(False)
+        self.color = (255, 121, 65)
+        self.icon = "project.png"
 
         self.addFeatures(
-            numberID = '#000-000',
+            ID = '#000-000',
             type = 'Project',
             manufacture = 'Assembled',
         )
 
 class AssemblyNode(ComponentNode):
-    def __init__(self, level, **features):
-        super().__init__(**features)
 
-        self.level = level
-        colors = [
-            qtg.QColor(255, 159, 81),
-            qtg.QColor(255, 198, 77),
-            qtg.QColor(255, 225, 93),
-            qtg.QColor(179, 179, 179)
-        ]
+    colors = [
+        (255, 159, 81),
+        (255, 198, 77),
+        (255, 225, 93)
+    ]
 
-        if self.level == 5:
-            self.editable = True
-            self.icon = qtg.QIcon(":/part.png")
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-            self.addFeatures(type = 'Part')
+        self.setEditable(False)
+        self.icon = "assembly.png"
 
-        else:
-            self.editable = False
-            self.icon = qtg.QIcon(":/assembly.png")
+        self.addFeatures(
+            type = 'Assembly',
+            manufacture = 'Assembled'
+        )
 
-            self.addFeatures(type = 'Assembly', manufacture = 'Assembled')
+        level = self.getFeature('level')
+        if level:
+            self.setLevel(level)
 
-        self.color = colors[self.level - 2]
-
-    # REIMPLEMENTATIONS
-
-    def superficialCopy(self):
+    def setLevel(self, level):
         """
-        Copies and returns this node with only it's features. The parent and children
-        are not copied.
+        Sets the level of the assembly node and it's color tuple.
 
-        Returns:
-            ComponentNode: a superficial copy of the node
+        Args:
+            level (int): the level of this assembly node
         """
 
-        copiedNode = self.__class__(self.getLevel())
-        copiedNode.replaceBundle(self.bundle.copy())
-        return copiedNode
+        self.addFeatures(
+            level = level,
+            color = self.colors[level - 2]
+        )
 
 class LeafNode(ComponentNode):
-    """
-    self.level = 5
-    self.type = Part
-    self.editable = True
-    """
+    def __init__(self, *keys, **features):
 
-    def __init__(self, **features):
+        super().__init__(*keys, **features)
 
-        super().__init__(**features)
-
-        self.editable = True
-        self.level = 5
-        self.color = qtg.QColor(179, 179, 179)
-        self.icon = qtg.QIcon(":/part.png")
+        self.setEditable(True)
+        self.color = (179, 179, 179)
+        self.icon = "part.png"
 
         self.addFeatures(type = 'Part')
 
-# HARDWARE AND PRODUCTS
+# --- HARDWARE NODES ---
 
 class HardwareNode(ComponentNode):
-    """
-    self.level = 5
-    self.ID prefix is one in [MEH, EMH, ELH]
-    self.type = Hardware
-    self.manufacture = Off the Shelf
-    self.editable = False
-    """
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-    def __init__(self, **features):
-        super().__init__(**features)
+        self.setEditable(False)
+        self.color = (246, 246, 246)
 
-        self.editable = False
-        self.level = 5
-        self.color = qtg.QColor(246, 246, 246)
+        self.addFeatures(
+            type = 'Hardware',
+            manufacture = 'Off the Shelf'
+        )
 
-        icons = {
-            'MEH': qtg.QIcon(":/hardware.png"),
-            'ELH': qtg.QIcon(":/electronic.png"),
-            'EMH': qtg.QIcon(":/electromechanical.png")
-        }
-        self.icon = icons[self.getPrefix()]
+class MechanicalNode(HardwareNode):
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-        self.addFeatures(type = 'Hardware', manufacture = 'Off the Shelf')
+        self.icon = "hardware.png"
 
-class MeasuredNode(ComponentNode):
-    """
-    self.level = 5
-    self.ID prefix = MMH
-    self.type = Hardware
-    self.manufacture = Cut to Length
-    self.editable = False
-    """
+class ElectricalNode(HardwareNode):
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-    def __init__(self, **features):
-        super().__init__(**features)
+        self.icon = "electronic.png"
 
-        self.editable = False
-        self.level = 5
-        self.color = qtg.QColor(246, 246, 246)
-        self.icon = qtg.QIcon(":/measured.png")
+class ElectromechanicalNode(HardwareNode):
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-        self.addFeatures(type = 'Hardware', manufacture = 'Cut to Length')
+        self.icon = "electromechanical.png"
 
-class ProductNode(ComponentNode):
-    """
-    self.level = 5
-    self.ID prefix = PRO
-    self.type = Product
-    self.manufacture = Off the Shelf
-    self.editable = False
-    """
+class MeasuredNode(HardwareNode):
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-    def __init__(self, **features):
-        super().__init__(**features)
+        self.icon = "measured.png"
 
-        self.editable = False
-        self.level = 5
-        self.color = qtg.QColor(246, 246, 246)
-        self.icon = qtg.QIcon(":/consumable.png")
+        self.addFeatures(
+            type = 'Hardware',
+            manufacture = 'Cut to Length'
+        )
 
-        self.addFeatures(type = 'Consumable', manufacture = 'Product')
+class ProductNode(HardwareNode):
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-# JIGS AND PLACEHOLDERS
+        self.icon = "consumable.png"
+
+        self.addFeatures(
+            type = 'Consumable',
+            manufacture = 'Product'
+        )
+
+# --- MISC NODES ---
 
 class JigNode(ComponentNode):
-    """
-    self.ID prefix = JIG
-    self.type = Jig
-    self.editable = True
-    """
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-    def __init__(self, level, **features):
-        super().__init__(**features)
-
-        self.editable = True
-        self.level = level
-        self.color = qtg.QColor(108, 201, 255)
-        self.icon = qtg.QIcon(":/jig.png")
+        self.setEditable(True)
+        self.color = (108, 201, 255)
+        self.icon = "jig.png"
 
         self.addFeatures(type = 'Jig')
 
-    # REIMPLEMENTATIONS
-
-    def superficialCopy(self):
-        """
-        Copies and returns this node with only it's features. The parent and children
-        are not copied.
-
-        Returns:
-            ComponentNode: a superficial copy of the node
-        """
-
-        copiedNode = self.__class__(self.getLevel())
-        copiedNode.replaceBundle(self.bundle.copy())
-        return copiedNode
-
 class PlaceholderNode(ComponentNode):
-    """
-    self.ID prefix = PLC
-    self.type = Placeholder
-    self.manufacture = Not Designed
-    self.editable = True
-    """
+    def __init__(self, *keys, **features):
+        super().__init__(*keys, **features)
 
-    def __init__(self, level, **features):
-        super().__init__(**features)
+        self.setEditable(True)
+        self.color = (148, 223, 255)
+        self.icon = "placeholder.png"
 
-        self.editable = True
-        self.level = level
-        self.color = qtg.QColor(148, 223, 255)
-        self.icon = qtg.QIcon(":/placeholder.png")
-
-        self.addFeatures(type = 'Placeholder', status = 'Not Designed')
-
-    # REIMPLEMENTATIONS
-
-    def superficialCopy(self):
-        """
-        Copies and returns this node with only it's features. The parent and children
-        are not copied.
-
-        Returns:
-            ComponentNode: a superficial copy of the node
-        """
-
-        copiedNode = self.__class__(self.getLevel())
-        copiedNode.replaceBundle(self.bundle.copy())
-        return copiedNode
+        self.addFeatures(
+            type = 'Placeholder',
+            status = 'Not Designed'
+        )

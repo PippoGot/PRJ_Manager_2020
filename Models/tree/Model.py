@@ -2,6 +2,8 @@ from PyQt5 import QtCore as qtc
 from PyQt5 import QtGui as qtg
 import csv
 
+from uis import resources
+
 from data_types.nodes import CompositeNodes as comp_nodes
 from data_types.nodes.ComponentNode import ComponentNode
 from data_types.trees.ComponentTree import ComponentTree
@@ -14,7 +16,7 @@ class TreeModel(qtc.QAbstractItemModel):
     """
 
     HEADERS = [
-        'numberID',
+        'ID',
         'name',
         'description',
         'type',
@@ -43,11 +45,12 @@ class TreeModel(qtc.QAbstractItemModel):
         self.rootItem = ComponentNode()
 
         if filename:
-            self.first = self.readFile(filename)
+            self.first = ComponentTree.jsonRead(filename)
+            self.tree = ComponentTree(self.first)
         else:
-            self.first = comp_nodes.ProjectNode()
+            self.tree = ComponentTree()
+            self.first = self.tree.getRoot()
 
-        self.tree = ComponentTree(self.first)
         self.rootItem.addChild(self.first)
 
 # --- MODEL FUNCTIONS ---
@@ -75,10 +78,12 @@ class TreeModel(qtc.QAbstractItemModel):
             return item.getFeature(column)
 
         elif role == qtc.Qt.BackgroundRole:
-            return item.color
+            colorTuple = item.getFeature('color')
+            return qtg.QColor(*colorTuple)
 
         elif role == qtc.Qt.DecorationRole and index.column() == 0:
-            return item.icon
+            iconPath = ':/' + item.getFeature('icon')
+            return qtg.QIcon(iconPath)
 
     def setData(self, index, value, role = qtc.Qt.EditRole):
         """
@@ -95,7 +100,7 @@ class TreeModel(qtc.QAbstractItemModel):
 
         if index.isValid() and role == qtc.Qt.EditRole:
             item = index.internalPointer()
-            item.updateFeature(self.HEADERS[index.column()], value)
+            item.addFeature(self.HEADERS[index.column()], value)
             self.dataChanged.emit(index, index)
             return True
         return
@@ -258,7 +263,6 @@ class TreeModel(qtc.QAbstractItemModel):
 
         self.beginInsertRows(parent.siblingAtColumn(0), position, position)
         success = parentItem.addChild(item)
-        self.tree.updateHashes(parentItem)
         self.endInsertRows()
 
         return success
@@ -291,19 +295,19 @@ class TreeModel(qtc.QAbstractItemModel):
 
 # --- CUSTOM FUNCTIONS ---
 
-    def getNewNode(self, parent, tp):
+    def getNewNode(self, parent, classname):
         """
         Returns the next new node to be added to the tree with the right number and level.
 
         Args:
             parent (ComponentNode): the parent of the node that would be added
-            tp (str): the type of node to be added
+            classname (str): the type of node to be added
 
         Returns:
             ComponentNode: the node that would be added with default values and the correct number and level
         """
 
-        return self.tree.getNewNode(parent, tp)
+        return self.tree.getNewNode(parent, classname)
 
 # FILE MANAGEMENT
 
@@ -315,21 +319,8 @@ class TreeModel(qtc.QAbstractItemModel):
             filename (str): name or path of the file to save.
         """
 
-        with open(filename, 'w') as file:
-            fieldnames = self.HEADERS
-            fullFieldnames = fieldnames.copy()
-            fullFieldnames.extend(['selfHash', 'parentHash'])
-
-            csv_writer = csv.DictWriter(file, fieldnames = fullFieldnames)
-            csv_writer.writeheader()
-
-            iterator = self.tree.iterPreorder()
-            for node in iterator:
-                nodeDict = node.getNodeDictionary(*fieldnames)
-                nodeDict['selfHash'] = node.selfHash
-                nodeDict['parentHash'] = node.parentHash
-
-                csv_writer.writerow(nodeDict)
+        if filename:
+            self.tree.jsonSave(filename)
 
     def readFile(self, filename):
         """
@@ -340,107 +331,10 @@ class TreeModel(qtc.QAbstractItemModel):
         """
 
         if filename:
-            with open(filename, 'r') as file:
-                csv_reader = csv.DictReader(file)
-
-                firstLine = next(csv_reader)
-                first = comp_nodes.ProjectNode()
-                first.selfHash = int(firstLine['selfHash'])
-                del firstLine['selfHash']
-                del firstLine['parentHash']
-                first.addFeatures(**firstLine)
-
-                tempTree = ComponentTree(first)
-
-                for line in csv_reader:
-                    line = line.copy()
-                    prefix = line['numberID'][1:4]
-                    parent = tempTree.searchByHash(int(line['parentHash']))
-
-                    newNode = self.getNodeByType(line['type'], prefix)
-                    newNode = self.fillNode(newNode, line, parent)
-                    parent.addChild(newNode)
-
-            return first
-
-    def getNodeByType(self, tp, prefix):
-        """
-        Returns the class of the correct node based on the type and the prefix
-        of the node.
-
-        Args:
-            tp (str): the type of the node
-            prefix (str): the prefix of the node
-
-        Returns:
-            class: the right class to initialize
-        """
-
-        nodes = {
-            'Project': comp_nodes.ProjectNode,
-            'Assembly': comp_nodes.AssemblyNode,
-            'Part': comp_nodes.LeafNode,
-            'Jig': comp_nodes.JigNode,
-            'Placeholder': comp_nodes.PlaceholderNode,
-            'Product': comp_nodes.ProductNode,
-            'Hardware': self.chooseHardware(prefix)
-        }
-
-        return nodes[tp]
-
-    def chooseHardware(self, prefix):
-        """
-        Returns the correct type of hardware node based on the pefix given.
-
-        Args:
-            prefix (str): the prefix of the node
-
-        Returns:
-            class: the class of the node to initialise
-        """
-
-        nodes = {
-            'MEH': comp_nodes.HardwareNode,
-            'ELH': comp_nodes.HardwareNode,
-            'EMH': comp_nodes.HardwareNode,
-            'MMH': comp_nodes.MeasuredNode
-        }
-        if prefix in nodes.keys():
-            return nodes[prefix]
-
-    def fillNode(self, nodeType, dataDict, parent = None):
-        """
-        Fills up a node with all the data needed.
-
-        Args:
-            nodeType (class): the class of the node
-            dataDict (dict[str, str]): the dictionary with all the data
-            parent (ComponentNode): the parent of the current node. Defaults to None.
-
-        Returns:
-            ComponentNode: the complete node with all the data
-        """
-
-        if dataDict['parentHash']:
-            parentHash = int(dataDict['parentHash'])
-        else: parentHash = 0
-
-        if dataDict['selfHash']:
-            selfHash = int(dataDict['selfHash'])
-        else: selfHash = 0
-
-        del dataDict['selfHash']
-        del dataDict['parentHash']
-
-        if dataDict['type'] in ['Assembly', 'Jig', 'Placeholder']:
-            node = nodeType(parent.getLevel() + 1, **dataDict)
-        else:
-            node = nodeType(**dataDict)
-
-        node.selfHash = selfHash
-        node.parentHash = parentHash
-
-        return node
+            self.tree = ComponentTree.jsonRead(filename)
+            self.first = self.tree.getRoot()
+            self.rootItem.children = []
+            self.rootItem.addChild(self.first)
 
 # UTILITY
 
@@ -462,9 +356,6 @@ class TreeModel(qtc.QAbstractItemModel):
     def __repr__(self):
         """
         Enables the user to represent the model with the print() function.
-
-        Custom functions:
-            BaseNode.toString()
 
         Returns:
             str: the string of the current rootItem object.

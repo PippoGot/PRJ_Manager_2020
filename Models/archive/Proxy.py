@@ -58,7 +58,7 @@ class ArchiveProxy(qtc.QSortFilterProxyModel):
         rowString = ''
 
         if item:
-            rowString = item.getNodeString()
+            rowString = item.toString()
 
         if regexp.search(rowString) or item == root:
             return True

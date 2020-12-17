@@ -40,7 +40,7 @@ class NewComponentEditor(qtw.QWidget, ui):
         Sets this widget's components to the passed node feature values.
         """
 
-        self.uiNumberID.setText(self.node.getFeature('numberID'))
+        self.uiNumberID.setText(self.node.getFeature('ID'))
         self.uiName.setText(self.node.getFeature('name'))
         self.uiDescription.setPlainText(self.node.getFeature('description'))
         self.uiType.setText(self.node.getFeature('type'))

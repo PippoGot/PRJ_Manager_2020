@@ -1,150 +1,97 @@
-from random import randint
-
-from .ADTutil import unpackID, toBase10
-
+from .NODESutil import unpackID, toBase10
 from .AbstractNode import AbstractNode
-from ..bundles.ComponentFeatureBundle import ComponentFeatureBundle
 
 class ComponentNode(AbstractNode):
     """
-    Generic component node. Inherited by the composite nodes.
-
-    self.selfHash
-    self.parentHash
-    self.level
-    self.editable
+    Class that describes the behaviour of a component node.
+    Extends the AbstractNode class, provides getters and editable boolean.
     """
 
-    def __init__(self, **features):
+    HEADERS = [
+        'ID',
+        'name',
+        'description',
+        'comment',
+        'packageQuantity',
+        'quantity',
+        'price',
+        'type',
+        'manufacture',
+        'status',
+        'seller',
+        'link'
+    ]
+
+    def __init__(self, *keys, **features):
         """
-        Initialise the added fields.
+        Initializes some defalut features to None, adds the passed features
+        and sets the editable parameter to True.
         """
 
-        super().__init__()
-        self.bundle = ComponentFeatureBundle(**features)
+        self.HEADERS.extend(keys)
+        super().__init__(*self.HEADERS, **features)
 
-        self.selfHash = randint(0, 99999)
-        self.parentHash = None
-        self.level = 0
         self.editable = True
 
-# UTILITY GETTERS
-
-    def getPrefix(self):
-        """
-        Returns the first 3 digits of the number of this node.
-
-        Returns:
-            str: the prefix number in base 36
-        """
-
-        numberID = self.bundle.getFeature('numberID')
-        if not numberID: return
-        return numberID[1:4]
-
-    def getSize(self):
-        """
-        Returns this node's size. The size is defined by the item number.
-        Each digit has the following weigth:
-
-              X      X      X             X      X      X
-            36^5 + 36^4 + 36^3      +   36^2 + 36^1 + 36^0
-
-        Returns:
-            int: the size of this node
-        """
-
-        numberID = unpackID(self.bundle.getFeature('numberID'))
-
-        if numberID:
-            prefix = numberID[:4]
-            suffix = numberID[4:]
-
-            numberID = prefix + suffix
-
-            return toBase10(numberID)
-        return 0
+# GETTERS
 
     def getLevel(self):
         """
-        Returns this node's level.
+        Returns this nodes level inside the tree. Equivalent of the depth.
 
         Returns:
             int: the level of this node
         """
 
-        return self.level
+        return self.getDepth()
+
+    def getSize(self):
+        """
+        Returns the ID of this node in decimal base.
+
+        Returns:
+            int: the converted ID
+        """
+
+        ID = self.getFeature('ID')
+        if not ID: return 0
+
+        ID = unpackID(ID)
+        return toBase10(ID)
+
+    def getPrefix(self):
+        """
+        Returns the first 3 digits of the ID.
+
+        Returns:
+            str: the first 3 digits of the ID
+        """
+
+        ID = self.getFeature('ID')
+        if not ID: return
+
+        ID = unpackID(ID)
+        return ID[:3]
+
+# BOOLEANS
+
+    def setEditable(self, boolean):
+        """
+        Changes the editable property of this node.
+
+        Args:
+            boolean (bool): if this node is editable or not
+        """
+
+        self.editable = boolean
 
     def isEditable(self):
         """
-        Returns the editability of this node
+        Returns the editable property of this node.
 
         Returns:
-            bool: if this node's manufacture can be edited
+            True: editable node
+            False: not editable node
         """
 
         return self.editable
-
-# REPRESENTATION GETTERS
-
-    def getNodeString(self):
-        """
-        Returns a string of the current node features, except for hashes, level and gui
-        properties. Used for model filtering in the application.
-
-        Returns:
-            str: the node string
-        """
-
-        valuesList = self.bundle.getBundleValues()
-
-        existingValues = []
-        for item in valuesList:
-            if item: existingValues.append(item)
-        if existingValues: return ' '.join(existingValues)
-
-        return ''
-
-    def getNodeDictionary(self, *featureKeys):
-        """
-        Returns a dictionary with every feature as key and it's value.
-
-        Returns:
-            dict: the dictionary {features: values}
-        """
-
-        return self.bundle.getSelectedFeatures(*featureKeys)
-
-    def toString(self, *featureKeys):
-        """
-        Returns a string version of the tree with optional features. The string is tabbed
-        to represent the different tree levels.
-
-        Args:
-            tab (int): the number of spaces of indentation. Default as 0.
-
-        Returns:
-            str: the tree structure in string format
-        """
-
-        string = f'|-- {self.getIndex()}°'
-
-        for featureKey in featureKeys:
-            featureValue = self.bundle.getFeature(featureKey)
-            if featureValue:
-                string += f' - {featureValue}'
-            else:
-                string += ' - _'
-
-        return string
-
-# DUNDERS
-
-    def __str__(self):
-        return self.toString(*self.bundle.getBundleKeys())
-
-    def __repr__(self):
-        return self.toString(*self.bundle.getBundleKeys())
-
-    def __eq__(self, other):
-        return self.getFeature('numberID') == other.getFeature('numberID')

@@ -1,91 +1,98 @@
-from ..bundles.AbstractFeatureBundle import AbstractFeatureBundle
-
-class AbstractNode(AbstractFeatureBundle):
+class AbstractNode():
     """
-    Class to represent a node in a generic tree structure.
-
-    self.up
-    self.children
-
-    self.bundle
+    Class that describes the basic behaviour of a tree node.
+    Provides insertion, deletion, copying, ancestor traversal, features
+    and properties managers, representation and basic getters.
     """
 
-    def __init__(self, **features):
+# INIT
+
+    def __init__(self, *keys, **features):
+        """
+        Initializes the class variables and adds all the passed features.
+        """
+
+        self.features = []
         self.up = None
         self.children = []
-        self.bundle = AbstractFeatureBundle(**features)
+
+        self.addFeatures('ID', *keys, **features)
 
 # INSERTION
 
-    def addChild(self, newNode):
-        """
-        Appends a node to the children of this node.
-
-        Args:
-            newNode (AbstractNode): the node to be added
-
-        Returns:
-            bool: the success of the operation
-        """
-
-        return self.insertChild(newNode, len(self))
-
-    def insertChild(self, newNode, position):
+    def insertChild(self, child, position):
         """
         Adds a node to the children of this node in a specific position.
 
         Args:
-            newNode (AbstractNode): the node to be added
+            child (AbstractNode): the node to add
             position (int): the position where to add the node
 
         Returns:
-            bool: the success of the operation
+            True: successfully inserted the node
+            False: position error
         """
 
         if not 0 <= position <= len(self): return False
 
-        self.children.insert(position, newNode)
-        newNode.updateParent(self)
+        self.children.insert(position, child)
+        child.up = self
         return True
 
-    def addChildren(self, newNodes):
+    def addChild(self, child):
+        """
+        Appends a node to the children of this node.
+
+        Args:
+            child (AbstractNode): the node to add
+
+        Returns:
+            True: successfully added the node
+            False: add error
+        """
+
+        return self.insertChild(child, len(self))
+
+    def addChildren(self, children):
         """
         Adds multiple nodes to the children of this node.
 
         Args:
-            nodesList (list[AbstractNode]): the list of nodes to add
+            children (list[AbstractNode]): the list of nodes to add
         """
 
-        for newNode in newNodes:
-            self.addChild(newNode)
+        for child in children:
+            self.addChild(child)
 
-    def updateParent(self, parentNode = None):
-        """
-        Sets this node's parent as the passed node.
+# DELETION
 
-        Args:
-            parentNode (AbstractNode): the parent node of this node. Default to None.
-        """
-
-        self.up = parentNode
-
-# REMOVAL
-
-    def removeChild(self, node):
+    def removeChild(self, child):
         """
         Locates and removes a node from the children if present.
 
         Args:
-            node (AbstractNode): the node to remove
+            child (AbstractNode): the node to remove
 
         Returns:
-            bool: the success of the operation
+            True: successfully removed the node
+            False: position error
         """
 
-        if node in self.children:
-            self.children.remove(node)
-            return True
-        return False
+        if child not in self.children: return False
+
+        self.children.remove(child)
+        return True
+
+    def removeChildren(self, children):
+        """
+        Removes multiple nodes from the children list if present
+
+        Args:
+            children (list[AbstractNode]): the nodes to remove
+        """
+
+        for child in children:
+            self.removeChild(child)
 
     def popChild(self, position):
         """
@@ -95,225 +102,189 @@ class AbstractNode(AbstractFeatureBundle):
             position (int): the position of the item to remove
 
         Returns:
-            Abstract: the removed node if any or False
+            AbstractNode: the popped node
+            False: position error
         """
 
-        if 0 <= position < len(self):
-            poppedNode = self.children.pop(position)
-            poppedNode.updateParent()
-            return poppedNode
-        return False
+        if not 0 <= position < len(self): return False
 
-    def removeChildren(self, nodesList):
-        """
-        Removes multiple nodes from the children list if present
-
-        Args:
-            nodesList (list[AbstractNode]): the nodes to remove
-        """
-
-        for node in nodesList:
-            self.removeChild(node)
+        poppedNode = self.children.pop(position)
+        poppedNode.up = None
+        return poppedNode
 
     def detach(self):
         """
-        Detaches itself from the parent. This corresponds to removing this node from the
+        Detaches this node from the parent. This corresponds to removing this node from the
         tree and returning itself. This node becomes a new rooted tree.
 
         Returns:
-            AbstractNode: the detached node
+            AbstractNode: this detached node
         """
 
         if not self.up: return self
 
-        parent = self.getParent()
-        index = self.getIndex()
+        return self.up.popChild(self.getIndex())
 
-        return parent.popChild(index)
-
-# COPY
-
-    def superficialCopy(self):
-        """
-        Copies and returns this node with only it's features. The parent and children
-        are not copied.
-
-        Returns:
-            AbstractNode: a superficial copy of the node
-        """
-
-        bundle = self.bundle.copy()
-        bundleDict = bundle.getBundleDictionary()
-        copiedNode = self.__class__(**bundleDict)
-        return copiedNode
-
-    def deepCopy(self):
-        """
-        Copies and returns this node with no parent but copied descendants.
-
-        Returns:
-            AbstractNode: the copied node
-        """
-
-        copiedNode = self.superficialCopy()
-        copiedNode.updateParent()
-
-        for child in self.children:
-            copiedNode.addChild(child.deepCopy())
-
-        return copiedNode
-
-# FEATURES HANDLING
-
-    def addFeature(self, featureKey, featureValue):
-        """
-        Adds a feature to this node's bundle or updates the ones already existing.
-
-        Args:
-            featureKey (str): the name of the feature
-            featureValue (PyObject): the value of the feature to store
-        """
-
-        self.bundle.addFeature(featureKey, featureValue)
-
-    def addFeatures(self, **features):
-        """
-        Adds an arbitrary number of features to this node's bundle or updates the ones
-        already existing.
-        """
-
-        self.bundle.addFeatures(**features)
-
-    def updateFeature(self, featureKey, featureValue):
-        """
-        Updates the value of a feature of this node's bundle.
-
-        Args:
-            featureKey (str): the feature to update
-            featureValue (PyObject): the new value to substitute
-        """
-
-        self.bundle.updateFeature(featureKey, featureValue)
-
-    def deleteFeature(self, featureKey):
-        """
-        Deletes a feature from this node's bundle.
-
-        Args:
-            featureKey (str): the feature to delete
-        """
-
-        self.bundle.deleteFeature(featureKey)
-
-    def deleteFeatures(self, *featureKeys):
-        """
-        Deletes an arbitrary number of features from this node's bundle.
-        """
-
-        self.bundle.deleteFeatures(*featureKeys)
-
-    def getFeature(self, featureKey):
-        """
-        Returns the value of the feature  in this node's bundle, specified by the passed key.
-        None is returned if the key doesn't exist.
-
-        Args:
-            featureKey (str): the feature to return the value of
-
-        Returns:
-            PyObject: the value of the attribute under the given key
-        """
-
-        return self.bundle.getFeature(featureKey)
-
-    def getFeatureKeys(self):
-        """
-        Returns the list of feature keys of this node.
-
-        Returns:
-            list[str]: the list of features of this node
-        """
-
-        return self.bundle.getBundleKeys()
-
-    def replaceBundle(self, newBundle):
-        """
-        Replaces this node's bundle with a new passed in one.
-
-        Args:
-            newBundle (AbstractFeatureBundle): the new bundle
-        """
-
-        self.bundle = newBundle
-
-    def getBundle(self):
-        """
-        Returns this node's bundle.
-
-        Returns:
-            AbstractFeatureBundle: the feature bundle of this node
-        """
-
-        return self.bundle
-
-# VISITS ITERATORS
-
-    def iterPreorder(self):
-        """
-        Iters through the descendants of this node recursively from root to leaf level.
-
-        Yields:
-            AbstractNode: the next descendant node to visit
-        """
-
-        yield self
-        for child in self.children:
-            yield from child.iterPreorder()
-
-    def iterPostorder(self):
-        """
-        Iters through the descendants of this node recursively from leaf to root level.
-
-        Yields:
-            AbstractNode: the next descendant node to visit
-        """
-
-        for child in self.children:
-            yield from child.iterPreorder()
-        yield self
+# TRAVERSAL
 
     def iterAncestors(self):
         """
-        Iters through the ancestors of this node.
+        Iters through the ancestors of this node, this node included.
 
         Yields:
             AbstractNode: the next ancestor node to visit
         """
 
         yield self
-
-        parent = self.getParent()
-        if not parent: raise StopIteration
-
+        parent = self.up
         while parent:
             yield parent
-            parent = parent.getParent()
+            parent = parent.up
 
-# GETTERS
+# COPY
 
-    def getRoot(self):
+    def superficialCopy(self):
         """
-        Returns this node's root by the definition:
-
-        root = the node that has no parent (None);
+        Returns a copy of this node with only it's features. The parent and children
+        are not copied.
 
         Returns:
-            AbstractNode: the root of this tree
+            AbstractNode: a superficial copy of this node
         """
 
-        for ancestorNode in self.iterAncestors():
-            if not ancestorNode.getParent(): return ancestorNode
-        return self
+        data = self.items().copy()
+        copiedNode = self.__class__(**data)
+
+        return copiedNode
+
+    def deepCopy(self):
+        """
+        Returns a copy of this node with descendants.
+
+        Returns:
+            AbstractNode: the copied node
+        """
+
+        copiedNode = self.superficialCopy()
+
+        for child in self.children:
+            copiedNode.addChild(child.deepCopy())
+
+        return copiedNode
+
+# FEATURES
+
+    def addFeature(self, key, value):
+        """
+        Adds a feature to this node or updates the ones already existing.
+
+        Args:
+            key (str): the name of the feature
+            value (PyObject): the value of the feature to store
+        """
+
+        setattr(self, key, value)
+        if not key in self.features:
+            self.features.append(key)
+
+    def addFeatures(self, *keys, **features):
+        """
+        Adds an arbitrary number of features to this nodd or updates the ones
+        already existing.
+        """
+
+        for key in keys:
+            self.addFeature(key, None)
+
+        for key, value in features.items():
+            self.addFeature(key, value)
+
+    def delFeature(self, key):
+        """
+        Deletes a feature from this node.
+
+        Args:
+            key (str): the feature to delete
+        """
+
+        delattr(self, key)
+        if key in self.features:
+            self.features.remove(key)
+
+    def delFeatures(self, *keys):
+        """
+        Deletes an arbitrary number of features from this node.
+        """
+
+        for key in keys:
+            self.delFeature(key)
+
+    def getFeature(self, key):
+        """
+        Returns the value of the feature in this node, specified by the passed key.
+        None is returned if the key doesn't exist.
+
+        Args:
+            key (str): the feature to return the value of
+
+        Returns:
+            PyObject: the value of the attribute under the given key
+            None: key doesn't exist
+        """
+
+        return getattr(self, key, None)
+
+    def getFeatures(self, *keys):
+        """
+        Returns this node feature dictionary with only selected keys.
+
+        Returns:
+            dict[str, PyObject]: the dictionary with the passed feature keys and values
+        """
+
+        data = {}
+        for key in keys:
+            data[key] = self.getFeature(key)
+
+        return data
+
+    def keys(self):
+        """
+        Returns the list of feature keys of this node.
+
+        Returns:
+            list[str]: the list of features keys of this node
+        """
+
+        return self.features
+
+    def values(self):
+        """
+        Returns the list of feature values of this node.
+
+        Returns:
+            list[PyObject]: the list of features values of this node
+        """
+
+        values = []
+        for key in self.features:
+            value = self.getFeature(key)
+            if value:
+                values.append(value)
+
+        return values
+
+    def items(self):
+        """
+        Returns this node feature dictionary.
+
+        Returns:
+            dict[str, PyObject]: the dictionary of this node's features
+        """
+
+        return self.getFeatures(*self.features)
+
+# GETTERS
 
     def getParent(self):
         """
@@ -325,76 +296,46 @@ class AbstractNode(AbstractFeatureBundle):
 
         return self.up
 
+    def getChildren(self):
+        """
+        Returns the children list of this node.
+
+        Returns:
+            list[AbstractNode]: children of this node
+        """
+
+        return self.children
+
     def getChildAt(self, position):
         """
         Returns the child at the specified position if valid.
-        If the index is non-existent an error is printed and no exception
-        is raised.
 
         Args:
             position (int): the position of the wanted child
 
         Returns:
             AbstractNode: the node at the specified position if present
+            None: position error
         """
 
-        if 0 <= position < len(self):
-            return self.children[position]
+        if not 0 <= position < len(self): return
 
-    def getChildren(self):
+        return self.children[position]
+
+    def getIndex(self):
         """
-        Returns the children list.
+        Returns this node's index in it's parent list.
 
         Returns:
-            list[AbstractNode]: self.children of this node
+            int: the index of this node
         """
 
-        return self.children
-
-    def getDescendants(self):
-        """
-        Returns a list of the descendant nodes of this node.
-
-        Returns:
-            list[AbstractNode]: the list of descendant nodes
-        """
-
-        descendantsList = []
-        for node in self.iterPreorder():
-            descendantsList.append(node)
-        return descendantsList
-
-    def getAncestors(self):
-        """
-        Returns a list of the ancestor nodes.
-
-        Returns:
-            list[AbstractNode]: the list of ancestor nodes
-        """
-
-        ancestorsList = []
-        for node in self.iterAncestors():
-            ancestorsList.append(node)
-        return ancestorsList
-
-    def getLeaves(self):
-        """
-        Returns a list of leaf nodes in this node. A leaf is a node with no children.
-
-        Returns:
-            list[AbstractNode]: the list of leaf nodes
-        """
-
-        leavesList = []
-        for node in self.iterPreorder():
-            if len(node) == 0:
-                leavesList.append(node)
-
-        return leavesList
+        if not self.up: return 0
+        return self.up.children.index(self)
 
     def getHeight(self):
         """
-        Returns this node's heigth based on the definition:
+        Returns this node's heigth.
 
         - if the node is a leaf, heigth = 0;
         - else heigth = 1 + max(node's children heigths);
@@ -413,7 +354,7 @@ class AbstractNode(AbstractFeatureBundle):
 
     def getDepth(self):
         """
-        Returns this node's depth based on the definition:
+        Returns this node's depth.
 
         - if the node is the root, depth = 0;
         - else depth = 1 + node's parent depth;
@@ -422,35 +363,24 @@ class AbstractNode(AbstractFeatureBundle):
             int: this node's depth
         """
 
-        if not self.getParent(): return 0
+        if not self.up: return 0
 
-        return self.getParent().getDepth() + 1
-
-    def getIndex(self):
-        """
-        Returns this node's index in it's parent list.
-
-        Returns:
-            int: the index of this node
-        """
-
-        parent = self.getParent()
-
-        if not parent: return 0
-        return parent.getChildren().index(self)
+        return self.up.getDepth() + 1
 
 # REPRESENTATION
 
     def toString(self):
         """
-        Returns a string version of the node with empty names.
+        Returns a string version of the node with every feature.
 
         Returns:
             str: the node structure in string format
         """
 
-        string = f'|-- {self.getIndex()}°'
-
+        string = ''
+        for key in self.features:
+            value = self.getFeature(key)
+            string += f'{key}: {value},\n'
         return string
 
 # DUNDERS
@@ -466,3 +396,6 @@ class AbstractNode(AbstractFeatureBundle):
 
     def __bool__(self):
         return True
+
+    def __eq__(self, other):
+        return self.getFeature('ID') == other.getFeature('ID')

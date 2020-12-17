@@ -165,7 +165,7 @@ class ComponentsPage(qtw.QWidget, ui):
         currentIndex = self.proxy.mapToSource(currentIndex)
         return currentIndex
 
-    def getNewNode(self, tp):
+    def getNewNode(self, classname):
         """
         Returns a new node given the parent and the type. The node isn't inserted in the
         tree, it is a temporary node instead, that has the values of the one that should
@@ -180,7 +180,11 @@ class ComponentsPage(qtw.QWidget, ui):
 
         currentNode = self.getCurrentNode()
         if currentNode:
-            return self.model.getNewNode(currentNode, tp)
+            level = currentNode.getLevel()
+            if level < 4:
+                return self.model.getNewNode(currentNode, classname)
+
+            return self.model.getNewNode(currentNode, 'LeafNode')
 
 # --- FILTERING ---
 

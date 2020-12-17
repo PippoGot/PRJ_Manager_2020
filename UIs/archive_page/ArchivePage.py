@@ -106,7 +106,6 @@ class ArchivePage(qtw.QWidget, ui):
 
         self.uiEditor.setCurrentSelection(index)
         self.currentIndex = index
-        self.currentNode = index.internalPointer()
         self._disableRemove()
 
     def setCurrentSelection(self, selectionList):
@@ -205,9 +204,19 @@ class ArchivePage(qtw.QWidget, ui):
 
         if prefix:
             self.prefix = prefix
-        self.newNode = self.model.getNewNode(self.prefix)
 
-        self.uiNumberID.setText(self.newNode.getFeature('numberID'))
+        classes = {
+            'MEH': 'MechanicalNode',
+            'ELH': 'ElectricalNode',
+            'EMH': 'ElectromechanicalNode',
+            'MMH': 'MeasuredNode',
+            'PRO': 'ProductNode'
+        }
+        parent = self.currentIndex.internalPointer()
+
+        self.newNode = self.model.getNewNode(parent, classes[self.prefix])
+
+        self.uiNumberID.setText(self.newNode.getFeature('ID'))
         self.uiName.setText(self.newNode.getFeature('name'))
         self.uiDescription.setPlainText(self.newNode.getFeature('description'))
         self.uiComment.setPlainText(self.newNode.getFeature('comment'))

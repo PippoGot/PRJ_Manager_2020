@@ -196,17 +196,9 @@
     <addaction name="separator"/>
     <addaction name="uiActDeprecated"/>
    </widget>
-   <widget class="QMenu" name="menuDebug">
-    <property name="title">
-     <string>Debug</string>
-    </property>
-    <addaction name="uiActLevel"/>
-    <addaction name="uiActHash"/>
-   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
-   <addaction name="menuDebug"/>
   </widget>
   <widget class="QStatusBar" name="uiStatusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -250,10 +242,9 @@
    <addaction name="uiActUpdate"/>
    <addaction name="separator"/>
    <addaction name="uiActExpandAll"/>
+   <addaction name="uiActExpandOne"/>
    <addaction name="uiActCollapseOne"/>
    <addaction name="uiActDeprecated"/>
-   <addaction name="uiActLevel"/>
-   <addaction name="uiActHash"/>
   </widget>
   <action name="uiActNew">
    <property name="icon">
@@ -394,30 +385,6 @@
    </property>
    <property name="text">
     <string>Hide Deprecated</string>
-   </property>
-  </action>
-  <action name="uiActLevel">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/lv.png</normaloff>:/lv.png</iconset>
-   </property>
-   <property name="text">
-    <string>Show Level</string>
-   </property>
-  </action>
-  <action name="uiActHash">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/id.png</normaloff>:/id.png</iconset>
-   </property>
-   <property name="text">
-    <string>Show Hashes</string>
    </property>
   </action>
   <action name="uiActRemove">
