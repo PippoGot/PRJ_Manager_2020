@@ -157,7 +157,7 @@
     <addaction name="uiActExportBill"/>
     <addaction name="uiActExportArchive"/>
     <addaction name="separator"/>
-    <addaction name="uiActArchive"/>
+    <addaction name="uiActSettings"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -450,11 +450,6 @@
     <string>Add Placeholder</string>
    </property>
   </action>
-  <action name="uiActArchive">
-   <property name="text">
-    <string>Find Archive</string>
-   </property>
-  </action>
   <action name="uiActExportArchive">
    <property name="text">
     <string>Export Archive</string>
@@ -463,6 +458,11 @@
   <action name="uiActExpandOne">
    <property name="text">
     <string>Expand Next Level</string>
+   </property>
+  </action>
+  <action name="uiActSettings">
+   <property name="text">
+    <string>Settings...</string>
    </property>
   </action>
  </widget>

@@ -2,7 +2,7 @@ from PyQt5 import QtCore as qtc
 from PyQt5 import QtGui as qtg
 import csv
 
-from uis import resources
+from uis import resources_rc
 
 from data_types.nodes import CompositeNodes as comp_nodes
 from data_types.nodes.ComponentNode import ComponentNode

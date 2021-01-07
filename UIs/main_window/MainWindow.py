@@ -15,13 +15,14 @@ from models.archive.Model import ArchiveModel
 # POPUPS
 from ..newcomponent_editor.NewComponentEditor import NewComponentEditor
 from ..hardware_selector.HardwareSelector import HardwareSelector
+from ..settings_window.SettingsWindow import SettingsWindow
 
 # PAGES
 from ..components_page.ComponentsPage import ComponentsPage
 from ..archive_page.ArchivePage import ArchivePage
 
 # RESOURCES
-from .. import resources
+from .. import resources_rc
 from . import decorators as decor
 
 # UI
@@ -40,13 +41,14 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.filename = None
         self.copiedNode = None
+
         self.unsavedChanges = False
-        self.archivePath = r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\HardwareArchive.json'
         self.undoStack = UndoStack()
 
-# COMBOBOX MODELS
-        self.manufactureModel = ComboboxModel(r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\uis\main_window\manufactures.csv')
-        self.statusModel = ComboboxModel(r'D:\Data\_PROGETTI\APPS\PRJ Manager 2.0\uis\main_window\statuses.csv')
+        self.settingsWindow = SettingsWindow()
+        self.settingsWindow.archivePathChanged.connect(self._setArchive)
+        self.statusModel = self.settingsWindow.getStatusModel()
+        self.manufactureModel = self.settingsWindow.getManufactureModel()
 
 # COMPONENTS PAGE
         self.componentsPage = ComponentsPage()
@@ -67,7 +69,7 @@ class MainWindow(qtw.QMainWindow, ui):
 # DATA MODELS
         self._setModel(TreeModel())
         self.undoStack.addSnapshot(str(self.treeModel), 'init')
-        self._setArchive(self.archivePath)
+        self._setArchive(self.settingsWindow.archivePath)
 
 # FILE MENU
         self.uiActNew.triggered.connect(self.newFile)
@@ -77,7 +79,7 @@ class MainWindow(qtw.QMainWindow, ui):
         self.uiActExportBill.triggered.connect(self.exportBill)
         self.uiActClear.triggered.connect(self.clearFile)
 
-        self.uiActArchive.triggered.connect(self.findArchive)
+        self.uiActSettings.triggered.connect(self.settings)
 
 # EDIT MENU
         self.uiActAddAssembly.triggered.connect(self.addAssemblyNode)
@@ -182,22 +184,12 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self._setModel()
 
-    def findArchive(self, *args):
+    def settings(self):
         """
-        Opens the editor to look for an archive file to open and use.
+        Opens the settings window.
         """
 
-        filename, _ = qtw.QFileDialog.getOpenFileName(
-            self,
-            "Select a file to open...",
-            qtc.QDir.homePath(),
-            'JSON Documents (*.json) ;; All Files (*)',
-            'JSON Documents (*.json)'
-        )
-
-        if filename:
-            self.archivePath = filename
-            self._setArchive(self.archivePath)
+        self.settingsWindow.show()
 
 # --- EDIT MENU FUNCTIONS ---
 
@@ -441,6 +433,7 @@ class MainWindow(qtw.QMainWindow, ui):
             archivePath (str): the name or path of the archive file. Defaults to None.
         """
 
+        self.archivePath = archivePath
         self.archiveModel = ArchiveModel(self.archivePath)
         self.archivePage.setModel(self.archiveModel, self.archivePath)
 

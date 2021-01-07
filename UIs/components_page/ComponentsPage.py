@@ -4,7 +4,7 @@ from PyQt5 import QtCore as qtc
 
 from models.tree.Proxy import TreeProxy
 
-from ..component_editor.ComponentEditor import ComponentEditor
+from ..widgets.component_editor.ComponentEditor import ComponentEditor
 from ..newcomponent_editor.NewComponentEditor import NewComponentEditor
 
 from .components_page import  Ui_uiComponentsPage as ui

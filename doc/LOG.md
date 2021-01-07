@@ -1,10 +1,17 @@
 TO DO LIST:
 
-- main window class breakdown
+    SETTINGS POPUP WINDOW
+    implemented with json files
+
+    - iconpack selection
+    - theme selection (stylesheet)
+    - last project
+    - recent projects list
 
 IDEAS:
 
     MAIN WINDOW
+    - main window class breakdown
     - undo stack view
     - bill model and page
         - export bill
@@ -23,34 +30,17 @@ IDEAS:
     - features class
     - ID class
     - measured hardware node quantity reimplementation
-
-    PREFERENCES POPUP WINDOW
-    implemented with json files
-
-    - iconpack selection
-    - theme selection (stylesheet)
-    - last progect
-    - recent projects list
-    - archive selection
-    - status and manufacture entries
+    - optional node
 
     COMPONENTS PAGE
 
     - automatic assembly status updating
-    - add statuses "testing", "CAD polishing"
     - parent-children highlighting
     - node filtering
     - find/edit
-    - optional node
     - checkable update hardware node
 
     ARCHIVE PAGE
     - export archive
 
 DONE:
-
-- coded and documented UndoStack
-- implement UndoStack:
-  - implement undoable decorator
-  - apply produces changes and undoable decorator
-  - implement undo and redo actions

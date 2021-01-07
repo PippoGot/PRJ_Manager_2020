@@ -1,0 +1,21 @@
+{
+    "archivePath": "D:/Data/_PROGETTI/APPS/PRJ Manager 2.0/HardwareArchive.json",
+    "statusEntries": [
+        "Not Designed",
+        "Design in Progress",
+        "Designed",
+        "Ready to Order",
+        "Ready to Manufacture",
+        "Ordered",
+        "Testing",
+        "CAD Polishing",
+        "Deprecated",
+        "Done"
+    ],
+    "manufactureEntries": [
+        "3D printed",
+        "Machined",
+        "Modified Hardware",
+        "Lasercut"
+    ]
+}
