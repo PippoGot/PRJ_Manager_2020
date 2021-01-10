@@ -29,11 +29,11 @@ class EntriesList(qtw.QWidget, ui):
         if entries:
             self.model.setStringList(entries)
 
-        self.uiAddBtn.clicked.connect(self.addItem)
+        self.uiAddBtn.clicked.connect(self._addItem)
         self.model.dataChanged.connect(self._emitEntries)
         self.uiList.customContextMenuRequested.connect(self._contextMenu)
 
-    def addItem(self):
+    def _addItem(self):
         """
         Adds an entry to the model, then the line is cleared and the signal is emitted.
         """
@@ -47,7 +47,7 @@ class EntriesList(qtw.QWidget, ui):
         self._clearLine()
         self._emitEntries()
 
-    def removeItem(self):
+    def _removeItem(self):
         """
         Removes an item from the model and emit the updated entries.
         """
@@ -81,7 +81,7 @@ class EntriesList(qtw.QWidget, ui):
 
         menu = qtw.QMenu()
         removeAction = qtw.QAction('Remove')
-        removeAction.triggered.connect(self.removeItem)
+        removeAction.triggered.connect(self._removeItem)
 
         current = self.uiList.selectionModel().currentIndex().row()
 

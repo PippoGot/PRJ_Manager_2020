@@ -3,8 +3,8 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
 from data_types.nodes import CompositeNodes as comp_nodes
-from ..widgets.component_editor.ComponentEditor import ComponentEditor
-from ..widgets.archive_view.ArchiveView import ArchiveView
+from ...widgets.component_editor.ComponentEditor import ComponentEditor
+from ...widgets.archive_view.ArchiveView import ArchiveView
 
 from .archive_page import Ui_uiArchivePage as ui
 

@@ -5,8 +5,6 @@ TO DO LIST:
 
     - iconpack selection
     - theme selection (stylesheet)
-    - last project
-    - recent projects list
 
 IDEAS:
 
@@ -41,6 +39,6 @@ IDEAS:
     - checkable update hardware node
 
     ARCHIVE PAGE
-    - export archive
+    - export archive in json and csv
 
 DONE:

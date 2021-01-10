@@ -199,7 +199,6 @@ class Ui_uiMainWindow(object):
         self.menuFile.addAction(self.uiActSave)
         self.menuFile.addAction(self.uiActSaveas)
         self.menuFile.addAction(self.uiActOpen)
-        self.menuFile.addSeparator()
         self.menuFile.addAction(self.uiActClear)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.uiActExportBill)

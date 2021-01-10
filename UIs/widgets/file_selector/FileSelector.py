@@ -31,7 +31,7 @@ class FileSelector(qtw.QWidget, ui):
         if path:
             self.uiPath.setText(path)
 
-        self.uiBrowseBtn.clicked.connect(self.browse)
+        self.uiBrowseBtn.clicked.connect(self._browse)
         self.uiPath.textChanged.connect(self._emitPathChanged)
 
     def setPath(self, path):
@@ -44,7 +44,7 @@ class FileSelector(qtw.QWidget, ui):
 
         self.uiPath.setText(path)
 
-    def browse(self):
+    def _browse(self):
         """
         Opens a popup to browse for a json file, if one is selected the path is updated.
         """

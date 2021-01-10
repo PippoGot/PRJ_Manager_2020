@@ -8,22 +8,23 @@ import os
 from data_types.UndoStack import UndoStack
 
 # MODELS
-from models.ComboboxModel import ComboboxModel
 from models.tree.Model import TreeModel
 from models.archive.Model import ArchiveModel
 
 # POPUPS
-from ..newcomponent_editor.NewComponentEditor import NewComponentEditor
-from ..hardware_selector.HardwareSelector import HardwareSelector
-from ..settings_window.SettingsWindow import SettingsWindow
+from ..popups.newcomponent_editor.NewComponentEditor import NewComponentEditor
+from ..popups.hardware_selector.HardwareSelector import HardwareSelector
+from ..popups.settings_window.SettingsWindow import SettingsWindow
 
 # PAGES
-from ..components_page.ComponentsPage import ComponentsPage
-from ..archive_page.ArchivePage import ArchivePage
+from ..pages.components_page.ComponentsPage import ComponentsPage
+from ..pages.archive_page.ArchivePage import ArchivePage
 
 # RESOURCES
 from .. import resources_rc
 from . import decorators as decor
+from . import dialogs
+from ..stylesheet import stylesheet as qss
 
 # UI
 from .main_window import Ui_uiMainWindow as ui
@@ -36,21 +37,25 @@ class MainWindow(qtw.QMainWindow, ui):
         Loads the UI window and set the manufacture model.
         """
 
+        # ui
         super(MainWindow, self).__init__()
         self.setupUi(self)
+        self.setStyleSheet(qss)
 
-        self.filename = None
+        # class variables
         self.copiedNode = None
 
+        # undo stack init
         self.unsavedChanges = False
         self.undoStack = UndoStack()
 
+        # settings window init
         self.settingsWindow = SettingsWindow()
         self.settingsWindow.archivePathChanged.connect(self._setArchive)
         self.statusModel = self.settingsWindow.getStatusModel()
         self.manufactureModel = self.settingsWindow.getManufactureModel()
 
-# COMPONENTS PAGE
+        # components page init
         self.componentsPage = ComponentsPage()
         self.ComponentsPage.layout().addWidget(self.componentsPage)
 
@@ -59,19 +64,33 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.componentsPage.uiView.customContextMenuRequested.connect(self._rightClickMenu)
 
-# ARCHIVE PAGE
+        # archive page init
         self.archivePage = ArchivePage()
         self.ArchivePage.layout().addWidget(self.archivePage)
 
         self.archivePage.setManufactureModel(self.manufactureModel)
         self.archivePage.setStatusModel(self.statusModel)
 
-# DATA MODELS
-        self._setModel(TreeModel())
-        self.undoStack.addSnapshot(str(self.treeModel), 'init')
+        # data models
+        self.filename = None
+        recentFiles = self.settingsWindow.getRecentFilesList()
+        if recentFiles:
+            self.filename = recentFiles[0]
+        self._setModel(TreeModel(self.filename))
         self._setArchive(self.settingsWindow.archivePath)
+        self.undoStack.addSnapshot(str(self.treeModel), 'init')
 
-# FILE MENU
+        # recent files
+        self.recentFilesMenu = qtw.QMenu('Recent Files...')
+        for file in recentFiles:
+            name = file.split('/')[-1]
+            action = qtw.QAction(name, self)
+            self.recentFilesMenu.addAction(action)
+            action.setData(file)
+            action.triggered.connect(self._openRecent)
+        self.menuFile.insertMenu(self.uiActClear, self.recentFilesMenu)
+
+        # file menu actions connections
         self.uiActNew.triggered.connect(self.newFile)
         self.uiActOpen.triggered.connect(self.openFile)
         self.uiActSave.triggered.connect(self.saveFile)
@@ -79,9 +98,9 @@ class MainWindow(qtw.QMainWindow, ui):
         self.uiActExportBill.triggered.connect(self.exportBill)
         self.uiActClear.triggered.connect(self.clearFile)
 
-        self.uiActSettings.triggered.connect(self.settings)
+        self.uiActSettings.triggered.connect(self.openSettings)
 
-# EDIT MENU
+        # edit menu actions connections
         self.uiActAddAssembly.triggered.connect(self.addAssemblyNode)
         self.uiActAddPart.triggered.connect(self.addLeafNode)
         self.uiActAddSpecial.triggered.connect(self.addSpecialNode)
@@ -98,7 +117,7 @@ class MainWindow(qtw.QMainWindow, ui):
         self.uiActUndo.triggered.connect(self.undo)
         self.uiActRedo.triggered.connect(self.redo)
 
-# VIEW MENU
+        # view menu actions connections
         self.uiActDeprecated.triggered.connect(self.hideDeprecated)
         self.uiActExpandAll.triggered.connect(self.expandAll)
         self.uiActExpandOne.triggered.connect(self.expandOne)
@@ -107,7 +126,6 @@ class MainWindow(qtw.QMainWindow, ui):
 # --- FILE MENU FUNCTIONS ---
 
     @decor.askSave
-    @decor.undoable
     def newFile(self, *args):
         """
         Creates a new model for a new file. When a new file is created the page
@@ -115,22 +133,17 @@ class MainWindow(qtw.QMainWindow, ui):
         """
 
         self._setModel(TreeModel())
+        self.filename = None
         self.tabWidget.setCurrentIndex(0)
 
     @decor.askSave
-    @decor.undoable
-    def openFile(self, *args):
+    def openFile(self, filename = None, *args):
         """
         Opens a file given it's name or path.
         """
 
-        filename, _ = qtw.QFileDialog.getOpenFileName(
-            self,
-            "Select a file to open...",
-            qtc.QDir.homePath(),
-            'JSON Documents (*.json) ;; All Files (*)',
-            'JSON Documents (*.json)'
-        )
+        if not filename:
+            filename = dialogs.openDialog()
 
         if filename:
             self._setModel()
@@ -138,6 +151,7 @@ class MainWindow(qtw.QMainWindow, ui):
             model = TreeModel(filename)
             self._setModel(model)
             self.filename = filename
+            self.settingsWindow.addRecentFile(self.filename)
 
             self.tabWidget.setCurrentIndex(0)
 
@@ -160,23 +174,18 @@ class MainWindow(qtw.QMainWindow, ui):
         Saves a file with a new name.
         """
 
-        filename, _ = qtw.QFileDialog.getSaveFileName(
-            self,
-            "Select the file to save to...",
-            qtc.QDir.homePath(),
-            'JSON Documents (*.json)'
-        )
+        filename = dialogs.saveDialog()
 
         if filename:
             self.treeModel.saveFile(filename)
             self.filename = filename
+            self.settingsWindow.addRecentFile(self.filename)
             self.unsavedChanges = False
 
     def exportBill(self, *args):
         pass
 
     @decor.askSave
-    @decor.undoable
     def clearFile(self, *args):
         """
         Clears the current model.
@@ -184,7 +193,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self._setModel()
 
-    def settings(self):
+    def openSettings(self):
         """
         Opens the settings window.
         """
@@ -193,8 +202,6 @@ class MainWindow(qtw.QMainWindow, ui):
 
 # --- EDIT MENU FUNCTIONS ---
 
-    @decor.componentsAction
-    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addAssemblyNode(self, *args):
         """
@@ -205,8 +212,6 @@ class MainWindow(qtw.QMainWindow, ui):
         if newNode:
             self._addNode(newNode)
 
-    @decor.componentsAction
-    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addLeafNode(self, *args):
         """
@@ -217,8 +222,6 @@ class MainWindow(qtw.QMainWindow, ui):
         if newNode:
             self._addNode(newNode)
 
-    @decor.componentsAction
-    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addSpecialNode(self, *args):
         """
@@ -231,8 +234,6 @@ class MainWindow(qtw.QMainWindow, ui):
         self.newSelector.submit.connect(self._undoable)
         self.newSelector.submit.connect(self._producesChanges)
 
-    @decor.componentsAction
-    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addJigNode(self, *args):
         """
@@ -243,8 +244,6 @@ class MainWindow(qtw.QMainWindow, ui):
         if newNode:
             self._addNode(newNode)
 
-    @decor.componentsAction
-    @decor.ifNodeSelected
     @decor.ifNotLeaf
     def addPlaceholderNode(self, *args):
         """
@@ -255,11 +254,8 @@ class MainWindow(qtw.QMainWindow, ui):
         if newNode:
             self._addNode(newNode)
 
-    @decor.componentsAction
-    @decor.ifNodeSelected
     @decor.ifNotRoot
-    @decor.producesChanges
-    @decor.undoable
+    @decor.undoableAction
     def removeComponent(self, *args):
         """
         Removes a component node that is not at level 1.
@@ -270,11 +266,9 @@ class MainWindow(qtw.QMainWindow, ui):
 
         return self.componentsPage.removeNode()
 
-    @decor.componentsAction
-    @decor.ifNodeSelected
-    @decor.ifIsLeaf
+    @decor.ifLeaf
     @decor.ifIsHardware
-    @decor.undoable
+    @decor.undoableAction
     def morphComponent(self, *args):
         """
         Swaps two archive components in the component tree model.
@@ -287,8 +281,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
     @decor.componentsAction
     @decor.ifHasModel
-    @decor.producesChanges
-    @decor.undoable
+    @decor.undoableAction
     def updateSpecialComponents(self, *args):
         """
         Updates all of the components in the tree model with data of the archive model.
@@ -326,8 +319,6 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.copiedNode = self.removeComponent()
 
-    @decor.componentsAction
-    @decor.ifNodeSelected
     @decor.ifNotRoot
     def copy(self, *args):
         """
@@ -337,11 +328,8 @@ class MainWindow(qtw.QMainWindow, ui):
         currentNode = self.componentsPage.getCurrentNode()
         self.copiedNode = currentNode.deepCopy()
 
-    @decor.componentsAction
-    @decor.ifNodeSelected
     @decor.ifNotLeaf
-    @decor.producesChanges
-    @decor.undoable
+    @decor.undoableAction
     def paste(self, *args):
         """
         Insert the copied or cut node in the currently selected node.
@@ -476,72 +464,6 @@ class MainWindow(qtw.QMainWindow, ui):
 
 # DIALOGS and MENUS
 
-    def _okDialog(self, title, message):
-        """
-        Creates a dialog window with an OK button.
-
-        Args:
-            title (str): the title of the dialog.
-            message (str): the message of the dialog.
-
-        Returns:
-            enum: the button pressed by the user
-        """
-
-        self.msgBox = qtw.QMessageBox.warning(
-            self,
-            title,
-            message,
-            qtw.QMessageBox.Ok,
-            qtw.QMessageBox.Ok
-        )
-
-        return self.msgBox
-
-    def _choiceDialog(self, title, message):
-        """
-        Creates a dialog window with a YES/NO choice.
-
-        Args:
-            title (str): the title of the dialog.
-            message (str): the message of the dialog.
-
-        Returns:
-            enum: the button pressed by the user.
-        """
-
-        self.msgBox = qtw.QMessageBox.warning(
-            self,
-            title,
-            message,
-            qtw.QMessageBox.Yes | qtw.QMessageBox.No,
-            qtw.QMessageBox.Yes
-        )
-
-        return self.msgBox
-
-    def _cancelDialog(self, title, message):
-        """
-        Creates a dialog window with an YES/NO/CANCEL choice.
-
-        Args:
-            title (str): the title of the dialog.
-            message (str): the message of the dialog.
-
-        Returns:
-            enum: the button pressed by the user.
-        """
-
-        self.msgBox = qtw.QMessageBox.warning(
-            self,
-            title,
-            message,
-            qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel,
-            qtw.QMessageBox.Yes
-        )
-
-        return self.msgBox
-
     def _rightClickMenu(self, position):
         """
         Creates the context menu in the components view when the right click is pressed.
@@ -589,6 +511,11 @@ class MainWindow(qtw.QMainWindow, ui):
         """
 
         if self.tabWidget.currentIndex() != page:
-            self._okDialog('Warning!', 'You are not in the proper page!')
+            dialogs.pageError()
             return True
         return False
+
+    def _openRecent(self):
+        action = self.sender()
+        if action:
+            self.openFile(action.data())

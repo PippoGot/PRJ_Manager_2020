@@ -3,14 +3,16 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 import json
 
-from ..widgets.entries_list.EntriesList import EntriesList
-from ..widgets.file_selector.FileSelector import FileSelector
+from ...widgets.entries_list.EntriesList import EntriesList
+from ...widgets.file_selector.FileSelector import FileSelector
 
 from .settings_window import Ui_settings_window as ui
 
 class SettingsWindow(qtw.QWidget, ui):
 
     archivePathChanged = qtc.pyqtSignal(str)
+
+# INIT
 
     def __init__(self):
         """
@@ -19,27 +21,33 @@ class SettingsWindow(qtw.QWidget, ui):
         widgets are added to the layout and initialised.
         """
 
+        # ui
         super(SettingsWindow, self).__init__()
         self.setupUi(self)
 
+        # reads settings file
         self.data = {}
         try:
             self._importSettings('settings.json')
         except FileNotFoundError:
             self.data = self._defaultSettings()
 
+        # signals-slots connections of the ui
         self.uiOkBtn.clicked.connect(self.close)
         self.uiImportBtn.clicked.connect(self._importSettings)
         self.uiExportBtn.clicked.connect(self._exportSettings)
 
+        # archive path section init
         self.archiveSelector = FileSelector(details = 'Path', path = self.archivePath)
         self.uiArchiveBox.layout().addWidget(self.archiveSelector)
         self.archiveSelector.pathChanged.connect(self._updateArchivePath)
 
+        # status editor section init
         self.statusEditor = EntriesList(self.statusEntries)
         self.uiStatusBox.layout().addWidget(self.statusEditor)
         self.statusEditor.entriesChanged.connect(self._updateStatusEntries)
 
+        # manufacture editor section init
         self.manufactureEditor = EntriesList(self.manufactureEntries)
         self.uiManufactureBox.layout().addWidget(self.manufactureEditor)
         self.manufactureEditor.entriesChanged.connect(self._updateManufactureEntries)
@@ -66,6 +74,60 @@ class SettingsWindow(qtw.QWidget, ui):
         self._updateStatusEntries([])
         self._updateManufactureEntries([])
         return data
+
+# RECENT FILES
+
+    def addRecentFile(self, filename):
+        """
+        Adds a new filename to the list then checks the list length. If a name is
+        already in the list it's moved to the front, otherwise the new filename is
+        inserted in the front.
+
+        Args:
+            filename (str): the new filename
+        """
+
+        if filename in self.recentFiles:
+            self.recentFiles.pop(self.recentFiles.index(filename))
+        self.recentFiles.insert(0, filename)
+
+        self._checkLength()
+        self._saveSettings()
+
+    def _checkLength(self):
+        """
+        Checks the length of the recent files list and removes the older ones.
+        """
+
+        length = len(self.recentFiles)
+        if length > 5:
+            for _ in range(length - 5):
+                self.recentFiles.pop(-1)
+
+    def getRecentFilesList(self):
+        """
+        Returns the list of strings of the recent files.
+
+        Returns:
+            list[str]: the list with the recent files
+        """
+
+        return self.data['recentFiles']
+
+# UPDATING
+
+    def _initRecentFiles(self, files):
+        """
+        Updates the recent files list and saves the settings.
+
+        Args:
+            files (list[str]): the paths of the recent files
+        """
+
+        self.recentFiles = files
+        self.data['recentFiles'] = self.recentFiles
+
+        self._saveSettings()
 
     def _updateArchivePath(self, path):
         """
@@ -107,12 +169,7 @@ class SettingsWindow(qtw.QWidget, ui):
 
         self._saveSettings()
 
-    def _saveSettings(self):
-        """
-        Saves the current settings in a json file.
-        """
-
-        self._exportSettings('settings.json')
+# GETTERS
 
     def getStatusModel(self):
         """
@@ -133,6 +190,8 @@ class SettingsWindow(qtw.QWidget, ui):
         """
 
         return self.manufactureEditor.model
+
+# FILE MANAGEMENT
 
     def _importSettings(self, filename = None):
         """
@@ -158,6 +217,7 @@ class SettingsWindow(qtw.QWidget, ui):
             self._updateArchivePath(data.get('archivePath'))
             self._updateStatusEntries(data.get('statusEntries'))
             self._updateManufactureEntries(data.get('manufactureEntries'))
+            self._initRecentFiles(data.get('recentFiles'))
 
     def _exportSettings(self, filename = None):
         """
@@ -178,3 +238,10 @@ class SettingsWindow(qtw.QWidget, ui):
         if filename:
             with open(filename, 'w') as file:
                 json.dump(self.data, file, indent = 4)
+
+    def _saveSettings(self):
+        """
+        Saves the current settings in a json file.
+        """
+
+        self._exportSettings('settings.json')

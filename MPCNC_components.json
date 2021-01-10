@@ -28,6 +28,11 @@
             "status": "Done",
             "seller": null,
             "link": null,
+            "color": [
+                255,
+                159,
+                81
+            ],
             "children": [
                 {
                     "class": "AssemblyNode",
@@ -44,6 +49,11 @@
                     "status": "Done",
                     "seller": null,
                     "link": null,
+                    "color": [
+                        255,
+                        198,
+                        77
+                    ],
                     "children": [
                         {
                             "class": "AssemblyNode",
@@ -60,6 +70,11 @@
                             "status": "Done",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -222,6 +237,11 @@
                             "status": "Done",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -354,6 +374,11 @@
                     "status": "Designed",
                     "seller": null,
                     "link": null,
+                    "color": [
+                        255,
+                        198,
+                        77
+                    ],
                     "children": [
                         {
                             "class": "MechanicalNode",
@@ -404,6 +429,11 @@
                     "status": "Done",
                     "seller": null,
                     "link": null,
+                    "color": [
+                        255,
+                        198,
+                        77
+                    ],
                     "children": [
                         {
                             "class": "MeasuredNode",
@@ -436,6 +466,11 @@
                             "status": "Done",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -522,6 +557,11 @@
             "status": "Design in Progress",
             "seller": null,
             "link": null,
+            "color": [
+                255,
+                159,
+                81
+            ],
             "children": [
                 {
                     "class": "AssemblyNode",
@@ -538,6 +578,11 @@
                     "status": "Design in Progress",
                     "seller": null,
                     "link": null,
+                    "color": [
+                        255,
+                        198,
+                        77
+                    ],
                     "children": [
                         {
                             "class": "AssemblyNode",
@@ -554,6 +599,11 @@
                             "status": "Design in Progress",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -764,6 +814,11 @@
                             "status": "Design in Progress",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -848,6 +903,11 @@
                     "status": "Designed",
                     "seller": null,
                     "link": null,
+                    "color": [
+                        255,
+                        198,
+                        77
+                    ],
                     "children": [
                         {
                             "class": "AssemblyNode",
@@ -864,6 +924,11 @@
                             "status": "Designed",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -966,6 +1031,11 @@
             "status": "Design in Progress",
             "seller": null,
             "link": null,
+            "color": [
+                255,
+                159,
+                81
+            ],
             "children": [
                 {
                     "class": "AssemblyNode",
@@ -982,6 +1052,11 @@
                     "status": "Design in Progress",
                     "seller": null,
                     "link": null,
+                    "color": [
+                        255,
+                        198,
+                        77
+                    ],
                     "children": [
                         {
                             "class": "AssemblyNode",
@@ -998,6 +1073,11 @@
                             "status": "Design in Progress",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -1064,6 +1144,11 @@
                             "status": "Designed",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -1212,6 +1297,11 @@
                     "status": "Done",
                     "seller": null,
                     "link": null,
+                    "color": [
+                        255,
+                        198,
+                        77
+                    ],
                     "children": [
                         {
                             "class": "AssemblyNode",
@@ -1228,6 +1318,11 @@
                             "status": "Done",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -1342,6 +1437,11 @@
                             "status": "Done",
                             "seller": null,
                             "link": null,
+                            "color": [
+                                255,
+                                225,
+                                93
+                            ],
                             "children": [
                                 {
                                     "class": "LeafNode",
@@ -1476,6 +1576,11 @@
             "status": "Not Designed",
             "seller": null,
             "link": null,
+            "color": [
+                255,
+                159,
+                81
+            ],
             "children": []
         }
     ]

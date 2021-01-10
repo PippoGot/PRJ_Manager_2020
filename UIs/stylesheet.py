@@ -160,7 +160,7 @@ stylesheet = """
         border: transparent;
     }
 
-    QTableView::item:alternate {
+    QTableView::item:alternate, QListView::item:alternate {
         background-color: #666666;
     }
 

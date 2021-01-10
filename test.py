@@ -8,4 +8,6 @@ if __name__ == '__main__':
     mw = SettingsWindow()
     mw.show()
 
+    print(mw.getRecentFilesList()[0])
+
     app.exec_()

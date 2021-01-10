@@ -151,7 +151,6 @@
     <addaction name="uiActSave"/>
     <addaction name="uiActSaveas"/>
     <addaction name="uiActOpen"/>
-    <addaction name="separator"/>
     <addaction name="uiActClear"/>
     <addaction name="separator"/>
     <addaction name="uiActExportBill"/>

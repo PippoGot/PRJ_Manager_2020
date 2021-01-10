@@ -3,6 +3,8 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from functools import wraps
 
+from . import dialogs
+
 # PAGE SELECTION
 
 def componentsAction(func):
@@ -39,7 +41,7 @@ def ifHasModel(func):
         if self.treeModel:
             return func(*args, **kwargs)
         else:
-            self._okDialog('Warning!', 'No file currently open.')
+            return dialogs.noFileError()
 
     return wrapper
 
@@ -58,7 +60,7 @@ def ifNodeSelected(func):
         if currentNode:
             return func(*args, **kwargs)
         else:
-            self._okDialog('Warning!', 'No item currently selected.')
+            return dialogs.noSelectionError()
 
     return wrapper
 
@@ -72,6 +74,8 @@ def ifNotRoot(func):
         func (PyFunction): the function to execute if the node is not a root
     """
 
+    @componentsAction
+    @ifNodeSelected
     @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
@@ -79,11 +83,11 @@ def ifNotRoot(func):
         if currentNode.getLevel() != 1:
             return func(*args, **kwargs)
         else:
-            self._okDialog('Warning!', 'The selected item is not of an appropriate level!')
+            return dialogs.levelError()
 
     return wrapper
 
-def ifIsLeaf(func):
+def ifLeaf(func):
     """
     Executes the passed funtion if the current node is a leaf.
 
@@ -91,6 +95,8 @@ def ifIsLeaf(func):
         func (PyFunction): the function to execute if the node is a leaf
     """
 
+    @componentsAction
+    @ifNodeSelected
     @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
@@ -98,7 +104,7 @@ def ifIsLeaf(func):
         if currentNode.getLevel() == 5:
             return func(*args, **kwargs)
         else:
-            self._okDialog('Warning!', 'The selected item is not of an appropriate level!')
+            return dialogs.levelError()
 
     return wrapper
 
@@ -110,6 +116,8 @@ def ifNotLeaf(func):
         func (PyFunction): the function to execute if the node is not a root
     """
 
+    @componentsAction
+    @ifNodeSelected
     @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
@@ -117,7 +125,7 @@ def ifNotLeaf(func):
         if currentNode.getLevel() < 5:
             return func(*args, **kwargs)
         else:
-            self._okDialog('Warning!', 'The selected item is not of an appropriate level!')
+            return dialogs.levelError()
 
     return wrapper
 
@@ -136,7 +144,7 @@ def ifIsHardware(func):
         if currentNode.getFeature('type') == 'Hardware':
             return func(*args, **kwargs)
         else:
-            self._okDialog('Warning!', 'The selected item is not of the correct type!')
+            return dialogs.typeError()
 
     return wrapper
 
@@ -155,6 +163,7 @@ def askSave(func):
         func (PyFunction): the function to run in yes/no cases
     """
 
+    @undoable
     @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
@@ -162,7 +171,7 @@ def askSave(func):
         if not self.treeModel: return func(*args, **kwargs)
         if not self.unsavedChanges: return func(*args, **kwargs)
 
-        dialog = self._cancelDialog('File not saved...', 'Save changes to current file?')
+        dialog = dialogs.askSave()
 
         if dialog == qtw.QMessageBox.Yes:
             self.saveFile()
@@ -211,5 +220,18 @@ def undoable(func):
         self.undoStack.addSnapshot(data, name)
 
         return val
+
+    return wrapper
+
+def undoableAction(func):
+    """
+    Composite decorator, produces changes + undoable.
+    """
+
+    @producesChanges
+    @undoable
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
 
     return wrapper
