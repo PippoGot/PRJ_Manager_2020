@@ -29,7 +29,7 @@ class FileSelector(qtw.QWidget, ui):
         if details:
             self.uiDetails.setText(details)
         if path:
-            self.uiPath.setText(path)
+            self.setPath(path)
 
         self.uiBrowseBtn.clicked.connect(self._browse)
         self.uiPath.textChanged.connect(self._emitPathChanged)

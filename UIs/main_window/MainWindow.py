@@ -12,8 +12,6 @@ from models.tree.Model import TreeModel
 from models.archive.Model import ArchiveModel
 
 # POPUPS
-from ..popups.newcomponent_editor.NewComponentEditor import NewComponentEditor
-from ..popups.hardware_selector.HardwareSelector import HardwareSelector
 from ..popups.settings_window.SettingsWindow import SettingsWindow
 
 # PAGES
@@ -42,16 +40,12 @@ class MainWindow(qtw.QMainWindow, ui):
         self.setupUi(self)
         self.setStyleSheet(qss)
 
-        # class variables
-        self.copiedNode = None
-
         # undo stack init
         self.unsavedChanges = False
         self.undoStack = UndoStack()
 
         # settings window init
         self.settingsWindow = SettingsWindow()
-        self.settingsWindow.archivePathChanged.connect(self._setArchive)
         self.statusModel = self.settingsWindow.getStatusModel()
         self.manufactureModel = self.settingsWindow.getManufactureModel()
 
@@ -63,6 +57,30 @@ class MainWindow(qtw.QMainWindow, ui):
         self.componentsPage.setStatusModel(self.statusModel)
 
         self.componentsPage.uiView.customContextMenuRequested.connect(self._rightClickMenu)
+        self.componentsPage.fileSaved.connect(self.settingsWindow.addRecentFile)
+        self.componentsPage.nodeAdded.connect(self._undoable)
+        self.componentsPage.nodeAdded.connect(self._producesChanges)
+
+        recentFiles = self.settingsWindow.getRecentFilesList()
+
+##### move to settings
+        filename = None
+        ct = 0
+        fileFound = False
+        while not fileFound:
+            file = recentFiles[ct]
+            try:
+                with open(file, 'r') as _:
+                    fileFound = True
+                    filename = file
+            except FileNotFoundError:
+                ct += 1
+            if ct > 4:
+                fileFound = True
+##### move to settings
+
+        self.componentsPage.readModel(filename)
+        self.undoStack.addSnapshot(str(self.componentsPage.getModel()), 'init')
 
         # archive page init
         self.archivePage = ArchivePage()
@@ -71,16 +89,10 @@ class MainWindow(qtw.QMainWindow, ui):
         self.archivePage.setManufactureModel(self.manufactureModel)
         self.archivePage.setStatusModel(self.statusModel)
 
-        # data models
-        self.filename = None
-        recentFiles = self.settingsWindow.getRecentFilesList()
-        if recentFiles:
-            self.filename = recentFiles[0]
-        self._setModel(TreeModel(self.filename))
-        self._setArchive(self.settingsWindow.archivePath)
-        self.undoStack.addSnapshot(str(self.treeModel), 'init')
+        self.settingsWindow.archivePathChanged.connect(self.archivePage.readArchive)
+        self.settingsWindow.activateArchivePathChanged()
 
-        # recent files
+        # recent files, separate functions ?
         self.recentFilesMenu = qtw.QMenu('Recent Files...')
         for file in recentFiles:
             name = file.split('/')[-1]
@@ -90,7 +102,7 @@ class MainWindow(qtw.QMainWindow, ui):
             action.triggered.connect(self._openRecent)
         self.menuFile.insertMenu(self.uiActClear, self.recentFilesMenu)
 
-        # file menu actions connections
+# file menu actions connections
         self.uiActNew.triggered.connect(self.newFile)
         self.uiActOpen.triggered.connect(self.openFile)
         self.uiActSave.triggered.connect(self.saveFile)
@@ -100,12 +112,16 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.uiActSettings.triggered.connect(self.openSettings)
 
-        # edit menu actions connections
-        self.uiActAddAssembly.triggered.connect(self.addAssemblyNode)
-        self.uiActAddPart.triggered.connect(self.addLeafNode)
+# edit menu actions connections
+        self.uiActAddAssembly.triggered.connect(self.addNode)
+        self.uiActAddAssembly.setData('AssemblyNode')
+        self.uiActAddPart.triggered.connect(self.addNode)
+        self.uiActAddPart.setData('LeafNode')
         self.uiActAddSpecial.triggered.connect(self.addSpecialNode)
-        self.uiActAddJig.triggered.connect(self.addJigNode)
-        self.uiActAddPlaceholder.triggered.connect(self.addPlaceholderNode)
+        self.uiActAddJig.triggered.connect(self.addNode)
+        self.uiActAddJig.setData('JigNode')
+        self.uiActAddPlaceholder.triggered.connect(self.addNode)
+        self.uiActAddPlaceholder.setData('PlaceholderNode')
 
         self.uiActRemove.triggered.connect(self.removeComponent)
         self.uiActMorph.triggered.connect(self.morphComponent)
@@ -117,7 +133,7 @@ class MainWindow(qtw.QMainWindow, ui):
         self.uiActUndo.triggered.connect(self.undo)
         self.uiActRedo.triggered.connect(self.redo)
 
-        # view menu actions connections
+# view menu actions connections
         self.uiActDeprecated.triggered.connect(self.hideDeprecated)
         self.uiActExpandAll.triggered.connect(self.expandAll)
         self.uiActExpandOne.triggered.connect(self.expandOne)
@@ -132,8 +148,7 @@ class MainWindow(qtw.QMainWindow, ui):
         index is set to the components page.
         """
 
-        self._setModel(TreeModel())
-        self.filename = None
+        self.componentsPage.resetModel()
         self.tabWidget.setCurrentIndex(0)
 
     @decor.askSave
@@ -146,13 +161,9 @@ class MainWindow(qtw.QMainWindow, ui):
             filename = dialogs.openDialog()
 
         if filename:
-            self._setModel()
-
-            model = TreeModel(filename)
-            self._setModel(model)
-            self.filename = filename
-            self.settingsWindow.addRecentFile(self.filename)
-
+            self.componentsPage.resetModel()
+            self.componentsPage.readModel(filename)
+            self.settingsWindow.addRecentFile(filename)
             self.tabWidget.setCurrentIndex(0)
 
     @decor.ifHasModel
@@ -162,11 +173,7 @@ class MainWindow(qtw.QMainWindow, ui):
         to the user.
         """
 
-        if self.filename:
-            self.treeModel.saveFile(self.filename)
-            self.unsavedChanges = False
-        else:
-            self.saveFileAs()
+        if self.componentsPage.saveModel(): self.unsavedChanges = False
 
     @decor.ifHasModel
     def saveFileAs(self, *args):
@@ -174,13 +181,7 @@ class MainWindow(qtw.QMainWindow, ui):
         Saves a file with a new name.
         """
 
-        filename = dialogs.saveDialog()
-
-        if filename:
-            self.treeModel.saveFile(filename)
-            self.filename = filename
-            self.settingsWindow.addRecentFile(self.filename)
-            self.unsavedChanges = False
+        if self.componentsPage.saveModelAs(): self.unsavedChanges = False
 
     def exportBill(self, *args):
         pass
@@ -191,7 +192,7 @@ class MainWindow(qtw.QMainWindow, ui):
         Clears the current model.
         """
 
-        self._setModel()
+        self.componentsPage.clearModel()
 
     def openSettings(self):
         """
@@ -203,24 +204,14 @@ class MainWindow(qtw.QMainWindow, ui):
 # --- EDIT MENU FUNCTIONS ---
 
     @decor.ifNotLeaf
-    def addAssemblyNode(self, *args):
+    def addNode(self, *args):
         """
-        Adds an assembly node.
-        """
-
-        newNode = self.componentsPage.getNewNode('AssemblyNode')
-        if newNode:
-            self._addNode(newNode)
-
-    @decor.ifNotLeaf
-    def addLeafNode(self, *args):
-        """
-        Adds a leaf node.
+        Adds a new node based on the sender function.
         """
 
-        newNode = self.componentsPage.getNewNode('LeafNode')
-        if newNode:
-            self._addNode(newNode)
+        action = self.sender()
+        tp = action.data()
+        self.componentsPage.prepareNode(tp)
 
     @decor.ifNotLeaf
     def addSpecialNode(self, *args):
@@ -228,31 +219,8 @@ class MainWindow(qtw.QMainWindow, ui):
         Adds a special node, either hardware or product.
         """
 
-        self.newSelector = HardwareSelector()
-        self.newSelector.setModel(self.archiveModel)
-        self.newSelector.submit.connect(self.componentsPage.addNode)
-        self.newSelector.submit.connect(self._undoable)
-        self.newSelector.submit.connect(self._producesChanges)
-
-    @decor.ifNotLeaf
-    def addJigNode(self, *args):
-        """
-        Adds a jig node.
-        """
-
-        newNode = self.componentsPage.getNewNode('JigNode')
-        if newNode:
-            self._addNode(newNode)
-
-    @decor.ifNotLeaf
-    def addPlaceholderNode(self, *args):
-        """
-        Adds a placeholder node.
-        """
-
-        newNode = self.componentsPage.getNewNode('PlaceholderNode')
-        if newNode:
-            self._addNode(newNode)
+        self.selector = self.archivePage.getSelector()
+        self.selector.submit.connect(self.componentsPage.addNode)
 
     @decor.ifNotRoot
     @decor.undoableAction
@@ -268,16 +236,13 @@ class MainWindow(qtw.QMainWindow, ui):
 
     @decor.ifLeaf
     @decor.ifIsHardware
-    @decor.undoableAction
     def morphComponent(self, *args):
         """
         Swaps two archive components in the component tree model.
         """
 
-        self.newSelector = HardwareSelector()
-        self.newSelector.setModel(self.archiveModel)
-        self.newSelector.submit.connect(self.componentsPage.swapNode)
-        self.newSelector.submit.connect(self._producesChanges)
+        self.selector = self.archivePage.getSelector()
+        self.selector.submit.connect(self.componentsPage.swapNode)
 
     @decor.componentsAction
     @decor.ifHasModel
@@ -287,37 +252,17 @@ class MainWindow(qtw.QMainWindow, ui):
         Updates all of the components in the tree model with data of the archive model.
         """
 
-        archiveComponents = self.archiveModel.rootItem.getChildren()
-        treeComponents = self.treeModel.tree.searchNodes(type = 'Hardware')
-        treeComponents.extend(self.treeModel.tree.searchNodes(type = 'Product'))
+        archiveNodes = self.archivePage.getNodes()
+        self.componentsPage.updateSpecialNodes(archiveNodes)
 
-        COLUMNS_TO_UPDATE = [
-            'name',
-            'description',
-            'type',
-            'manufacture',
-            'status',
-            'price',
-            'package',
-            'seller',
-            'link'
-        ]
-
-        for treeNode in treeComponents:
-            for archiveNode in archiveComponents:
-                if treeNode == archiveNode:
-                    features = archiveNode.getNodeDictionary(*COLUMNS_TO_UPDATE)
-                    for key, value in features.items():
-                        treeNode.addFeature(key, value)
-        self.componentsPage._resizeView()
-
+    @decor.ifNotRoot
+    @decor.undoableAction
     def cut(self, *args):
         """
-        Removes and stores a component for later pasting. Inherits the decorators from
-        removeComponents.
+        Removes and stores a component for later pasting.
         """
 
-        self.copiedNode = self.removeComponent()
+        self.componentsPage.cutNode()
 
     @decor.ifNotRoot
     def copy(self, *args):
@@ -325,8 +270,7 @@ class MainWindow(qtw.QMainWindow, ui):
         Copies a node with it's children to paste it in other nodes.
         """
 
-        currentNode = self.componentsPage.getCurrentNode()
-        self.copiedNode = currentNode.deepCopy()
+        self.componentsPage.copyNode()
 
     @decor.ifNotLeaf
     @decor.undoableAction
@@ -335,9 +279,9 @@ class MainWindow(qtw.QMainWindow, ui):
         Insert the copied or cut node in the currently selected node.
         """
 
-        newNode = self.copiedNode.deepCopy()
-        self.componentsPage.addNode(newNode)
+        self.componentsPage.pasteNode()
 
+    @decor.componentsAction
     @decor.producesChanges
     def undo(self, *args):
         """
@@ -345,10 +289,9 @@ class MainWindow(qtw.QMainWindow, ui):
         """
 
         string = self.undoStack.undo()
-        model = TreeModel()
-        model.readString(string)
-        self._setModel(model)
+        self.componentsPage.readJsonString(string)
 
+    @decor.componentsAction
     @decor.producesChanges
     def redo(self, *args):
         """
@@ -356,9 +299,7 @@ class MainWindow(qtw.QMainWindow, ui):
         """
 
         string = self.undoStack.redo()
-        model = TreeModel()
-        model.readString(string)
-        self._setModel(model)
+        self.componentsPage.readJsonString(string)
 
 # --- VIEW MENU FUNCTIONS ---
 
@@ -399,31 +340,7 @@ class MainWindow(qtw.QMainWindow, ui):
 
 # --- PRIVATE UTILITY FUNCTIONS ---
 
-    def _setModel(self, model = None):
-        """
-        Sets the models if one is given, then updates the models of the other widgets.
-
-        Args:
-            model (ModelTree): the new model
-        """
-
-        self.treeModel = model
-        self.componentsPage.setModel(self.treeModel)
-
-        if self.treeModel:
-            self.treeModel.dataChanged.connect(self.hideDeprecated)
-
-    def _setArchive(self, archivePath = None):
-        """
-        Sets the archive model.
-
-        Args:
-            archivePath (str): the name or path of the archive file. Defaults to None.
-        """
-
-        self.archivePath = archivePath
-        self.archiveModel = ArchiveModel(self.archivePath)
-        self.archivePage.setModel(self.archiveModel, self.archivePath)
+# UNDO and CHANGES
 
     @decor.producesChanges
     def _producesChanges(self, *args):
@@ -442,25 +359,6 @@ class MainWindow(qtw.QMainWindow, ui):
         """
 
         pass
-
-# NODES HANDLING
-
-    def _addNode(self, node):
-        """
-        Pops up an editor window with an initialised node to edit. If "Add" is
-        pressed the node is added to the tree, while if "Cancel" is pressed
-        the node will not be added to the tree.
-
-        Args:
-            node (ComponentNode): the node to edit
-        """
-
-        self.newEditor = NewComponentEditor(node)
-        self.newEditor.setManufactureModel(self.manufactureModel)
-        self.newEditor.setStatusModel(self.statusModel)
-        self.newEditor.submit.connect(self.componentsPage.addNode)
-        self.newEditor.submit.connect(self._undoable)
-        self.newEditor.submit.connect(self._producesChanges)
 
 # DIALOGS and MENUS
 

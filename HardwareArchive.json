@@ -24,7 +24,7 @@
             "price": 0.0,
             "type": "Hardware",
             "manufacture": "Off the Shelf",
-            "status": "Designed",
+            "status": "Not Designed",
             "seller": "Longhin",
             "link": null,
             "children": []

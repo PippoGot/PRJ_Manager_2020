@@ -129,3 +129,17 @@ class ComponentTree(AbstractTree):
 
         newNode.addFeatures(ID = ID)
         return newNode
+
+    def getHardwareNodes(self):
+        """
+        Searches for the hardware and product nodes inside the tree and returns the
+        list of these nodes.
+
+        Returns:
+            list[ComponentNode]: the list of hardware nodes
+        """
+
+        hardwareNodes = self.searchNodes(type = 'Hardware')
+        hardwareNodes.extend(self.searchNodes(type = 'Product'))
+
+        return hardwareNodes

@@ -32,6 +32,31 @@ class SettingsWindow(qtw.QWidget, ui):
         except FileNotFoundError:
             self.data = self._defaultSettings()
 
+        # archive check
+        try:
+            with open(self.archivePath, 'r') as _:
+                pass
+        except FileNotFoundError:
+            with open(self.archivePath, 'w') as file:
+                root = {
+                    "class": "ProjectNode",
+                    "ID": "#000-000",
+                    "name": "Name",
+                    "description": "Description",
+                    "comment": "",
+                    "packageQuantity": 1,
+                    "quantity": 1,
+                    "price": 0.0,
+                    "type": "Project",
+                    "manufacture": "Assembled",
+                    "status": "Not Designed",
+                    "seller": None,
+                    "link": None,
+                    "children": []
+                }
+
+                json.dump(root, file, indent = 4)
+
         # signals-slots connections of the ui
         self.uiOkBtn.clicked.connect(self.close)
         self.uiImportBtn.clicked.connect(self._importSettings)
@@ -61,7 +86,7 @@ class SettingsWindow(qtw.QWidget, ui):
         """
 
         data = {
-            'archivePath': None,
+            'archivePath': 'HardwareArchive.json',
             'statusEntries': [],
             'manufactureEntries': [],
             'recentFiles': []
@@ -190,6 +215,15 @@ class SettingsWindow(qtw.QWidget, ui):
         """
 
         return self.manufactureEditor.model
+
+# ACTIVATORS
+
+    def activateArchivePathChanged(self):
+        """
+        Emits the corresponding signal.
+        """
+
+        self.archivePathChanged.emit(self.archivePath)
 
 # FILE MANAGEMENT
 

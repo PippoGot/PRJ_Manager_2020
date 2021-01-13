@@ -38,7 +38,7 @@ def ifHasModel(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
-        if self.treeModel:
+        if self.componentsPage.getModel():
             return func(*args, **kwargs)
         else:
             return dialogs.noFileError()
@@ -168,7 +168,7 @@ def askSave(func):
     def wrapper(*args, **kwargs):
         self = args[0]
 
-        if not self.treeModel: return func(*args, **kwargs)
+        if not self.componentsPage.getModel(): return func(*args, **kwargs)
         if not self.unsavedChanges: return func(*args, **kwargs)
 
         dialog = dialogs.askSave()
@@ -215,7 +215,7 @@ def undoable(func):
 
         val = func(*args, **kwargs)
 
-        data = str(self.treeModel)
+        data = str(self.componentsPage.getModel())
         name = func.__name__
         self.undoStack.addSnapshot(data, name)
 

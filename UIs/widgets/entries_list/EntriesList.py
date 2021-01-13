@@ -27,7 +27,7 @@ class EntriesList(qtw.QWidget, ui):
         self.uiList.setModel(self.model)
 
         if entries:
-            self.model.setStringList(entries)
+            self.setEntries(entries)
 
         self.uiAddBtn.clicked.connect(self._addItem)
         self.model.dataChanged.connect(self._emitEntries)
@@ -42,7 +42,7 @@ class EntriesList(qtw.QWidget, ui):
         if item:
             strings = self.model.stringList()
             strings.append(item)
-            self.model.setStringList(strings)
+            self.setEntries(strings)
 
         self._clearLine()
         self._emitEntries()

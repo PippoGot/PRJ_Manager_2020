@@ -3,8 +3,10 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
 from data_types.nodes import CompositeNodes as comp_nodes
+from models.archive.Model import ArchiveModel
 from ...widgets.component_editor.ComponentEditor import ComponentEditor
 from ...widgets.archive_view.ArchiveView import ArchiveView
+from ...popups.hardware_selector.HardwareSelector import HardwareSelector
 
 from .archive_page import Ui_uiArchivePage as ui
 
@@ -49,7 +51,7 @@ class ArchivePage(qtw.QWidget, ui):
 
 # --- MODELS ---
 
-    def setModel(self, model, filename = None):
+    def setModel(self, model):
         """
         Sets the editor's and view's model.
 
@@ -61,9 +63,6 @@ class ArchivePage(qtw.QWidget, ui):
         self.model = model
         self.uiArchiveView.setModel(self.model)
         self.uiEditor.setModel(self.model)
-
-        if filename:
-            self.filename = filename
 
         if self.model:
             self.model.dataChanged.connect(self._saveArchive)
@@ -184,6 +183,28 @@ class ArchivePage(qtw.QWidget, ui):
         self._updateNewNode()
         self._saveArchive()
 
+# --- GETTERS ---
+
+    def getModel(self):
+        """
+        Returns the current model.
+
+        Returns:
+            ArchiveModel: the current model
+        """
+
+        return self.model
+
+    def getNodes(self):
+        """
+        Returns a list of the nodes inside the archive model.
+
+        Returns:
+            list[ComponentNode]: the list of nodes inside the model
+        """
+
+        return self.model.rootItem.getChildren()
+
 # --- UTILITY ---
 
     def _disableRemove(self):
@@ -232,3 +253,26 @@ class ArchivePage(qtw.QWidget, ui):
         """
 
         self.model.saveFile(self.filename)
+
+    def readArchive(self, filename = None):
+        """
+        Reads a file if one is passed in, and converts it to an archive model.
+
+        Args:
+            filename (str): the filename of the file to read. Defaults to None.
+        """
+
+        self.filename = filename
+        self.setModel(ArchiveModel(filename))
+
+    def getSelector(self):
+        """
+        Returns a hardware selector with the same model of the archive page.
+
+        Returns:
+            QWidget: the hardware selector
+        """
+
+        selector = HardwareSelector()
+        selector.setModel(self.model)
+        return selector

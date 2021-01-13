@@ -6,6 +6,9 @@ TO DO LIST:
     - iconpack selection
     - theme selection (stylesheet)
 
+    - flowchart of every class
+    - readonly lineedit of settings window
+
 IDEAS:
 
     MAIN WINDOW
