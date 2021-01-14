@@ -6,7 +6,7 @@ if __name__ == '__main__':
     import sys
     app = qtw.QApplication(sys.argv)
 
-    mw = MainWindow()
+    mw = MainWindow(app)
     mw.show()
 
     app.exec_()

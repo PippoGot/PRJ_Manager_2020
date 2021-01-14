@@ -23,6 +23,7 @@ class Ui_file_selector(object):
         self.horizontalLayout.addWidget(self.uiDetails)
         self.uiPath = QtWidgets.QLineEdit(file_selector)
         self.uiPath.setText("")
+        self.uiPath.setReadOnly(True)
         self.uiPath.setObjectName("uiPath")
         self.horizontalLayout.addWidget(self.uiPath)
         self.uiBrowseBtn = QtWidgets.QPushButton(file_selector)

@@ -3,16 +3,15 @@ TO DO LIST:
     SETTINGS POPUP WINDOW
     implemented with json files
 
-    - iconpack selection
-    - theme selection (stylesheet)
+        - iconpack selection
+        - theme selection (stylesheet)
 
-    - flowchart of every class
-    - readonly lineedit of settings window
+    VARIOUS
+    - update app structure file with the refactoring
 
 IDEAS:
 
     MAIN WINDOW
-    - main window class breakdown
     - undo stack view
     - bill model and page
         - export bill

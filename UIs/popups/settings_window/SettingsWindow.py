@@ -11,6 +11,7 @@ from .settings_window import Ui_settings_window as ui
 class SettingsWindow(qtw.QWidget, ui):
 
     archivePathChanged = qtc.pyqtSignal(str)
+    recentFileAdded = qtc.pyqtSignal(str)
 
 # INIT
 
@@ -27,35 +28,8 @@ class SettingsWindow(qtw.QWidget, ui):
 
         # reads settings file
         self.data = {}
-        try:
-            self._importSettings('settings.json')
-        except FileNotFoundError:
-            self.data = self._defaultSettings()
-
-        # archive check
-        try:
-            with open(self.archivePath, 'r') as _:
-                pass
-        except FileNotFoundError:
-            with open(self.archivePath, 'w') as file:
-                root = {
-                    "class": "ProjectNode",
-                    "ID": "#000-000",
-                    "name": "Name",
-                    "description": "Description",
-                    "comment": "",
-                    "packageQuantity": 1,
-                    "quantity": 1,
-                    "price": 0.0,
-                    "type": "Project",
-                    "manufacture": "Assembled",
-                    "status": "Not Designed",
-                    "seller": None,
-                    "link": None,
-                    "children": []
-                }
-
-                json.dump(root, file, indent = 4)
+        self._checkSettings()
+        self._checkArchive(self.archivePath)
 
         # signals-slots connections of the ui
         self.uiOkBtn.clicked.connect(self.close)
@@ -77,29 +51,6 @@ class SettingsWindow(qtw.QWidget, ui):
         self.uiManufactureBox.layout().addWidget(self.manufactureEditor)
         self.manufactureEditor.entriesChanged.connect(self._updateManufactureEntries)
 
-    def _defaultSettings(self):
-        """
-        Sets the default settings if a file is not present.
-
-        Returns:
-            dict[str, PyObject]: the dictionary with the default settings
-        """
-
-        data = {
-            'archivePath': 'HardwareArchive.json',
-            'statusEntries': [],
-            'manufactureEntries': [],
-            'recentFiles': []
-        }
-
-        with open('settings.json', 'w') as file:
-            json.dump(data, file)
-
-        self._updateArchivePath(None)
-        self._updateStatusEntries([])
-        self._updateManufactureEntries([])
-        return data
-
 # RECENT FILES
 
     def addRecentFile(self, filename):
@@ -116,8 +67,10 @@ class SettingsWindow(qtw.QWidget, ui):
             self.recentFiles.pop(self.recentFiles.index(filename))
         self.recentFiles.insert(0, filename)
 
+        self._checkOpening()
         self._checkLength()
         self._saveSettings()
+        self.recentFileAdded.emit(filename)
 
     def _checkLength(self):
         """
@@ -129,6 +82,21 @@ class SettingsWindow(qtw.QWidget, ui):
             for _ in range(length - 5):
                 self.recentFiles.pop(-1)
 
+    def _checkOpening(self):
+        """
+        Checks if the filenames in the recent files list can be opened. If not they are
+        removed from the list.
+        """
+
+        notFoundList = []
+        for file in self.recentFiles:
+            try:
+                with open(file, 'r') as _: pass
+            except FileNotFoundError:
+                notFoundList.append(file)
+        for file in notFoundList:
+            self.recentFiles.remove(file)
+
     def getRecentFilesList(self):
         """
         Returns the list of strings of the recent files.
@@ -137,6 +105,7 @@ class SettingsWindow(qtw.QWidget, ui):
             list[str]: the list with the recent files
         """
 
+        self._checkOpening()
         return self.data['recentFiles']
 
 # UPDATING
@@ -226,6 +195,77 @@ class SettingsWindow(qtw.QWidget, ui):
         self.archivePathChanged.emit(self.archivePath)
 
 # FILE MANAGEMENT
+
+    def _checkSettings(self):
+        """
+        Checks if the settings file is in the right location, otherwise a new one
+        is initialized.
+        """
+
+        try:
+            self._importSettings('settings.json')
+        except FileNotFoundError:
+            self._initSettings()
+
+    def _initSettings(self):
+        """
+        Sets the default settings if a file is not present.
+        """
+
+        self.data = {
+            'archivePath': 'HardwareArchive.json',
+            'statusEntries': [],
+            'manufactureEntries': [],
+            'recentFiles': []
+        }
+
+        with open('settings.json', 'w') as file:
+            json.dump(self.data, file)
+
+        self._updateArchivePath('HardwareArchive.json')
+        self._updateStatusEntries([])
+        self._updateManufactureEntries([])
+        self._initRecentFiles([])
+
+    def _checkArchive(self, archivePath):
+        """
+        Checks if the archive exists in the specified location, if not the archive is
+        reinitialized
+
+        Args:
+            archivePath (str): the filename of the archive to check
+        """
+
+        try:
+            with open(archivePath, 'r') as _:
+                pass
+        except FileNotFoundError:
+            self._initArchive()
+
+    def _initArchive(self):
+        """
+        Initialises a new archive file.
+        """
+
+        with open(self.archivePath, 'w') as file:
+            root = {
+                "class": "ProjectNode",
+                "ID": "#000-000",
+                "name": "Name",
+                "description": "Description",
+                "comment": "",
+                "packageQuantity": 1,
+                "quantity": 1,
+                "price": 0.0,
+                "type": "Project",
+                "manufacture": "Assembled",
+                "status": "Not Designed",
+                "seller": None,
+                "link": None,
+                "children": []
+            }
+
+            json.dump(root, file, indent = 4)
 
     def _importSettings(self, filename = None):
         """

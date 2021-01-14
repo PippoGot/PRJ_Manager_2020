@@ -30,26 +30,27 @@ from .main_window import Ui_uiMainWindow as ui
 # --- CLASS ---
 
 class MainWindow(qtw.QMainWindow, ui):
-    def __init__(self):
+    def __init__(self, application):
         """
         Loads the UI window and set the manufacture model.
         """
 
-        # ui
+# ui
         super(MainWindow, self).__init__()
         self.setupUi(self)
-        self.setStyleSheet(qss)
+        self.application = application
+        self.application.setStyleSheet(qss)
 
-        # undo stack init
+# undo stack init
         self.unsavedChanges = False
         self.undoStack = UndoStack()
 
-        # settings window init
+# settings window init
         self.settingsWindow = SettingsWindow()
         self.statusModel = self.settingsWindow.getStatusModel()
         self.manufactureModel = self.settingsWindow.getManufactureModel()
 
-        # components page init
+# components page init
         self.componentsPage = ComponentsPage()
         self.ComponentsPage.layout().addWidget(self.componentsPage)
 
@@ -61,28 +62,11 @@ class MainWindow(qtw.QMainWindow, ui):
         self.componentsPage.nodeAdded.connect(self._undoable)
         self.componentsPage.nodeAdded.connect(self._producesChanges)
 
-        recentFiles = self.settingsWindow.getRecentFilesList()
+        self._openLatest()
+        self._updateRecentFilesMenu()
+        self.settingsWindow.recentFileAdded.connect(self._updateRecentFilesMenu)
 
-##### move to settings
-        filename = None
-        ct = 0
-        fileFound = False
-        while not fileFound:
-            file = recentFiles[ct]
-            try:
-                with open(file, 'r') as _:
-                    fileFound = True
-                    filename = file
-            except FileNotFoundError:
-                ct += 1
-            if ct > 4:
-                fileFound = True
-##### move to settings
-
-        self.componentsPage.readModel(filename)
-        self.undoStack.addSnapshot(str(self.componentsPage.getModel()), 'init')
-
-        # archive page init
+# archive page init
         self.archivePage = ArchivePage()
         self.ArchivePage.layout().addWidget(self.archivePage)
 
@@ -91,16 +75,6 @@ class MainWindow(qtw.QMainWindow, ui):
 
         self.settingsWindow.archivePathChanged.connect(self.archivePage.readArchive)
         self.settingsWindow.activateArchivePathChanged()
-
-        # recent files, separate functions ?
-        self.recentFilesMenu = qtw.QMenu('Recent Files...')
-        for file in recentFiles:
-            name = file.split('/')[-1]
-            action = qtw.QAction(name, self)
-            self.recentFilesMenu.addAction(action)
-            action.setData(file)
-            action.triggered.connect(self._openRecent)
-        self.menuFile.insertMenu(self.uiActClear, self.recentFilesMenu)
 
 # file menu actions connections
         self.uiActNew.triggered.connect(self.newFile)
@@ -161,10 +135,13 @@ class MainWindow(qtw.QMainWindow, ui):
             filename = dialogs.openDialog()
 
         if filename:
-            self.componentsPage.resetModel()
-            self.componentsPage.readModel(filename)
-            self.settingsWindow.addRecentFile(filename)
-            self.tabWidget.setCurrentIndex(0)
+            try:
+                self.componentsPage.resetModel()
+                self.componentsPage.readModel(filename)
+                self.settingsWindow.addRecentFile(filename)
+                self.tabWidget.setCurrentIndex(0)
+            except Exception:
+                dialogs.fileReadError()
 
     @decor.ifHasModel
     def saveFile(self, *args):
@@ -397,6 +374,21 @@ class MainWindow(qtw.QMainWindow, ui):
 
             menu.exec_(self.componentsPage.uiView.viewport().mapToGlobal(position))
 
+    def _updateRecentFilesMenu(self):
+        """
+        Updates the recent files menu with the latest files.
+        """
+
+        recentFiles = self.settingsWindow.getRecentFilesList()
+        self.recentFilesMenu = qtw.QMenu('Recent Files...', self)
+        for file in recentFiles:
+            name = file.split('/')[-1]
+            action = qtw.QAction(name, self)
+            self.recentFilesMenu.addAction(action)
+            action.setData(file)
+            action.triggered.connect(self._openRecent)
+        self.menuFile.insertMenu(self.uiActClear, self.recentFilesMenu)
+
     def _checkPage(self, page):
         """
         Checks if the user is in the correct page and notify with a dialog if it's not.
@@ -413,7 +405,27 @@ class MainWindow(qtw.QMainWindow, ui):
             return True
         return False
 
+# RECENT FILE OPENING
+
     def _openRecent(self):
+        """
+        Opens a recent file based on the filename inside the calling action.
+        """
+
         action = self.sender()
         if action:
             self.openFile(action.data())
+
+    def _openLatest(self):
+        """
+        Opens the most recent file if it exists, otherwise starts a new model and saves the
+        changes to the undo stack.
+        """
+
+        recentFiles = self.settingsWindow.getRecentFilesList()
+        filename = None
+        if recentFiles:
+            filename = recentFiles[0]
+
+        self.componentsPage.readModel(filename)
+        self.undoStack.addSnapshot(str(self.componentsPage.getModel()), 'init')

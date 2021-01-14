@@ -115,6 +115,9 @@ def pageError():
 def noFileError():
     return _okDialog('Warning!', 'No file currently open!')
 
+def fileReadError():
+    return _okDialog('Warning!', 'The file you tried to open either does not exist or can\'t be read')
+
 def noSelectionError():
     return _okDialog('Warning!', 'No item currently selected!')
 
