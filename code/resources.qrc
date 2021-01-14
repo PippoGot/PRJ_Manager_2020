@@ -1,0 +1,41 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="assembly.png">resources/icons/assembly.png</file>
+    <file alias="bill.png">resources/icons/bill.png</file>
+    <file alias="clear.png">resources/icons/clear.png</file>
+    <file alias="collapse.png">resources/icons/collapse.png</file>
+    <file alias="consumable.png">resources/icons/consumable.png</file>
+    <file alias="copy.png">resources/icons/copy.png</file>
+    <file alias="cut.png">resources/icons/cut.png</file>
+    <file alias="deprecated.png">resources/icons/deprecated.png</file>
+    <file alias="downarrow-disabled.png">resources/icons/downarrow-disabled.png</file>
+    <file alias="downarrow-selected.png">resources/icons/downarrow-selected.png</file>
+    <file alias="downarrow.png">resources/icons/downarrow.png</file>
+    <file alias="electromechanical.png">resources/icons/electromechanical.png</file>
+    <file alias="electronic.png">resources/icons/electronic.png</file>
+    <file alias="expand.png">resources/icons/expand.png</file>
+    <file alias="hardware.png">resources/icons/hardware.png</file>
+    <file alias="id.png">resources/icons/id.png</file>
+    <file alias="jig.png">resources/icons/jig.png</file>
+    <file alias="leaf.png">resources/icons/leaf.png</file>
+    <file alias="lv.png">resources/icons/lv.png</file>
+    <file alias="measured.png">resources/icons/measured.png</file>
+    <file alias="morph.png">resources/icons/morph.png</file>
+    <file alias="new.png">resources/icons/new.png</file>
+    <file alias="open.png">resources/icons/open.png</file>
+    <file alias="part.png">resources/icons/part.png</file>
+    <file alias="paste.png">resources/icons/paste.png</file>
+    <file alias="placeholder.png">resources/icons/placeholder.png</file>
+    <file alias="project.png">resources/icons/project.png</file>
+    <file alias="redo.png">resources/icons/redo.png</file>
+    <file alias="remove.png">resources/icons/remove.png</file>
+    <file alias="save.png">resources/icons/save.png</file>
+    <file alias="saveas.png">resources/icons/saveas.png</file>
+    <file alias="search.png">resources/icons/search.png</file>
+    <file alias="undo.png">resources/icons/undo.png</file>
+    <file alias="uparrow-disabled.png">resources/icons/uparrow-disabled.png</file>
+    <file alias="uparrow-selected.png">resources/icons/uparrow-selected.png</file>
+    <file alias="uparrow.png">resources/icons/uparrow.png</file>
+    <file alias="update.png">resources/icons/update.png</file>
+</qresource>
+</RCC>

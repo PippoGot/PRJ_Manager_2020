@@ -1,0 +1,57 @@
+parentHash,selfHash,level,number,title,description,type,manufacture,status,comment,price,quantity,package,seller,kit,link,length
+
+,0,0,,Name,Description,,,Not Designed,,0,1,0,,,,
+
+0,63638480,5,#MEH-001,M3x50mm Screw,"Cross slot, fully threaded",Hardware,Off the Shelf,Designed,-,0,1,1,Longhin,,-,
+
+0,18268886,5,#MEH-002,M3 washer,"1 mm thickness, 8 mm OD",Hardware,Off the Shelf,Designed,-,0,1,1,Longhin,,-,
+
+0,79147264,5,#MEH-003,M3 nut,5.5 mm smaller distance,Hardware,Off the Shelf,Not Designed,-,0,1,1,Brico,,-,
+
+0,37974943,5,#MEH-004,M8x20mm Bolt,Hex Bolt,Hardware,Off the Shelf,Designed,-,0,1,1,Bricoman,,-,
+
+0,85181490,5,#MEH-005,M8x40mm Bolt,Hex Bolt,Hardware,Off the Shelf,Designed,-,0,1,1,Bricoman,,-,
+
+0,69518796,5,#MEH-006,M3x15mm Screw,Allen key screw,Hardware,Off the Shelf,Designed,-,0,1,1,Longhin,,-,
+
+0,61470108,5,#MEH-008,M8 Wood Threaded Insert ,"Threaded insert for wood sheets, OD 26mm",Hardware,Off the Shelf,Not Designed,-,0,1,1,Longhin,,-,
+
+0,79784248,5,#MEH-009,608ZZ Ball Bearing,"22mm OD, 8mm ID, 7mm width",Hardware,Off the Shelf,Designed,-,0,1,1,Amazon,,-,
+
+0,43149878,5,#MEH-00A,M8 washer,"1.5mm thickness, 16mm OD",Hardware,Off the Shelf,Designed,-,0,1,1,Bricoman,,-,
+
+0,45337748,5,#EMH-001,NEMA17 Stepper Motor,5mm shaft,Hardware,Off the Shelf,Designed,-,0,1,1,Amazon,,-,
+
+0,98656339,5,#MEH-00B,GT2 Pulley,"Aluminum pulley, 20 teeth",Hardware,Off the Shelf,Designed,-,0,1,1,Amazon,,-,
+
+0,4597313,5,#MEH-00C,M8 Nylock Nut,Self locking nut,Hardware,Off the Shelf,Designed,-,0,1,1,Bricoman,,-,
+
+0,41597008,5,#MEH-00D,M8x60mm Bolt,Hex Bolt,Hardware,Off the Shelf,Designed,-,0,1,1,Bricoman,,-,
+
+0,48339223,5,#MEH-00E,M3x10mm Screw,"Allen key screw, fully threaded",Hardware,Off the Shelf,Designed,-,0,1,1,Longhin,,-,
+
+0,55236866,5,#ELH-001,Endstop Switch,"3 terminals, NO, NC, COM",Hardware,Off the Shelf,Designed,-,0,1,1,Amazon,,-,
+
+0,18726578,5,#MEH-00F,Spring Coupler 5mm to 8mm,"5mm, 8mm, aluminum spring coupler",Hardware,Off the Shelf,Designed,-,0,1,1,Amazon,,-,
+
+0,84558139,5,#MEH-00H,T8 Brass Nut,"T8 brass nut, 20mm OD",Hardware,Off the Shelf,Designed,-,0,1,1,Amazon,,-,
+
+0,17660322,5,#EMH-002,Makita Router,Makita router tool,Hardware,Off the Shelf,Designed,-,0,1,1,Amazon,,-,
+
+0,24285398,5,#MEH-00I,M8x30mm Bolt,Hex Bolt,Hardware,Off the Shelf,Designed,-,0,1,1,Bricoman,,-,
+
+0,7314131,5,#MEH-00J,M8x80mm Bolt,"Hex Bolt, fully threaded",Hardware,Off the Shelf,Designed,-,0,1,1,Bricoman,,-,
+
+0,87623796,5,#MMH-001,20mm aluminum pipe,"Default length 1M, OD 20mm, ID 16mm",Hardware,Cut to length,Not Designed,-,0,1,1,Leroy merlin,,-,
+
+0,88092985,5,#MMH-002,MDF board 18mm thickness,"Custom dimensions, 18mm thickness",Hardware,Cut to length,Not Designed,-,0,1,1,Brico,,-,
+
+0,54868193,5,#MEH-007,M3 threaded insert,"Helical grooves, 5.7mm heigth.",Hardware,Off the Shelf,Not Designed,-,0,1,1,Amazon,,-,
+
+0,60926449,5,#MMH-003,GT2 timing belt,"6mm width, GT2 rubber timing belt",Hardware,Cut to length,Not Designed,-,0,1,1,Amazon,,-,
+
+0,55917940,5,#MEH-00K,M3 threaded insert,"Vertical grooves, 3mm heigth.",Hardware,Off the Shelf,Not Designed,-,0,1,1,Amazon,,-,
+
+0,22094627,5,#MEH-00L,M3x40mm Screw,"Cross slot, fully threaded",Hardware,Off the Shelf,Not Designed,-,0,1,1,Longhin,,-,
+
+0,47909261,5,#MMH-004,T8 screw,T8 thread screw,Hardware,Cut to length,Designed,-,0,1,1,Amazon,,-,

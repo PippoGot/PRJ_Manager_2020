@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>uiMainWindow</class>
+ <widget class="QMainWindow" name="uiMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>723</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PRJ Manager 2020</string>
+  </property>
+  <widget class="QWidget" name="uiCentralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="uiTabWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="uiTreePage">
+       <attribute name="title">
+        <string>Components List</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="uiBillPage">
+       <attribute name="title">
+        <string>Bill of Materials</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="uiAnalyticsPage">
+       <attribute name="title">
+        <string>Analytics</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="uiHardwarePage">
+       <attribute name="title">
+        <string>Hardware Editor</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="uiMenubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>960</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="uiFileMenu">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="uiActionNew"/>
+    <addaction name="uiActionOpen"/>
+    <addaction name="uiActionSave"/>
+    <addaction name="uiActionSaveAs"/>
+    <addaction name="uiActionExportBOM"/>
+    <addaction name="uiActionClear"/>
+   </widget>
+   <widget class="QMenu" name="uiEditMenu">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="uiActionUndo"/>
+    <addaction name="uiActionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="uiActionCut"/>
+    <addaction name="uiActionCopy"/>
+    <addaction name="uiActionPaste"/>
+    <addaction name="separator"/>
+    <addaction name="uiActionAddComponent"/>
+    <addaction name="uiActionAddLeafComponent"/>
+    <addaction name="uiActionAddJig"/>
+    <addaction name="uiActionAddPlaceholder"/>
+    <addaction name="uiActionAddSpecialComponent"/>
+    <addaction name="uiActionMorphSpecialComponent"/>
+    <addaction name="uiActionUpdateSpecialComponents"/>
+    <addaction name="uiActionRemoveComponent"/>
+   </widget>
+   <widget class="QMenu" name="uiViewMenu">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="uiActionHideDeprecated"/>
+    <addaction name="uiActionExpandAll"/>
+    <addaction name="uiActionCollapseAll"/>
+   </widget>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>Debug</string>
+    </property>
+    <addaction name="uiActionShowHashes"/>
+    <addaction name="uiActionShowLevel"/>
+   </widget>
+   <addaction name="uiFileMenu"/>
+   <addaction name="uiEditMenu"/>
+   <addaction name="uiViewMenu"/>
+   <addaction name="menuDebug"/>
+  </widget>
+  <widget class="QToolBar" name="uiToolbar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="uiActionNew"/>
+   <addaction name="uiActionOpen"/>
+   <addaction name="uiActionSave"/>
+   <addaction name="uiActionSaveAs"/>
+   <addaction name="uiActionExportBOM"/>
+   <addaction name="uiActionClear"/>
+   <addaction name="separator"/>
+   <addaction name="uiActionUndo"/>
+   <addaction name="uiActionRedo"/>
+   <addaction name="separator"/>
+   <addaction name="uiActionCut"/>
+   <addaction name="uiActionCopy"/>
+   <addaction name="uiActionPaste"/>
+   <addaction name="separator"/>
+   <addaction name="uiActionAddComponent"/>
+   <addaction name="uiActionAddSpecialComponent"/>
+   <addaction name="uiActionAddLeafComponent"/>
+   <addaction name="uiActionAddJig"/>
+   <addaction name="uiActionAddPlaceholder"/>
+   <addaction name="uiActionMorphSpecialComponent"/>
+   <addaction name="uiActionUpdateSpecialComponents"/>
+   <addaction name="uiActionRemoveComponent"/>
+   <addaction name="separator"/>
+   <addaction name="uiActionHideDeprecated"/>
+   <addaction name="uiActionCollapseAll"/>
+   <addaction name="uiActionExpandAll"/>
+   <addaction name="separator"/>
+   <addaction name="uiActionShowHashes"/>
+   <addaction name="uiActionShowLevel"/>
+  </widget>
+  <action name="uiActionNew">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/new.png</normaloff>:/new.png</iconset>
+   </property>
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="uiActionOpen">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/open.png</normaloff>
+     <normalon>:/icons/open.png</normalon>:/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="uiActionSave">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/save.png</normaloff>:/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="uiActionSaveAs">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/saveas.png</normaloff>:/saveas.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save as...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="uiActionUndo">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/undo.png</normaloff>:/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="uiActionRedo">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/redo.png</normaloff>:/redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="uiActionAddComponent">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/part.png</normaloff>:/part.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Component</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="uiActionRemoveComponent">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/remove.png</normaloff>:/remove.png</iconset>
+   </property>
+   <property name="text">
+    <string>Remove Component</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="uiActionExportBOM">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/bill.png</normaloff>:/bill.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export Bill of Materials</string>
+   </property>
+  </action>
+  <action name="uiActionMorphSpecialComponent">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/morph.png</normaloff>:/morph.png</iconset>
+   </property>
+   <property name="text">
+    <string>Morph Special Component</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="uiActionHideDeprecated">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/deprecated.png</normaloff>:/deprecated.png</iconset>
+   </property>
+   <property name="text">
+    <string>Hide Deprecated</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="uiActionClear">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/clear.png</normaloff>:/clear.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+X</string>
+   </property>
+  </action>
+  <action name="uiActionUpdateSpecialComponents">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/update.png</normaloff>:/update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Update Special Components</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+U</string>
+   </property>
+  </action>
+  <action name="uiActionAddLeafComponent">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/leaf.png</normaloff>:/leaf.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Leaf Component</string>
+   </property>
+  </action>
+  <action name="uiActionAddJig">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/jig.png</normaloff>:/jig.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Jig</string>
+   </property>
+  </action>
+  <action name="uiActionExpandAll">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/expand.png</normaloff>:/expand.png</iconset>
+   </property>
+   <property name="text">
+    <string>Expand All</string>
+   </property>
+  </action>
+  <action name="uiActionCollapseAll">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/collapse.png</normaloff>:/collapse.png</iconset>
+   </property>
+   <property name="text">
+    <string>Collapse All</string>
+   </property>
+  </action>
+  <action name="uiActionAddSpecialComponent">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/hardware.png</normaloff>:/hardware.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Special Component</string>
+   </property>
+  </action>
+  <action name="uiActionCut">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/cut.png</normaloff>:/cut.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="uiActionCopy">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/copy.png</normaloff>:/copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="uiActionPaste">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/paste.png</normaloff>:/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="uiActionAddPlaceholder">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/placeholder.png</normaloff>:/placeholder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Placeholder</string>
+   </property>
+  </action>
+  <action name="uiActionShowHashes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/id.png</normaloff>:/id.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Hashes</string>
+   </property>
+  </action>
+  <action name="uiActionShowLevel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/lv.png</normaloff>:/lv.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Level</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../../resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
